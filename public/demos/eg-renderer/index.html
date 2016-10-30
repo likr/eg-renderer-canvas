@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8"/>
+<title></title>
+<link rel="import" href="../../eg-renderer.html">
+</head>
+<body>
+<eg-renderer id="renderer"></eg-renderer>
+<script>
+fetch('data.json')
+  .then((response) => response.json())
+  .then((data) => {
+    const renderer = document.getElementById('renderer')
+    renderer.canvas.width = 1200
+    renderer.canvas.height = 500
+    renderer.render(data)
+  })
+</script>
+</body>
+</html>

@@ -19,5 +19,8 @@
     "gh-pages": "^0.11.0",
     "webpack": "^1.13.3",
     "webpack-dev-server": "^1.16.2"
+  },
+  "dependencies": {
+    "babel-polyfill": "^6.16.0"
   }
 }

@@ -3,6 +3,7 @@ module.exports = {
     loaders: [
       {
         test: /\.js$/,
+        exclude: /node_modules/,
         loader: 'babel-loader',
         query: {
           presets: ['latest'],
@@ -12,7 +13,8 @@ module.exports = {
     ]
   },
   entry: {
-    'my-hello': './src/my-hello.js'
+    'my-hello': './src/my-hello.js',
+    'eg-renderer': './src/eg-renderer.js'
   },
   output: {
     path: './public',
