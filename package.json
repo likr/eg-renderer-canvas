@@ -1,0 +1,23 @@
+{
+  "name": "components",
+  "version": "0.0.0",
+  "description": "",
+  "scripts": {
+    "start": "webpack-dev-server --content-base=public",
+    "build": "webpack",
+    "deploy": "npm run build && gh-pages -d public",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "MIT",
+  "devDependencies": {
+    "babel-core": "^6.18.0",
+    "babel-loader": "^6.2.7",
+    "babel-plugin-transform-react-jsx": "^6.8.0",
+    "babel-preset-latest": "^6.16.0",
+    "gh-pages": "^0.11.0",
+    "webpack": "^1.13.3",
+    "webpack-dev-server": "^1.16.2"
+  }
+}
