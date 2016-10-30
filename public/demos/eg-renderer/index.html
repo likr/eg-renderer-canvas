@@ -3,19 +3,22 @@
 <head>
 <meta charset="utf-8"/>
 <title></title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/webcomponentsjs/0.7.22/webcomponents.min.js"></script>
 <link rel="import" href="../../eg-renderer.html">
 </head>
 <body>
 <eg-renderer id="renderer"></eg-renderer>
 <script>
-fetch('data.json')
-  .then((response) => response.json())
-  .then((data) => {
-    const renderer = document.getElementById('renderer')
-    renderer.canvas.width = 1200
-    renderer.canvas.height = 500
-    renderer.render(data)
-  })
+window.addEventListener('WebComponentsReady', () => {
+  fetch('data.json')
+    .then((response) => response.json())
+    .then((data) => {
+      const renderer = document.getElementById('renderer')
+      renderer.canvas.width = 1200
+      renderer.canvas.height = 500
+      renderer.render(data)
+    })
+})
 </script>
 </body>
 </html>
