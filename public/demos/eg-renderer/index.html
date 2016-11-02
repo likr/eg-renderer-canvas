@@ -25,6 +25,7 @@ body {
 <div class="control">
   <button id="hoge1">hoge1</button>
   <button id="hoge2">hoge2</button>
+  <button id="hoge3">hoge3</button>
   <button id="center">center</button>
 </div>
 <script>
@@ -66,6 +67,17 @@ document.getElementById('hoge2').addEventListener('click', (event) => {
   if (graph.numVertices() > 0) {
     const u = graph.vertices()[0]
     graph.removeVertex(u)
+    renderer.layout()
+  }
+})
+
+document.getElementById('hoge3').addEventListener('click', (event) => {
+  const {graph} = renderer
+  if (graph.numVertices() > 0) {
+    const u = graph.vertices()[0]
+    const v = 'key' + Math.random()
+    graph.addVertex(v, {text: v})
+    graph.addEdge(u, v)
     renderer.layout()
   }
 })

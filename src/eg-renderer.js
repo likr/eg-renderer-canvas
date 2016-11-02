@@ -71,6 +71,32 @@ const diff = (current, next) => {
       if (next.edges[u][v]) {
         if (current.edges[u] && current.edges[u][v]) {
           result.edges[u][v] = current.edges[u][v]
+        } else if (current.vertices[u]) {
+          const {x, y, width} = current.vertices[u]
+          const {points} = next.edges[u][v]
+          result.edges[u][v] = Object.assign({}, next.edges[u][v], {
+            points: [
+              [x + width / 2, y],
+              [x + width / 2, y],
+              [points[2][0], 0],
+              [points[3][0], 0],
+              [points[4][0], 0],
+              [points[5][0], 0]
+            ]
+          })
+        } else if (current.vertices[v]) {
+          const {x, y, width} = current.vertices[v]
+          const {points} = next.edges[u][v]
+          result.edges[u][v] = Object.assign({}, next.edges[u][v], {
+            points: [
+              [points[0][0], 0],
+              [points[1][0], 0],
+              [points[2][0], 0],
+              [points[3][0], 0],
+              [x - width / 2, y],
+              [x - width / 2, y]
+            ]
+          })
         } else {
           result.edges[u][v] = Object.assign({}, next.edges[u][v], {
             points: next.edges[u][v].points.map(([x]) => [x, 0])
