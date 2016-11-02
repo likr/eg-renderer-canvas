@@ -63,6 +63,8 @@ class EgRenderer extends window.HTMLElement {
       k: 1
     }
     this.highlightedVertex = null
+    this.graph = new Graph()
+    this.layoutResult = {vertices: [], edges: {}}
 
     const zoom = d3.zoom()
       .on('zoom', () => {
@@ -80,27 +82,12 @@ class EgRenderer extends window.HTMLElement {
         this.highlightedVertex = event.region
       }
     })
-  }
 
-  render (graphData) {
-    const graph = new Graph()
-    for (const {u, d} of graphData.vertices) {
-      graph.addVertex(u, d)
-    }
-    for (const {u, v, d} of graphData.edges) {
-      graph.addEdge(u, v, d)
-    }
-    const layouter = new Layouter()
-      .vertexWidth(() => 150)
-      .vertexHeight(() => 20)
-      .layerMargin(50)
-      .vertexMargin(30)
-    const layout = layouter.layout(graph)
-    const margin = 10
-    const {layoutWidth, layoutHeight} = layoutRect(layout)
-    const {scale, x, y} = centerTransform(layoutWidth, layoutHeight, this.canvas.width, this.canvas.height, margin)
-    const ctx = this.canvas.getContext('2d')
     const render = () => {
+      const margin = 10
+      const {layoutWidth, layoutHeight} = layoutRect(this.layoutResult)
+      const {scale, x, y} = centerTransform(layoutWidth, layoutHeight, this.canvas.width, this.canvas.height, margin)
+      const ctx = this.canvas.getContext('2d')
       window.requestAnimationFrame(render)
       ctx.resetTransform()
       ctx.clearRect(0, 0, this.canvas.width, this.canvas.height)
@@ -109,9 +96,9 @@ class EgRenderer extends window.HTMLElement {
       ctx.translate(margin, margin)
       ctx.translate(x, y)
       ctx.scale(scale, scale)
-      for (const u of graph.vertices()) {
-        const {x, y, width, height} = layout.vertices[u]
-        const {text} = graph.vertex(u)
+      for (const u of this.graph.vertices()) {
+        const {x, y, width, height} = this.layoutResult.vertices[u]
+        const {text} = this.graph.vertex(u)
         withContext(ctx, () => {
           ctx.translate(x, y)
           ctx.textAlign = 'center'
@@ -123,12 +110,21 @@ class EgRenderer extends window.HTMLElement {
           ctx.fillText(text, 0, 4)
         })
       }
-      for (const [u, v] of graph.edges()) {
-        const {points} = layout.edges[u][v]
+      for (const [u, v] of this.graph.edges()) {
+        const {points} = this.layoutResult.edges[u][v]
         renderPath(ctx, points)
       }
     }
     render()
+  }
+
+  layout () {
+    const layouter = new Layouter()
+      .vertexWidth(() => 150)
+      .vertexHeight(() => 20)
+      .layerMargin(50)
+      .vertexMargin(30)
+    this.layoutResult = layouter.layout(this.graph)
   }
 
   resize (width, height) {
