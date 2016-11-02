@@ -11,17 +11,19 @@ import {
   interpolateLayout
 } from './interpolate'
 import {
-  renderPath,
-  renderRect
+  renderEdge,
+  renderVertex
 } from './render'
 
-const withContext = (ctx, f) => {
-  ctx.save()
-  f()
-  ctx.restore()
-}
-
 const privates = new WeakMap()
+
+const accessor = (self, key, args) => {
+  if (args.length === 0) {
+    return privates.get(self)[key]
+  }
+  privates.get(self)[key] = args[0]
+  return self
+}
 
 class EgRenderer extends window.HTMLElement {
   createdCallback () {
@@ -45,7 +47,8 @@ class EgRenderer extends window.HTMLElement {
       }),
       layoutTime: 0,
       layouter: new Layouter(),
-      edgeType: 'curve'
+      edgeType: 'curve',
+      vertexType: 'rect'
     }
     privates.set(this, p)
 
@@ -75,24 +78,14 @@ class EgRenderer extends window.HTMLElement {
       ctx.scale(p.transform.k, p.transform.k)
       ctx.translate(p.margin, p.margin)
       for (const u of p.graph.vertices()) {
-        const {x, y, width, height} = layout.vertices[u]
-        const {text} = p.graph.vertex(u)
-        withContext(ctx, () => {
-          ctx.translate(x, y)
-          ctx.textAlign = 'center'
-          withContext(ctx, () => {
-            ctx.fillStyle = u.toString() === p.highlightedVertex ? 'red' : 'white'
-            renderRect(ctx, 0, 0, width, height)
-          })
-          if (ctx.addHitRegion) {
-            ctx.addHitRegion({id: u})
-          }
-          ctx.fillText(text, 0, 4)
-        })
+        renderVertex(ctx, Object.assign({}, p.graph.vertex(u), layout.vertices[u], {
+          u,
+          fillColor: u.toString() === p.highlightedVertex ? 'red' : 'white'
+        }), p.vertexType)
       }
       for (const [u, v] of p.graph.edges()) {
         const {points} = layout.edges[u][v]
-        renderPath(ctx, points, p.edgeType)
+        renderEdge(ctx, points, p.edgeType)
       }
       window.requestAnimationFrame(render)
     }
@@ -138,21 +131,15 @@ class EgRenderer extends window.HTMLElement {
   }
 
   transitionDuration () {
-    if (arguments.length === 0) {
-      return privates.get(this).transitionDuration
-    } else {
-      privates.get(this).transitionDuration = arguments[0]
-      return this
-    }
+    return accessor(this, 'transitionDuration', arguments)
+  }
+
+  vertexType () {
+    return accessor(this, 'vertexType', arguments)
   }
 
   edgeType () {
-    if (arguments.length === 0) {
-      return privates.get(this).edgeType
-    } else {
-      privates.get(this).edgeType = arguments[0]
-      return this
-    }
+    return accessor(this, 'edgeType', arguments)
   }
 }
 

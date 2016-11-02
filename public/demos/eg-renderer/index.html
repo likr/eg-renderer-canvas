@@ -26,7 +26,8 @@ body {
   <button id="hoge1">hoge1</button>
   <button id="hoge2">hoge2</button>
   <button id="hoge3">hoge3</button>
-  <button id="toggle">edge type</button>
+  <button id="toggleVertexType">vertex type</button>
+  <button id="toggleEdgeType">edge type</button>
   <button id="center">center</button>
 </div>
 <script>
@@ -91,7 +92,22 @@ document.getElementById('hoge3').addEventListener('click', (event) => {
   }
 })
 
-document.getElementById('toggle').addEventListener('click', (event) => {
+document.getElementById('toggleVertexType').addEventListener('click', (event) => {
+  if (renderer.vertexType() === 'rect') {
+    renderer.vertexType('circle')
+    renderer.layouter()
+      .vertexWidth(() => 20)
+      .layerMargin(115)
+  } else {
+    renderer.vertexType('rect')
+    renderer.layouter()
+      .vertexWidth(() => 150)
+      .layerMargin(50)
+  }
+  renderer.layout()
+})
+
+document.getElementById('toggleEdgeType').addEventListener('click', (event) => {
   if (renderer.edgeType() === 'line') {
     renderer.edgeType('curve')
   } else {
