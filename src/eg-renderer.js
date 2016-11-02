@@ -1,4 +1,5 @@
 import 'babel-polyfill'
+import * as d3 from 'd3'
 import Graph from 'egraph/graph'
 import Layouter from 'egraph/layouter/sugiyama'
 
@@ -55,6 +56,18 @@ class EgRenderer extends window.HTMLElement {
     const canvas = document.createElement('canvas')
     this.canvas = canvas
     this.createShadowRoot().appendChild(canvas)
+    this.transform = {
+      x: 0,
+      y: 0,
+      k: 1
+    }
+
+    const zoom = d3.zoom()
+      .on('zoom', () => {
+        Object.assign(this.transform, d3.event.transform)
+      })
+    d3.select(canvas)
+      .call(zoom)
   }
 
   render (graphData) {
@@ -77,23 +90,31 @@ class EgRenderer extends window.HTMLElement {
     const canvasHeight = this.canvas.height
     const {scale, x, y} = centerTransform(layoutWidth, layoutHeight, canvasWidth, canvasHeight, margin)
     const ctx = this.canvas.getContext('2d')
-    ctx.translate(margin, margin)
-    ctx.translate(x, y)
-    ctx.scale(scale, scale)
-    for (const u of graph.vertices()) {
-      const {x, y, width, height} = layout.vertices[u]
-      const {text} = graph.vertex(u)
-      withTransform(ctx, () => {
-        ctx.translate(x, y)
-        ctx.textAlign = 'center'
-        ctx.fillText(text, 0, 4)
-        renderRect(ctx, 0, 0, width, height)
-      })
+    const render = () => {
+      window.requestAnimationFrame(render)
+      ctx.resetTransform()
+      ctx.clearRect(0, 0, canvasWidth, canvasHeight)
+      ctx.translate(this.transform.x, this.transform.y)
+      ctx.scale(this.transform.k, this.transform.k)
+      ctx.translate(margin, margin)
+      ctx.translate(x, y)
+      ctx.scale(scale, scale)
+      for (const u of graph.vertices()) {
+        const {x, y, width, height} = layout.vertices[u]
+        const {text} = graph.vertex(u)
+        withTransform(ctx, () => {
+          ctx.translate(x, y)
+          ctx.textAlign = 'center'
+          ctx.fillText(text, 0, 4)
+          renderRect(ctx, 0, 0, width, height)
+        })
+      }
+      for (const [u, v] of graph.edges()) {
+        const {points} = layout.edges[u][v]
+        renderPath(ctx, points)
+      }
     }
-    for (const [u, v] of graph.edges()) {
-      const {points} = layout.edges[u][v]
-      renderPath(ctx, points)
-    }
+    render()
   }
 }
 

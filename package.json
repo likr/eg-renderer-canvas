@@ -21,6 +21,8 @@
     "webpack-dev-server": "^1.16.2"
   },
   "dependencies": {
-    "babel-polyfill": "^6.16.0"
+    "babel-polyfill": "^6.16.0",
+    "d3": "^4.3.0",
+    "egraph": "^3.0.0"
   }
 }
