@@ -68,10 +68,14 @@ const diff = (current, next) => {
     }
     result.edges[u] = {}
     for (const v of vertices) {
-      if (current.edges[u] && current.edges[u][v]) {
-        result.edges[u][v] = current.edges[u][v]
-      } else {
-        result.edges[u][v] = Object.assign({}, next.edges[u][v])
+      if (next.edges[u][v]) {
+        if (current.edges[u] && current.edges[u][v]) {
+          result.edges[u][v] = current.edges[u][v]
+        } else {
+          result.edges[u][v] = Object.assign({}, next.edges[u][v], {
+            points: next.edges[u][v].points.map(([x]) => [x, 0])
+          })
+        }
       }
     }
   }
@@ -91,6 +95,13 @@ const interpolateVertex = (current, next, r) => {
   return result
 }
 
+const interpolateEdge = (current, next, r) => {
+  return {
+    width: interpolate(current.width, next.width, r),
+    points: current.points.map(([x, y], i) => [interpolate(x, next.points[i][0], r), interpolate(y, next.points[i][1], r)])
+  }
+}
+
 const interpolateLayout = (current, next, r) => {
   const vertices = Object.keys(next.vertices)
   const result = {
@@ -101,7 +112,9 @@ const interpolateLayout = (current, next, r) => {
     result.vertices[u] = interpolateVertex(current.vertices[u], next.vertices[u], r)
     result.edges[u] = {}
     for (const v of vertices) {
-      result.edges[u][v] = next.edges[u][v]
+      if (next.edges[u][v]) {
+        result.edges[u][v] = interpolateEdge(current.edges[u][v], next.edges[u][v], r)
+      }
     }
   }
   return result
@@ -159,7 +172,9 @@ class EgRenderer extends window.HTMLElement {
             ctx.fillStyle = u.toString() === this.highlightedVertex ? 'red' : 'white'
             renderRect(ctx, 0, 0, width, height)
           })
-          ctx.addHitRegion({id: u})
+          if (ctx.addHitRegion) {
+            ctx.addHitRegion({id: u})
+          }
           ctx.fillText(text, 0, 4)
         })
       }
@@ -179,6 +194,12 @@ class EgRenderer extends window.HTMLElement {
       .layerMargin(50)
       .vertexMargin(30)
     const layoutResult = layouter.layout(this.graph)
+    for (const [u, v] of this.graph.edges()) {
+      const {points} = layoutResult.edges[u][v]
+      while (points.length < 6) {
+        points.push(points[points.length - 1])
+      }
+    }
     this.previousLayoutResult = diff(this.layoutResult, layoutResult)
     this.layoutResult = layoutResult
     this.layoutTime = new Date()

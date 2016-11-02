@@ -23,7 +23,8 @@ body {
 <body>
 <eg-renderer id="renderer"></eg-renderer>
 <div class="control">
-  <button id="hoge">hoge</button>
+  <button id="hoge1">hoge1</button>
+  <button id="hoge2">hoge2</button>
   <button id="center">center</button>
 </div>
 <script>
@@ -50,7 +51,7 @@ window.addEventListener('resize', (event) => {
   renderer.resize(window.innerWidth - 15, window.innerHeight - 15)
 })
 
-document.getElementById('hoge').addEventListener('click', (event) => {
+document.getElementById('hoge1').addEventListener('click', (event) => {
   const {graph} = renderer
   const u = 'key' + Math.random()
   const v = 'key' + Math.random()
@@ -58,6 +59,15 @@ document.getElementById('hoge').addEventListener('click', (event) => {
   graph.addVertex(v, {text: v})
   graph.addEdge(u, v)
   renderer.layout()
+})
+
+document.getElementById('hoge2').addEventListener('click', (event) => {
+  const {graph} = renderer
+  if (graph.numVertices() > 0) {
+    const u = graph.vertices()[0]
+    graph.removeVertex(u)
+    renderer.layout()
+  }
 })
 
 document.getElementById('center').addEventListener('click', (event) => {
