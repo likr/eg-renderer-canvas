@@ -3,15 +3,15 @@ import * as d3 from 'd3'
 import Graph from 'egraph/graph'
 import Layouter from 'egraph/layouter/sugiyama'
 
-const renderRect = (ctx, u, x, y, width, height) => {
+const renderRect = (ctx, x, y, width, height) => {
   ctx.beginPath()
   ctx.moveTo(x - width / 2, y - height / 2)
   ctx.lineTo(x + width / 2, y - height / 2)
   ctx.lineTo(x + width / 2, y + height / 2)
   ctx.lineTo(x - width / 2, y + height / 2)
   ctx.closePath()
+  ctx.fill()
   ctx.stroke()
-  ctx.addHitRegion({id: u})
 }
 
 const renderPath = (ctx, points) => {
@@ -23,7 +23,7 @@ const renderPath = (ctx, points) => {
   ctx.stroke()
 }
 
-const withTransform = (ctx, f) => {
+const withContext = (ctx, f) => {
   ctx.save()
   f()
   ctx.restore()
@@ -62,6 +62,7 @@ class EgRenderer extends window.HTMLElement {
       y: 0,
       k: 1
     }
+    this.highlightedVertex = null
 
     const zoom = d3.zoom()
       .on('zoom', () => {
@@ -71,10 +72,12 @@ class EgRenderer extends window.HTMLElement {
       .call(zoom)
 
     this.canvas.addEventListener('mousemove', (event) => {
-      if (event.region != null) {
-        this.canvas.style.cursor = 'pointer'
-      } else {
+      if (event.region == null) {
         this.canvas.style.cursor = 'move'
+        this.highlightedVertex = null
+      } else {
+        this.canvas.style.cursor = 'pointer'
+        this.highlightedVertex = event.region
       }
     })
   }
@@ -88,7 +91,7 @@ class EgRenderer extends window.HTMLElement {
       graph.addEdge(u, v, d)
     }
     const layouter = new Layouter()
-      .vertexWidth(() => 140)
+      .vertexWidth(() => 150)
       .vertexHeight(() => 20)
       .layerMargin(50)
       .vertexMargin(30)
@@ -109,11 +112,15 @@ class EgRenderer extends window.HTMLElement {
       for (const u of graph.vertices()) {
         const {x, y, width, height} = layout.vertices[u]
         const {text} = graph.vertex(u)
-        withTransform(ctx, () => {
+        withContext(ctx, () => {
           ctx.translate(x, y)
           ctx.textAlign = 'center'
+          withContext(ctx, () => {
+            ctx.fillStyle = u.toString() === this.highlightedVertex ? 'red' : 'white'
+            renderRect(ctx, 0, 0, width, height)
+          })
+          ctx.addHitRegion({id: u})
           ctx.fillText(text, 0, 4)
-          renderRect(ctx, u, 0, 0, width, height)
         })
       }
       for (const [u, v] of graph.edges()) {
