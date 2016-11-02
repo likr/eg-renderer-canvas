@@ -3,7 +3,7 @@ import * as d3 from 'd3'
 import Graph from 'egraph/graph'
 import Layouter from 'egraph/layouter/sugiyama'
 
-const renderRect = (ctx, x, y, width, height) => {
+const renderRect = (ctx, u, x, y, width, height) => {
   ctx.beginPath()
   ctx.moveTo(x - width / 2, y - height / 2)
   ctx.lineTo(x + width / 2, y - height / 2)
@@ -11,6 +11,7 @@ const renderRect = (ctx, x, y, width, height) => {
   ctx.lineTo(x - width / 2, y + height / 2)
   ctx.closePath()
   ctx.stroke()
+  ctx.addHitRegion({id: u})
 }
 
 const renderPath = (ctx, points) => {
@@ -68,6 +69,14 @@ class EgRenderer extends window.HTMLElement {
       })
     d3.select(canvas)
       .call(zoom)
+
+    this.canvas.addEventListener('mousemove', (event) => {
+      if (event.region != null) {
+        this.canvas.style.cursor = 'pointer'
+      } else {
+        this.canvas.style.cursor = 'move'
+      }
+    })
   }
 
   render (graphData) {
@@ -106,7 +115,7 @@ class EgRenderer extends window.HTMLElement {
           ctx.translate(x, y)
           ctx.textAlign = 'center'
           ctx.fillText(text, 0, 4)
-          renderRect(ctx, 0, 0, width, height)
+          renderRect(ctx, u, 0, 0, width, height)
         })
       }
       for (const [u, v] of graph.edges()) {
