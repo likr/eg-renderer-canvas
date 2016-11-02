@@ -5,19 +5,28 @@
 <title></title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/webcomponentsjs/0.7.22/webcomponents.min.js"></script>
 <link rel="import" href="../../eg-renderer.html">
+<style>
+body {
+  margin: 0;
+}
+</style>
 </head>
 <body>
 <eg-renderer id="renderer"></eg-renderer>
 <script>
+const renderer = document.getElementById('renderer')
+
 window.addEventListener('WebComponentsReady', () => {
   fetch('data.json')
     .then((response) => response.json())
     .then((data) => {
-      const renderer = document.getElementById('renderer')
-      renderer.canvas.width = 1200
-      renderer.canvas.height = 500
+      renderer.resize(window.innerWidth - 15, window.innerHeight - 15)
       renderer.render(data)
     })
+})
+
+window.addEventListener('resize', (event) => {
+  renderer.resize(window.innerWidth - 15, window.innerHeight - 15)
 })
 </script>
 </body>

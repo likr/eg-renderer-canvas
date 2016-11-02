@@ -95,14 +95,12 @@ class EgRenderer extends window.HTMLElement {
     const layout = layouter.layout(graph)
     const margin = 10
     const {layoutWidth, layoutHeight} = layoutRect(layout)
-    const canvasWidth = this.canvas.width
-    const canvasHeight = this.canvas.height
-    const {scale, x, y} = centerTransform(layoutWidth, layoutHeight, canvasWidth, canvasHeight, margin)
+    const {scale, x, y} = centerTransform(layoutWidth, layoutHeight, this.canvas.width, this.canvas.height, margin)
     const ctx = this.canvas.getContext('2d')
     const render = () => {
       window.requestAnimationFrame(render)
       ctx.resetTransform()
-      ctx.clearRect(0, 0, canvasWidth, canvasHeight)
+      ctx.clearRect(0, 0, this.canvas.width, this.canvas.height)
       ctx.translate(this.transform.x, this.transform.y)
       ctx.scale(this.transform.k, this.transform.k)
       ctx.translate(margin, margin)
@@ -124,6 +122,11 @@ class EgRenderer extends window.HTMLElement {
       }
     }
     render()
+  }
+
+  resize (width, height) {
+    this.canvas.width = width
+    this.canvas.height = height
   }
 }
 
