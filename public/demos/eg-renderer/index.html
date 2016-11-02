@@ -24,6 +24,7 @@ body {
 <eg-renderer id="renderer"></eg-renderer>
 <div class="control">
   <button id="hoge">hoge</button>
+  <button id="center">center</button>
 </div>
 <script>
 const renderer = document.getElementById('renderer')
@@ -38,8 +39,10 @@ window.addEventListener('WebComponentsReady', () => {
       for (const {u, v, d} of data.edges) {
         renderer.graph.addEdge(u, v, d)
       }
-      renderer.resize(window.innerWidth - 15, window.innerHeight - 15)
-      renderer.layout()
+      renderer
+        .resize(window.innerWidth - 15, window.innerHeight - 15)
+        .layout()
+        .center()
     })
 })
 
@@ -55,6 +58,10 @@ document.getElementById('hoge').addEventListener('click', (event) => {
   graph.addVertex(v, {text: v})
   graph.addEdge(u, v)
   renderer.layout()
+})
+
+document.getElementById('center').addEventListener('click', (event) => {
+  renderer.center()
 })
 </script>
 </body>

@@ -49,7 +49,62 @@ const centerTransform = (lWidth, lHeight, cWidth, cHeight, margin) => {
   const scale = Math.min(hScale, vScale)
   const x = hScale < vScale ? 0 : (aWidth - lWidth * scale) / 2
   const y = vScale < hScale ? 0 : (aHeight - lHeight * scale) / 2
-  return {scale, x, y}
+  return {x, y, k: scale}
+}
+
+const diff = (current, next) => {
+  const vertices = Object.keys(next.vertices)
+  const result = {
+    vertices: {},
+    edges: {}
+  }
+  for (const u of vertices) {
+    if (current.vertices[u]) {
+      result.vertices[u] = current.vertices[u]
+    } else {
+      result.vertices[u] = Object.assign({}, next.vertices[u], {
+        y: 0
+      })
+    }
+    result.edges[u] = {}
+    for (const v of vertices) {
+      if (current.edges[u] && current.edges[u][v]) {
+        result.edges[u][v] = current.edges[u][v]
+      } else {
+        result.edges[u][v] = Object.assign({}, next.edges[u][v])
+      }
+    }
+  }
+  return result
+}
+
+const interpolate = (current, next, r) => {
+  return r > 1 ? next : (next - current) * r + current
+}
+
+const interpolateVertex = (current, next, r) => {
+  const properties = ['x', 'y', 'width', 'height']
+  const result = {}
+  for (const property of properties) {
+    result[property] = interpolate(current[property], next[property], r)
+  }
+  return result
+}
+
+const interpolateLayout = (current, next, r) => {
+  const vertices = Object.keys(next.vertices)
+  const result = {
+    vertices: {},
+    edges: {}
+  }
+  for (const u of vertices) {
+    result.vertices[u] = interpolateVertex(current.vertices[u], next.vertices[u], r)
+    result.edges[u] = {}
+    for (const v of vertices) {
+      result.edges[u][v] = next.edges[u][v]
+    }
+  }
+  return result
 }
 
 class EgRenderer extends window.HTMLElement {
@@ -64,14 +119,15 @@ class EgRenderer extends window.HTMLElement {
     }
     this.highlightedVertex = null
     this.graph = new Graph()
-    this.layoutResult = {vertices: [], edges: {}}
+    this.layoutResult = {vertices: {}, edges: {}}
+    this.margin = 10
 
-    const zoom = d3.zoom()
+    this.zoom = d3.zoom()
       .on('zoom', () => {
         Object.assign(this.transform, d3.event.transform)
       })
-    d3.select(canvas)
-      .call(zoom)
+    d3.select(this.canvas)
+      .call(this.zoom)
 
     this.canvas.addEventListener('mousemove', (event) => {
       if (event.region == null) {
@@ -84,20 +140,17 @@ class EgRenderer extends window.HTMLElement {
     })
 
     const render = () => {
-      const margin = 10
-      const {layoutWidth, layoutHeight} = layoutRect(this.layoutResult)
-      const {scale, x, y} = centerTransform(layoutWidth, layoutHeight, this.canvas.width, this.canvas.height, margin)
+      const now = new Date()
+      const r = (now - this.layoutTime) / 500
+      const layout = interpolateLayout(this.previousLayoutResult, this.layoutResult, r)
       const ctx = this.canvas.getContext('2d')
-      window.requestAnimationFrame(render)
       ctx.resetTransform()
       ctx.clearRect(0, 0, this.canvas.width, this.canvas.height)
       ctx.translate(this.transform.x, this.transform.y)
       ctx.scale(this.transform.k, this.transform.k)
-      ctx.translate(margin, margin)
-      ctx.translate(x, y)
-      ctx.scale(scale, scale)
+      ctx.translate(this.margin, this.margin)
       for (const u of this.graph.vertices()) {
-        const {x, y, width, height} = this.layoutResult.vertices[u]
+        const {x, y, width, height} = layout.vertices[u]
         const {text} = this.graph.vertex(u)
         withContext(ctx, () => {
           ctx.translate(x, y)
@@ -111,9 +164,10 @@ class EgRenderer extends window.HTMLElement {
         })
       }
       for (const [u, v] of this.graph.edges()) {
-        const {points} = this.layoutResult.edges[u][v]
+        const {points} = layout.edges[u][v]
         renderPath(ctx, points)
       }
+      window.requestAnimationFrame(render)
     }
     render()
   }
@@ -124,12 +178,23 @@ class EgRenderer extends window.HTMLElement {
       .vertexHeight(() => 20)
       .layerMargin(50)
       .vertexMargin(30)
-    this.layoutResult = layouter.layout(this.graph)
+    const layoutResult = layouter.layout(this.graph)
+    this.previousLayoutResult = diff(this.layoutResult, layoutResult)
+    this.layoutResult = layoutResult
+    this.layoutTime = new Date()
+    return this
   }
 
   resize (width, height) {
     this.canvas.width = width
     this.canvas.height = height
+    return this
+  }
+
+  center () {
+    const {layoutWidth, layoutHeight} = layoutRect(this.layoutResult)
+    const {x, y, k} = centerTransform(layoutWidth, layoutHeight, this.canvas.width, this.canvas.height, this.margin)
+    this.zoom.transform(d3.select(this.canvas), d3.zoomIdentity.translate(x, y).scale(k))
   }
 }
 
