@@ -2,26 +2,14 @@ import 'babel-polyfill'
 import * as d3 from 'd3'
 import Graph from 'egraph/graph'
 import Layouter from 'egraph/layouter/sugiyama'
-
-const renderRect = (ctx, x, y, width, height) => {
-  ctx.beginPath()
-  ctx.moveTo(x - width / 2, y - height / 2)
-  ctx.lineTo(x + width / 2, y - height / 2)
-  ctx.lineTo(x + width / 2, y + height / 2)
-  ctx.lineTo(x - width / 2, y + height / 2)
-  ctx.closePath()
-  ctx.fill()
-  ctx.stroke()
-}
-
-const renderPath = (ctx, points) => {
-  ctx.beginPath()
-  ctx.moveTo(points[0][0], points[0][1])
-  for (let i = 1; i < points.length; ++i) {
-    ctx.lineTo(points[i][0], points[i][1])
-  }
-  ctx.stroke()
-}
+import {
+  renderRect,
+  renderPath
+} from './render'
+import {
+  interpolateLayout,
+  diff
+} from './interpolate'
 
 const withContext = (ctx, f) => {
   ctx.save()
@@ -50,100 +38,6 @@ const centerTransform = (lWidth, lHeight, cWidth, cHeight, margin) => {
   const x = hScale < vScale ? 0 : (aWidth - lWidth * scale) / 2
   const y = vScale < hScale ? 0 : (aHeight - lHeight * scale) / 2
   return {x, y, k: scale}
-}
-
-const diff = (current, next) => {
-  const vertices = Object.keys(next.vertices)
-  const result = {
-    vertices: {},
-    edges: {}
-  }
-  for (const u of vertices) {
-    if (current.vertices[u]) {
-      result.vertices[u] = current.vertices[u]
-    } else {
-      result.vertices[u] = Object.assign({}, next.vertices[u], {
-        y: 0
-      })
-    }
-    result.edges[u] = {}
-    for (const v of vertices) {
-      if (next.edges[u][v]) {
-        if (current.edges[u] && current.edges[u][v]) {
-          result.edges[u][v] = current.edges[u][v]
-        } else if (current.vertices[u]) {
-          const {x, y, width} = current.vertices[u]
-          const {points} = next.edges[u][v]
-          result.edges[u][v] = Object.assign({}, next.edges[u][v], {
-            points: [
-              [x + width / 2, y],
-              [x + width / 2, y],
-              [points[2][0], 0],
-              [points[3][0], 0],
-              [points[4][0], 0],
-              [points[5][0], 0]
-            ]
-          })
-        } else if (current.vertices[v]) {
-          const {x, y, width} = current.vertices[v]
-          const {points} = next.edges[u][v]
-          result.edges[u][v] = Object.assign({}, next.edges[u][v], {
-            points: [
-              [points[0][0], 0],
-              [points[1][0], 0],
-              [points[2][0], 0],
-              [points[3][0], 0],
-              [x - width / 2, y],
-              [x - width / 2, y]
-            ]
-          })
-        } else {
-          result.edges[u][v] = Object.assign({}, next.edges[u][v], {
-            points: next.edges[u][v].points.map(([x]) => [x, 0])
-          })
-        }
-      }
-    }
-  }
-  return result
-}
-
-const interpolate = (current, next, r) => {
-  return r > 1 ? next : (next - current) * r + current
-}
-
-const interpolateVertex = (current, next, r) => {
-  const properties = ['x', 'y', 'width', 'height']
-  const result = {}
-  for (const property of properties) {
-    result[property] = interpolate(current[property], next[property], r)
-  }
-  return result
-}
-
-const interpolateEdge = (current, next, r) => {
-  return {
-    width: interpolate(current.width, next.width, r),
-    points: current.points.map(([x, y], i) => [interpolate(x, next.points[i][0], r), interpolate(y, next.points[i][1], r)])
-  }
-}
-
-const interpolateLayout = (current, next, r) => {
-  const vertices = Object.keys(next.vertices)
-  const result = {
-    vertices: {},
-    edges: {}
-  }
-  for (const u of vertices) {
-    result.vertices[u] = interpolateVertex(current.vertices[u], next.vertices[u], r)
-    result.edges[u] = {}
-    for (const v of vertices) {
-      if (next.edges[u][v]) {
-        result.edges[u][v] = interpolateEdge(current.edges[u][v], next.edges[u][v], r)
-      }
-    }
-  }
-  return result
 }
 
 class EgRenderer extends window.HTMLElement {

@@ -14,7 +14,7 @@ module.exports = {
   },
   entry: {
     'my-hello': './src/my-hello.js',
-    'eg-renderer': './src/eg-renderer.js'
+    'eg-renderer': './src/eg-renderer/index.js'
   },
   output: {
     path: './public',
