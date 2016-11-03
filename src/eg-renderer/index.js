@@ -3,6 +3,7 @@ import * as d3 from 'd3'
 import Graph from 'egraph/graph'
 import Layouter from 'egraph/layouter/sugiyama'
 import {arcLayout} from './layout/arc-layout'
+import {circularLayout} from './layout/circular-layout'
 import {
   centerTransform,
   layoutRect
@@ -101,6 +102,9 @@ class EgRenderer extends window.HTMLElement {
     switch (mode) {
       case 'arc':
         layoutResult = arcLayout(graph)
+        break
+      case 'circular':
+        layoutResult = circularLayout(graph)
         break
       case 'hierarchy':
         layoutResult = layouter.layout(graph)

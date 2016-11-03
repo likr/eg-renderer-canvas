@@ -119,7 +119,7 @@ export const diff = (current, next) => {
         const currentEdge = (current.edges[u] && current.edges[u][v] && current.edges[u][v].type === nextEdge.type) ? current.edges[u][v] : null
         const du = current.vertices[u] || null
         const dv = current.vertices[v] || null
-        if (nextEdge.type === 'arc') {
+        if (nextEdge.type === 'arc' || nextEdge.type === 'line') {
           result.edges[u][v] = diffArcEdge(currentEdge, nextEdge, du, dv)
         }
         if (next.edges[u][v].type === 'hierarchy') {

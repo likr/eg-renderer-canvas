@@ -30,8 +30,8 @@ body {
   <button id="center">center</button>
   <select id="layout">
     <option value="arc">arc</option>
-    <option value="hierarchy-line" selected>hierarchy-line</option>
-    <option value="hierarchy-curve">hierarchy-curve</option>
+    <option value="circular">circular</option>
+    <option value="hierarchy" selected>hierarchy</option>
   </select>
 </div>
 <script>
@@ -103,24 +103,21 @@ document.getElementById('center').addEventListener('click', (event) => {
 })
 
 document.getElementById('layout').addEventListener('input', (event) => {
-  const value = event.target.value
   switch (event.target.value) {
     case 'arc':
       egRenderer.vertexType('circle')
       egRenderer.edgeType('arc')
-      layout = 'arc'
       break
-    case 'hierarchy-curve':
+    case 'circular':
+      egRenderer.vertexType('circle')
+      egRenderer.edgeType('line')
+      break
+    case 'hierarchy':
       egRenderer.vertexType('rect')
       egRenderer.edgeType('curve')
-      layout = 'hierarchy'
-      break
-    case 'hierarchy-line':
-      egRenderer.vertexType('rect')
-      egRenderer.edgeType('line')
-      layout = 'hierarchy'
       break
   }
+  layout = event.target.value
   egRenderer.layout(layout)
 })
 </script>
