@@ -27,12 +27,16 @@ body {
   <button id="hoge1">hoge1</button>
   <button id="hoge2">hoge2</button>
   <button id="hoge3">hoge3</button>
-  <button id="toggleVertexType">vertex type</button>
-  <button id="toggleEdgeType">edge type</button>
   <button id="center">center</button>
+  <select id="layout">
+    <option value="arc">arc</option>
+    <option value="hierarchy-line" selected>hierarchy-line</option>
+    <option value="hierarchy-curve">hierarchy-curve</option>
+  </select>
 </div>
 <script>
 let egRenderer = document.getElementById('renderer')
+let layout = 'hierarchy'
 
 window.addEventListener('WebComponentsReady', () => {
   window.fetch('data.json')
@@ -54,7 +58,8 @@ window.addEventListener('WebComponentsReady', () => {
 
       egRenderer
         .resize(window.innerWidth - 15, window.innerHeight - 15)
-        .layout()
+        .layout(layout)
+        .transitionDuration(500)
         .center()
     })
 })
@@ -70,7 +75,7 @@ document.getElementById('hoge1').addEventListener('click', (event) => {
   graph.addVertex(u, {text: u})
   graph.addVertex(v, {text: v})
   graph.addEdge(u, v)
-  egRenderer.layout()
+  egRenderer.layout(layout)
 })
 
 document.getElementById('hoge2').addEventListener('click', (event) => {
@@ -78,7 +83,7 @@ document.getElementById('hoge2').addEventListener('click', (event) => {
   if (graph.numVertices() > 0) {
     const u = graph.vertices()[0]
     graph.removeVertex(u)
-    egRenderer.layout()
+    egRenderer.layout(layout)
   }
 })
 
@@ -89,35 +94,34 @@ document.getElementById('hoge3').addEventListener('click', (event) => {
     const v = 'key' + Math.random()
     graph.addVertex(v, {text: v})
     graph.addEdge(u, v)
-    egRenderer.layout()
-  }
-})
-
-document.getElementById('toggleVertexType').addEventListener('click', (event) => {
-  if (egRenderer.vertexType() === 'rect') {
-    egRenderer.vertexType('circle')
-    egRenderer.layouter()
-      .vertexWidth(() => 20)
-      .layerMargin(115)
-  } else {
-    egRenderer.vertexType('rect')
-    egRenderer.layouter()
-      .vertexWidth(() => 150)
-      .layerMargin(50)
-  }
-  egRenderer.layout()
-})
-
-document.getElementById('toggleEdgeType').addEventListener('click', (event) => {
-  if (egRenderer.edgeType() === 'line') {
-    egRenderer.edgeType('curve')
-  } else {
-    egRenderer.edgeType('line')
+    egRenderer.layout(layout)
   }
 })
 
 document.getElementById('center').addEventListener('click', (event) => {
   egRenderer.center()
+})
+
+document.getElementById('layout').addEventListener('input', (event) => {
+  const value = event.target.value
+  switch (event.target.value) {
+    case 'arc':
+      egRenderer.vertexType('circle')
+      egRenderer.edgeType('arc')
+      layout = 'arc'
+      break
+    case 'hierarchy-curve':
+      egRenderer.vertexType('rect')
+      egRenderer.edgeType('curve')
+      layout = 'hierarchy'
+      break
+    case 'hierarchy-line':
+      egRenderer.vertexType('rect')
+      egRenderer.edgeType('line')
+      layout = 'hierarchy'
+      break
+  }
+  egRenderer.layout(layout)
 })
 </script>
 </body>

@@ -2,6 +2,7 @@ import 'babel-polyfill'
 import * as d3 from 'd3'
 import Graph from 'egraph/graph'
 import Layouter from 'egraph/layouter/sugiyama'
+import {arcLayout} from './layout/arc-layout'
 import {
   centerTransform,
   layoutRect
@@ -93,15 +94,24 @@ class EgRenderer extends window.HTMLElement {
     render()
   }
 
-  layout () {
+  layout (mode = 'hierarchy') {
     const p = privates.get(this)
     const {graph, layouter} = p
-    const layoutResult = layouter.layout(graph)
-    for (const [u, v] of graph.edges()) {
-      const {points} = layoutResult.edges[u][v]
-      while (points.length < 6) {
-        points.push(points[points.length - 1])
-      }
+    let layoutResult
+    switch (mode) {
+      case 'arc':
+        layoutResult = arcLayout(graph)
+        break
+      case 'hierarchy':
+        layoutResult = layouter.layout(graph)
+        for (const [u, v] of graph.edges()) {
+          const {points} = layoutResult.edges[u][v]
+          while (points.length < 6) {
+            points.push(points[points.length - 1])
+          }
+          layoutResult.edges[u][v].type = 'hierarchy'
+        }
+        break
     }
     p.previousLayoutResult = diff(p.layoutResult, layoutResult)
     p.layoutResult = layoutResult

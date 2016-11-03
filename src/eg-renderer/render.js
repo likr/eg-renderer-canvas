@@ -102,8 +102,23 @@ const renderCurveEdge = (ctx, points) => {
   ctx.stroke()
 }
 
+const renderArcEdge = (ctx, points) => {
+  const dx = points[1][0] - points[0][0]
+  const dy = points[1][1] - points[0][1]
+  const r = Math.sqrt(dx * dx + dy + dy) / 2
+  const cx = (points[0][0] + points[1][0]) / 2
+  const cy = (points[0][1] + points[1][1]) / 2
+  const theta = Math.atan(dy / dx)
+  ctx.beginPath()
+  ctx.arc(cx, cy, r, theta, theta + Math.PI)
+  ctx.stroke()
+}
+
 export const renderEdge = (ctx, points, type) => {
   switch (type) {
+    case 'arc':
+      renderArcEdge(ctx, points)
+      break
     case 'curve':
       renderCurveEdge(ctx, points)
       break
