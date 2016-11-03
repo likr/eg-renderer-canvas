@@ -3,6 +3,7 @@
 <head>
 <meta charset="utf-8"/>
 <title></title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/fetch/1.0.0/fetch.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/webcomponentsjs/0.7.22/webcomponents.min.js"></script>
 <link rel="import" href="../../eg-renderer.html">
 <style>
@@ -31,13 +32,13 @@ body {
   <button id="center">center</button>
 </div>
 <script>
-const renderer = document.getElementById('renderer')
+let egRenderer = document.getElementById('renderer')
 
 window.addEventListener('WebComponentsReady', () => {
-  fetch('data.json')
+  window.fetch('data.json')
     .then((response) => response.json())
     .then((data) => {
-      const graph = renderer.graph()
+      const graph = egRenderer.graph()
       for (const {u, d} of data.vertices) {
         graph.addVertex(u, d)
       }
@@ -45,13 +46,13 @@ window.addEventListener('WebComponentsReady', () => {
         graph.addEdge(u, v, d)
       }
 
-      renderer.layouter()
+      egRenderer.layouter()
         .vertexWidth(() => 150)
         .vertexHeight(() => 20)
         .layerMargin(50)
         .vertexMargin(30)
 
-      renderer
+      egRenderer
         .resize(window.innerWidth - 15, window.innerHeight - 15)
         .layout()
         .center()
@@ -59,64 +60,64 @@ window.addEventListener('WebComponentsReady', () => {
 })
 
 window.addEventListener('resize', (event) => {
-  renderer.resize(window.innerWidth - 15, window.innerHeight - 15)
+  egRenderer.resize(window.innerWidth - 15, window.innerHeight - 15)
 })
 
 document.getElementById('hoge1').addEventListener('click', (event) => {
-  const graph = renderer.graph()
+  const graph = egRenderer.graph()
   const u = 'key' + Math.random()
   const v = 'key' + Math.random()
   graph.addVertex(u, {text: u})
   graph.addVertex(v, {text: v})
   graph.addEdge(u, v)
-  renderer.layout()
+  egRenderer.layout()
 })
 
 document.getElementById('hoge2').addEventListener('click', (event) => {
-  const graph = renderer.graph()
+  const graph = egRenderer.graph()
   if (graph.numVertices() > 0) {
     const u = graph.vertices()[0]
     graph.removeVertex(u)
-    renderer.layout()
+    egRenderer.layout()
   }
 })
 
 document.getElementById('hoge3').addEventListener('click', (event) => {
-  const graph = renderer.graph()
+  const graph = egRenderer.graph()
   if (graph.numVertices() > 0) {
     const u = graph.vertices()[0]
     const v = 'key' + Math.random()
     graph.addVertex(v, {text: v})
     graph.addEdge(u, v)
-    renderer.layout()
+    egRenderer.layout()
   }
 })
 
 document.getElementById('toggleVertexType').addEventListener('click', (event) => {
-  if (renderer.vertexType() === 'rect') {
-    renderer.vertexType('circle')
-    renderer.layouter()
+  if (egRenderer.vertexType() === 'rect') {
+    egRenderer.vertexType('circle')
+    egRenderer.layouter()
       .vertexWidth(() => 20)
       .layerMargin(115)
   } else {
-    renderer.vertexType('rect')
-    renderer.layouter()
+    egRenderer.vertexType('rect')
+    egRenderer.layouter()
       .vertexWidth(() => 150)
       .layerMargin(50)
   }
-  renderer.layout()
+  egRenderer.layout()
 })
 
 document.getElementById('toggleEdgeType').addEventListener('click', (event) => {
-  if (renderer.edgeType() === 'line') {
-    renderer.edgeType('curve')
+  if (egRenderer.edgeType() === 'line') {
+    egRenderer.edgeType('curve')
   } else {
-    renderer.edgeType('line')
+    egRenderer.edgeType('line')
   }
 })
 
 document.getElementById('center').addEventListener('click', (event) => {
-  renderer.center()
+  egRenderer.center()
 })
 </script>
 </body>

@@ -72,7 +72,7 @@ class EgRenderer extends window.HTMLElement {
       const r = (now - p.layoutTime) / p.transitionDuration
       const layout = interpolateLayout(p.previousLayoutResult, p.layoutResult, r)
       const ctx = p.canvas.getContext('2d')
-      ctx.resetTransform()
+      ctx.save()
       ctx.clearRect(0, 0, p.canvas.width, p.canvas.height)
       ctx.translate(p.transform.x, p.transform.y)
       ctx.scale(p.transform.k, p.transform.k)
@@ -87,6 +87,7 @@ class EgRenderer extends window.HTMLElement {
         const {points} = layout.edges[u][v]
         renderEdge(ctx, points, p.edgeType)
       }
+      ctx.restore()
       window.requestAnimationFrame(render)
     }
     render()
