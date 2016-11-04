@@ -21,6 +21,7 @@ module.exports = {
     filename: '[name].js'
   },
   externals: {
+    'd3': 'd3',
     'react': 'React',
     'react-dom': 'ReactDOM'
   }
