@@ -1,5 +1,5 @@
 const interpolate = (current, next, r) => {
-  return r > 1 ? next : (next - current) * r + current
+  return (next - current) * r + current
 }
 
 const interpolateVertex = (current, next, r) => {
@@ -19,6 +19,9 @@ const interpolateEdge = (current, next, r) => {
 }
 
 export const interpolateLayout = (current, next, r) => {
+  if (r > 1) {
+    return next
+  }
   const vertices = Object.keys(next.vertices)
   const result = {
     vertices: {},

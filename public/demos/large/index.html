@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8"/>
+<title></title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/fetch/1.0.0/fetch.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/webcomponentsjs/0.7.22/webcomponents.min.js"></script>
+<link rel="import" href="../../eg-renderer.html">
+</head>
+<body>
+<eg-renderer id="renderer"></eg-renderer>
+<script>
+window.addEventListener('WebComponentsReady', () => {
+  const egRenderer = document.getElementById('renderer')
+  const graph = egRenderer.graph()
+
+  window.fetch('data.json')
+    .then((response) => response.json())
+    .then((data) => {
+      for (const node of data.nodes) {
+        graph.addVertex(node.id, node)
+      }
+      for (const link of data.links) {
+        graph.addEdge(link.source, link.target, link)
+      }
+      egRenderer
+        .resize(window.innerWidth - 20, window.innerHeight - 20)
+        .vertexType('circle')
+        .edgeType('line')
+        .layout('circular')
+        .center()
+    })
+})
+</script>
+</body>
+</html>
