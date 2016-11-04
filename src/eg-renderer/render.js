@@ -30,8 +30,10 @@ const renderRectVertex = (ctx, args) => {
     if (ctx.addHitRegion) {
       ctx.addHitRegion({id: u})
     }
-    ctx.textAlign = 'center'
-    ctx.fillText(text, 0, 4)
+    if (text) {
+      ctx.textAlign = 'center'
+      ctx.fillText(text, 0, 4)
+    }
   })
 }
 
@@ -59,8 +61,10 @@ const renderCircleVertex = (ctx, args) => {
     if (ctx.addHitRegion) {
       ctx.addHitRegion({id: u})
     }
-    ctx.textAlign = 'center'
-    ctx.fillText(text, 0, 4)
+    if (text) {
+      ctx.textAlign = 'center'
+      ctx.fillText(text, 0, 4)
+    }
   })
 }
 

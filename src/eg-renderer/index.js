@@ -50,7 +50,8 @@ class EgRenderer extends window.HTMLElement {
       layoutTime: 0,
       layouter: new Layouter(),
       edgeType: 'curve',
-      vertexType: 'rect'
+      vertexType: 'rect',
+      vertexText: ({d}) => d.text
     }
     privates.set(this, p)
 
@@ -80,8 +81,9 @@ class EgRenderer extends window.HTMLElement {
       ctx.scale(p.transform.k, p.transform.k)
       ctx.translate(p.margin, p.margin)
       for (const u of p.graph.vertices()) {
-        renderVertex(ctx, Object.assign({}, p.graph.vertex(u), layout.vertices[u], {
+        renderVertex(ctx, Object.assign({}, layout.vertices[u], {
           u,
+          text: p.vertexText({u, d: p.graph.vertex(u)}),
           fillColor: u.toString() === p.highlightedVertex ? 'red' : 'white'
         }), p.vertexType)
       }
@@ -155,6 +157,10 @@ class EgRenderer extends window.HTMLElement {
 
   edgeType () {
     return accessor(this, 'edgeType', arguments)
+  }
+
+  vertexText () {
+    return accessor(this, 'vertexText', arguments)
   }
 }
 

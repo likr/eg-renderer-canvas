@@ -118,7 +118,9 @@ document.getElementById('layout').addEventListener('input', (event) => {
       break
   }
   layout = event.target.value
-  egRenderer.layout(layout)
+  egRenderer
+    .layout(layout)
+    .center()
 })
 </script>
 </body>
