@@ -80,16 +80,21 @@ class EgRenderer extends window.HTMLElement {
       ctx.translate(p.transform.x, p.transform.y)
       ctx.scale(p.transform.k, p.transform.k)
       ctx.translate(p.margin, p.margin)
-      for (const u of p.graph.vertices()) {
+      const vertices = p.graph.vertices()
+      for (const u of vertices) {
         renderVertex(ctx, Object.assign({}, layout.vertices[u], {
           u,
           text: p.vertexText({u, d: p.graph.vertex(u)}),
           fillColor: u.toString() === p.highlightedVertex ? 'red' : 'white'
         }), p.vertexType)
       }
-      for (const [u, v] of p.graph.edges()) {
-        const {points} = layout.edges[u][v]
-        renderEdge(ctx, points, p.edgeType)
+      for (const u of vertices) {
+        for (const v in layout.edges[u]) {
+          if (layout.edges[u][v]) {
+            const {points} = layout.edges[u][v]
+            renderEdge(ctx, points, p.edgeType)
+          }
+        }
       }
       ctx.restore()
       window.requestAnimationFrame(render)
