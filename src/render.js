@@ -68,8 +68,8 @@ const renderCircleVertex = (ctx, args) => {
   })
 }
 
-export const renderVertex = (ctx, args, type) => {
-  switch (type) {
+export const renderVertex = (ctx, args) => {
+  switch (args.type) {
     case 'circle':
       renderCircleVertex(ctx, args)
       break
@@ -118,12 +118,12 @@ const renderArcEdge = (ctx, points) => {
   ctx.stroke()
 }
 
-export const renderEdge = (ctx, points, type) => {
+export const renderEdge = (ctx, {points, type}) => {
   switch (type) {
     case 'arc':
       renderArcEdge(ctx, points)
       break
-    case 'curve':
+    case 'hierarchy':
       renderCurveEdge(ctx, points)
       break
     case 'line':

@@ -4,7 +4,9 @@ const interpolate = (current, next, r) => {
 
 const interpolateVertex = (current, next, r) => {
   const properties = ['x', 'y', 'width', 'height']
-  const result = {}
+  const result = {
+    type: next.type
+  }
   for (const property of properties) {
     result[property] = interpolate(current[property], next[property], r)
   }
@@ -13,6 +15,7 @@ const interpolateVertex = (current, next, r) => {
 
 const interpolateEdge = (current, next, r) => {
   return {
+    type: next.type,
     width: interpolate(current.width, next.width, r),
     points: current.points.map(([x, y], i) => [interpolate(x, next.points[i][0], r), interpolate(y, next.points[i][1], r)])
   }

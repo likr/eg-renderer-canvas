@@ -1,6 +1,7 @@
 {
-  "name": "components",
+  "name": "eg-renderer-canvas",
   "version": "0.0.0",
+  "main": "src/index.js",
   "description": "",
   "scripts": {
     "start": "webpack-dev-server --content-base=public",
@@ -14,7 +15,6 @@
   "devDependencies": {
     "babel-core": "^6.18.0",
     "babel-loader": "^6.2.7",
-    "babel-plugin-transform-react-jsx": "^6.8.0",
     "babel-preset-latest": "^6.16.0",
     "gh-pages": "^0.11.0",
     "webpack": "^1.13.3",

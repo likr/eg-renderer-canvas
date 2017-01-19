@@ -22,80 +22,44 @@ body {
 </style>
 </head>
 <body>
-<eg-renderer id="renderer"></eg-renderer>
+<eg-renderer
+  id="renderer"
+  transition-duration="500"
+  layout="hierarchy"
+  auto-update
+  auto-centering>
+</eg-renderer>
 <div class="control">
-  <button id="hoge1">hoge1</button>
-  <button id="hoge2">hoge2</button>
-  <button id="hoge3">hoge3</button>
   <button id="center">center</button>
+  <button id="update">update</button>
   <select id="layout">
     <option value="arc">arc</option>
     <option value="circular">circular</option>
     <option value="hierarchy" selected>hierarchy</option>
   </select>
+  <label id="auto-update"><input type="checkbox" checked> auto update</label>
+  <label id="auto-centering"><input type="checkbox" checked> auto centering</label>
 </div>
 <script>
 let egRenderer = document.getElementById('renderer')
-let layout = 'hierarchy'
 
 window.addEventListener('WebComponentsReady', () => {
+  egRenderer.setAttribute('width', window.innerWidth)
+  egRenderer.setAttribute('height', window.innerHeight - 15)
   window.fetch('data.json')
     .then((response) => response.json())
     .then((data) => {
-      const graph = egRenderer.graph()
-      for (const {u, d} of data.vertices) {
-        graph.addVertex(u, d)
-      }
-      for (const {u, v, d} of data.edges) {
-        graph.addEdge(u, v, d)
-      }
-
-      egRenderer.layouter()
-        .vertexWidth(() => 150)
-        .vertexHeight(() => 20)
-        .layerMargin(50)
-        .vertexMargin(30)
-
-      egRenderer
-        .resize(window.innerWidth - 15, window.innerHeight - 15)
-        .layout(layout)
-        .transitionDuration(500)
-        .center()
+      egRenderer.setAttribute('data', JSON.stringify(data))
     })
 })
 
 window.addEventListener('resize', (event) => {
-  egRenderer.resize(window.innerWidth - 15, window.innerHeight - 15)
+  egRenderer.setAttribute('width', window.innerWidth)
+  egRenderer.setAttribute('height', window.innerHeight - 15)
 })
 
-document.getElementById('hoge1').addEventListener('click', (event) => {
-  const graph = egRenderer.graph()
-  const u = 'key' + Math.random()
-  const v = 'key' + Math.random()
-  graph.addVertex(u, {text: u})
-  graph.addVertex(v, {text: v})
-  graph.addEdge(u, v)
-  egRenderer.layout(layout)
-})
-
-document.getElementById('hoge2').addEventListener('click', (event) => {
-  const graph = egRenderer.graph()
-  if (graph.numVertices() > 0) {
-    const u = graph.vertices()[0]
-    graph.removeVertex(u)
-    egRenderer.layout(layout)
-  }
-})
-
-document.getElementById('hoge3').addEventListener('click', (event) => {
-  const graph = egRenderer.graph()
-  if (graph.numVertices() > 0) {
-    const u = graph.vertices()[0]
-    const v = 'key' + Math.random()
-    graph.addVertex(v, {text: v})
-    graph.addEdge(u, v)
-    egRenderer.layout(layout)
-  }
+document.getElementById('update').addEventListener('click', (event) => {
+  egRenderer.layout()
 })
 
 document.getElementById('center').addEventListener('click', (event) => {
@@ -103,24 +67,23 @@ document.getElementById('center').addEventListener('click', (event) => {
 })
 
 document.getElementById('layout').addEventListener('input', (event) => {
-  switch (event.target.value) {
-    case 'arc':
-      egRenderer.vertexType('circle')
-      egRenderer.edgeType('arc')
-      break
-    case 'circular':
-      egRenderer.vertexType('circle')
-      egRenderer.edgeType('line')
-      break
-    case 'hierarchy':
-      egRenderer.vertexType('rect')
-      egRenderer.edgeType('curve')
-      break
+  egRenderer.setAttribute('layout', event.target.value)
+})
+
+document.getElementById('auto-update').addEventListener('change', (event) => {
+  if (event.target.checked) {
+    egRenderer.setAttribute('auto-update', '')
+  } else {
+    egRenderer.removeAttribute('auto-update')
   }
-  layout = event.target.value
-  egRenderer
-    .layout(layout)
-    .center()
+})
+
+document.getElementById('auto-centering').addEventListener('change', (event) => {
+  if (event.target.checked) {
+    egRenderer.setAttribute('auto-centering', '')
+  } else {
+    egRenderer.removeAttribute('auto-centering')
+  }
 })
 </script>
 </body>
