@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8"/>
+<title></title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/fetch/1.0.0/fetch.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/webcomponentsjs/0.7.22/webcomponents.min.js"></script>
+<link rel="import" href="../../eg-renderer.html">
+<style>
+body {
+  margin: 0;
+}
+
+.control {
+  position: absolute;
+  height: 50px;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background-color: gray;
+}
+</style>
+</head>
+<body>
+<eg-renderer
+  id="renderer"
+  transition-duration="500"
+  layout="hierarchy"
+  auto-update
+  auto-centering>
+</eg-renderer>
+<div class="control">
+  <button id="center">center</button>
+  <button id="update">update</button>
+  <select id="layout">
+    <option value="arc">arc</option>
+    <option value="circular">circular</option>
+    <option value="hierarchy" selected>hierarchy</option>
+  </select>
+  <label id="auto-update"><input type="checkbox" checked> auto update</label>
+  <label id="auto-centering"><input type="checkbox" checked> auto centering</label>
+</div>
+<script>
+let egRenderer = document.getElementById('renderer')
+
+window.addEventListener('WebComponentsReady', () => {
+  egRenderer.setAttribute('width', window.innerWidth)
+  egRenderer.setAttribute('height', window.innerHeight - 15)
+  window.fetch('data.json')
+    .then((response) => response.json())
+    .then((data) => {
+      egRenderer.setAttribute('data', JSON.stringify(data))
+    })
+})
+
+window.addEventListener('resize', (event) => {
+  egRenderer.setAttribute('width', window.innerWidth)
+  egRenderer.setAttribute('height', window.innerHeight - 15)
+})
+
+document.getElementById('update').addEventListener('click', (event) => {
+  egRenderer.layout()
+})
+
+document.getElementById('center').addEventListener('click', (event) => {
+  egRenderer.center()
+})
+
+document.getElementById('layout').addEventListener('input', (event) => {
+  egRenderer.setAttribute('layout', event.target.value)
+})
+
+document.getElementById('auto-update').addEventListener('change', (event) => {
+  if (event.target.checked) {
+    egRenderer.setAttribute('auto-update', '')
+  } else {
+    egRenderer.removeAttribute('auto-update')
+  }
+})
+
+document.getElementById('auto-centering').addEventListener('change', (event) => {
+  if (event.target.checked) {
+    egRenderer.setAttribute('auto-centering', '')
+  } else {
+    egRenderer.removeAttribute('auto-centering')
+  }
+})
+</script>
+</body>
+</html>
