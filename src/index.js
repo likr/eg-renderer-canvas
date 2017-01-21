@@ -112,6 +112,18 @@ class EgRenderer extends window.HTMLElement {
       window.requestAnimationFrame(render)
     }
     render()
+
+    if (this.hasAttribute('width')) {
+      p.canvas.width = this.getAttribute('width')
+    }
+    if (this.hasAttribute('height')) {
+      p.canvas.height = this.getAttribute('height')
+    }
+    if (this.hasAttribute('data')) {
+      p.data = JSON.parse(this.getAttribute('data'))
+      this.layout()
+      this.center()
+    }
   }
 
   attributeChangedCallback (attr, oldValue, newValue) {

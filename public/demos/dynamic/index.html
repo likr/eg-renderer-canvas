@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8"/>
+<title>EgRenderer Example</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/fetch/1.0.0/fetch.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/webcomponentsjs/0.7.22/webcomponents.min.js"></script>
+<link rel="import" href="../../eg-renderer.html">
+</head>
+<body>
+<eg-renderer
+  width="600"
+  height="400"
+  transition-duration="500"
+  layout="hierarchy">
+</eg-renderer>
+<script>
+fetch('data.json')
+  .then((response) => response.text())
+  .then((data) => {
+    const renderer = document.querySelector('eg-renderer')
+    renderer.setAttribute('data', data)
+    renderer
+      .layout()
+      .center()
+  })
+</script>
+</body>
+</html>
