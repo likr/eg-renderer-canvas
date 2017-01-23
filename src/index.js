@@ -92,11 +92,12 @@ class EgRenderer extends window.HTMLElement {
       ctx.scale(p.transform.k, p.transform.k)
       ctx.translate(p.margin, p.margin)
       const data = p.data
+      const textKey = this.getAttribute('text-key') || 'text'
       for (const vertex of data.vertices) {
         const u = vertex.u
         renderVertex(ctx, Object.assign({}, layout.vertices[u], {
           u,
-          text: vertex.d.text,
+          text: vertex.d[textKey] || '',
           fillColor: u.toString() === p.highlightedVertex ? 'red' : 'white'
         }))
       }
