@@ -1,24 +1,57 @@
-module.exports = {
+const path = require('path')
+const webpack = require('webpack')
+
+const options = {
   module: {
-    loaders: [
+    rules: [
       {
         test: /\.js$/,
-        exclude: /node_modules/,
-        loader: 'babel-loader',
-        query: {
-          presets: ['latest']
-        }
+        include: [
+          path.resolve(__dirname, 'src')
+        ],
+        use: [
+          {
+            loader: 'babel-loader',
+            options: {
+              presets: ['env']
+            }
+          }
+        ]
       }
     ]
   },
   entry: {
-    'eg-renderer': './src/index.js'
+    'eg-renderer': './src/index'
   },
   output: {
-    path: './public',
+    path: path.resolve(__dirname, 'public'),
     filename: '[name].js'
   },
   externals: {
     'd3': 'd3'
+  },
+  plugins: [
+  ],
+  resolve: {
+    extensions: ['.js']
+  },
+  devServer: {
+    contentBase: path.join(__dirname, 'public'),
+    historyApiFallback: true,
+    port: 8080
   }
 }
+
+if (process.env.NODE_ENV === 'production') {
+  options.plugins.push(new webpack.optimize.UglifyJsPlugin({
+    compress: {
+      warnings: false
+    }
+  }))
+} else {
+  Object.assign(options, {
+    devtool: 'inline-source-map'
+  })
+}
+
+module.exports = options
