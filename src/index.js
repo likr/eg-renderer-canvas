@@ -28,6 +28,55 @@ const renderType = (layout) => {
   }
 }
 
+const zoom = (attrs) => {
+  const pos = {
+    region: null,
+    x0: 0,
+    y0: 0
+  }
+  const zoom = d3.zoom()
+  zoom
+    .on('start', () => {
+      if (d3.event.sourceEvent && d3.event.sourceEvent.region) {
+        pos.region = d3.event.sourceEvent.region
+        pos.x0 = d3.event.transform.x / d3.event.transform.k
+        pos.y0 = d3.event.transform.y / d3.event.transform.k
+      }
+    })
+    .on('zoom', () => {
+      if (pos.region) {
+        const dx = d3.event.transform.x / d3.event.transform.k - pos.x0
+        const dy = d3.event.transform.y / d3.event.transform.k - pos.y0
+        attrs.layoutResult.vertices[pos.region].x += dx
+        attrs.layoutResult.vertices[pos.region].y += dy
+        for (const key in attrs.layoutResult.edges) {
+          if (attrs.layoutResult.edges[key][pos.region]) {
+            const {points} = attrs.layoutResult.edges[key][pos.region]
+            points[points.length - 1][0] += dx
+            points[points.length - 1][1] += dy
+          }
+        }
+        for (const key in attrs.layoutResult.edges[pos.region]) {
+          const {points} = attrs.layoutResult.edges[pos.region][key]
+          points[0][0] += dx
+          points[0][1] += dy
+        }
+        pos.x0 = d3.event.transform.x / d3.event.transform.k
+        pos.y0 = d3.event.transform.y / d3.event.transform.k
+      } else {
+        Object.assign(attrs.transform, d3.event.transform)
+      }
+    })
+    .on('end', function () {
+      if (pos.region) {
+        pos.region = null
+        d3.select(this)
+          .call(zoom.transform, d3.zoomIdentity.translate(attrs.transform.x, attrs.transform.y).scale(attrs.transform.k))
+      }
+    })
+  return zoom
+}
+
 const privates = new WeakMap()
 
 class EgRenderer extends window.HTMLElement {
@@ -58,11 +107,9 @@ class EgRenderer extends window.HTMLElement {
         edges: {}
       },
       margin: 10,
-      zoom: d3.zoom().on('zoom', () => {
-        Object.assign(privates.get(this).transform, d3.event.transform)
-      }),
       layoutTime: 0
     }
+    p.zoom = zoom(p)
     privates.set(this, p)
 
     this.createShadowRoot().appendChild(p.canvas)
