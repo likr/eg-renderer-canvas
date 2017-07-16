@@ -10,7 +10,13 @@
 body {
   margin: 0;
 }
-
+#wrapper {
+  position: absolute;
+  top: 0;
+  bottom: 50px;
+  left: 0;
+  right: 0;
+}
 .control {
   position: absolute;
   height: 50px;
@@ -22,30 +28,38 @@ body {
 </style>
 </head>
 <body>
-<eg-renderer
-  id="renderer"
-  transition-duration="500"
-  layout="hierarchy"
-  auto-update
-  auto-centering>
-</eg-renderer>
+<div id="wrapper">
+  <eg-renderer
+    id="renderer"
+    transition-duration="500"
+    layout="fmmm"
+    auto-update
+    auto-centering>
+  </eg-renderer>
+</div>
 <div class="control">
   <button id="center">center</button>
   <button id="update">update</button>
   <select id="layout">
-    <option value="arc">arc</option>
+    <option value="balloon">balloon</option>
     <option value="circular">circular</option>
-    <option value="hierarchy" selected>hierarchy</option>
+    <option value="davidsonHarel">davidsonHarel</option>
+    <option value="fastMultipoleEmbedder">fastMultipoleEmbedder</option>
+    <option value="fmmm" selected>fmmm</option>
+    <option value="planarization">planarization</option>
+    <option value="tree">tree</option>
+    <option value="tutte">tutte</option>
   </select>
   <label id="auto-update"><input type="checkbox" checked> auto update</label>
   <label id="auto-centering"><input type="checkbox" checked> auto centering</label>
 </div>
 <script>
 let egRenderer = document.getElementById('renderer')
+const wrapper = document.getElementById('wrapper')
 
 window.addEventListener('WebComponentsReady', () => {
-  egRenderer.setAttribute('width', window.innerWidth)
-  egRenderer.setAttribute('height', window.innerHeight - 15)
+  egRenderer.setAttribute('width', wrapper.clientWidth)
+  egRenderer.setAttribute('height', wrapper.clientHeight)
   window.fetch('data.json')
     .then((response) => response.json())
     .then((data) => {
@@ -54,8 +68,8 @@ window.addEventListener('WebComponentsReady', () => {
 })
 
 window.addEventListener('resize', (event) => {
-  egRenderer.setAttribute('width', window.innerWidth)
-  egRenderer.setAttribute('height', window.innerHeight - 15)
+  egRenderer.setAttribute('width', wrapper.clientWidth)
+  egRenderer.setAttribute('height', wrapper.clientHeight)
 })
 
 document.getElementById('update').addEventListener('click', (event) => {

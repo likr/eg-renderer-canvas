@@ -1,9 +1,7 @@
 import 'babel-polyfill'
 import * as d3 from 'd3'
 import Graph from 'egraph/graph'
-import Layouter from 'egraph/layouter/sugiyama'
-import {arcLayout} from './layout/arc-layout'
-import {circularLayout} from './layout/circular-layout'
+import {layout} from './layout'
 import {
   centerTransform,
   layoutRect
@@ -16,17 +14,6 @@ import {
   renderEdge,
   renderVertex
 } from './render'
-
-const renderType = (layout) => {
-  switch (layout) {
-    case 'arc':
-      return ['circle', 'arc']
-    case 'circular':
-      return ['circle', 'line']
-    case 'hierarchy':
-      return ['rect', 'curve']
-  }
-}
 
 const zoom = (attrs) => {
   const pos = {
@@ -142,19 +129,19 @@ class EgRenderer extends window.HTMLElement {
       const textKey = this.getAttribute('text-key') || 'text'
       for (const vertex of data.vertices) {
         const u = vertex.u
-        renderVertex(ctx, Object.assign({}, layout.vertices[u], {
-          u,
-          text: vertex.d[textKey] || '',
-          fillColor: u.toString() === p.highlightedVertex ? 'red' : 'white'
-        }))
-      }
-      for (const vertex of data.vertices) {
-        const u = vertex.u
         for (const v in layout.edges[u]) {
           if (layout.edges[u][v]) {
             renderEdge(ctx, layout.edges[u][v])
           }
         }
+      }
+      for (const vertex of data.vertices) {
+        const u = vertex.u
+        renderVertex(ctx, Object.assign({}, layout.vertices[u], {
+          u,
+          text: vertex.d[textKey] || '',
+          fillColor: u.toString() === p.highlightedVertex ? 'red' : 'white'
+        }))
       }
       ctx.restore()
       window.requestAnimationFrame(render)
@@ -210,33 +197,9 @@ class EgRenderer extends window.HTMLElement {
       graph.addEdge(u, v, d)
     }
 
-    let layoutResult
-    switch (mode) {
-      case 'arc':
-        layoutResult = arcLayout(graph)
-        break
-      case 'circular':
-        layoutResult = circularLayout(graph)
-        break
-      case 'hierarchy':
-        const layouter = new Layouter()
-          .vertexWidth(() => 150)
-          .vertexHeight(() => 20)
-          .layerMargin(50)
-          .vertexMargin(30)
-        layoutResult = layouter.layout(graph)
-        for (const [u, v] of graph.edges()) {
-          const {points} = layoutResult.edges[u][v]
-          while (points.length < 6) {
-            points.push(points[points.length - 1])
-          }
-          layoutResult.edges[u][v].type = 'hierarchy'
-        }
-        break
-    }
-    const [vertexType] = renderType(this.getAttribute('layout'))
+    let layoutResult = layout(data, mode)
     for (const u of graph.vertices()) {
-      layoutResult.vertices[u].type = vertexType
+      layoutResult.vertices[u].type = 'circle'
     }
     p.previousLayoutResult = diff(p.layoutResult, layoutResult)
     p.layoutResult = layoutResult
@@ -249,8 +212,8 @@ class EgRenderer extends window.HTMLElement {
 
   center () {
     const {canvas, layoutResult, margin, zoom} = privates.get(this)
-    const {layoutWidth, layoutHeight} = layoutRect(layoutResult)
-    const {x, y, k} = centerTransform(layoutWidth, layoutHeight, canvas.width, canvas.height, margin)
+    const {layoutWidth, layoutHeight, left, top} = layoutRect(layoutResult)
+    const {x, y, k} = centerTransform(layoutWidth, layoutHeight, left, top, canvas.width, canvas.height, margin)
     zoom.transform(d3.select(canvas), d3.zoomIdentity.translate(x, y).scale(k))
   }
 }

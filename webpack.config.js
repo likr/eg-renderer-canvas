@@ -39,6 +39,9 @@ const options = {
     contentBase: path.join(__dirname, 'public'),
     historyApiFallback: true,
     port: 8080
+  },
+  node: {
+    fs: 'empty'
   }
 }
 

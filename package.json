@@ -22,6 +22,6 @@
   },
   "dependencies": {
     "babel-polyfill": "^6.16.0",
-    "egraph": "^3.0.0"
+    "emogdf": "file:../emogdf"
   }
 }
