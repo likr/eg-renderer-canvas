@@ -18,7 +18,7 @@ export const centerTransform = (lWidth, lHeight, left, top, cWidth, cHeight, mar
   const hScale = aWidth / lWidth
   const vScale = aHeight / lHeight
   const scale = Math.min(hScale, vScale)
-  const x = (hScale < vScale ? 0 : (aWidth - lWidth * scale) / 2) - left * scale - margin
-  const y = (vScale < hScale ? 0 : (aHeight - lHeight * scale) / 2) - top * scale - margin
+  const x = hScale < vScale ? 0 : (aWidth - lWidth * scale) / 2
+  const y = vScale < hScale ? 0 : (aHeight - lHeight * scale) / 2
   return {x, y, k: scale}
 }

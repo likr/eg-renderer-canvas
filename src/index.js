@@ -122,9 +122,9 @@ class EgRenderer extends window.HTMLElement {
       const ctx = p.canvas.getContext('2d')
       ctx.save()
       ctx.clearRect(0, 0, p.canvas.width, p.canvas.height)
+      ctx.translate(p.margin, p.margin)
       ctx.translate(p.transform.x, p.transform.y)
       ctx.scale(p.transform.k, p.transform.k)
-      ctx.translate(p.margin, p.margin)
       const data = p.data
       const textKey = this.getAttribute('text-key') || 'text'
       for (const vertex of data.vertices) {
@@ -214,7 +214,7 @@ class EgRenderer extends window.HTMLElement {
     const {canvas, layoutResult, margin, zoom} = privates.get(this)
     const {layoutWidth, layoutHeight, left, top} = layoutRect(layoutResult)
     const {x, y, k} = centerTransform(layoutWidth, layoutHeight, left, top, canvas.width, canvas.height, margin)
-    zoom.transform(d3.select(canvas), d3.zoomIdentity.translate(x, y).scale(k))
+    zoom.transform(d3.select(canvas), d3.zoomIdentity.translate(x, y).scale(k).translate(-left, -top))
   }
 }
 
