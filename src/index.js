@@ -14,6 +14,10 @@ import {
   renderVertex
 } from './render'
 
+const devicePixelRatio = () => {
+  return window.devicePixelRatio || 1.0
+}
+
 const zoom = (attrs) => {
   const pos = {
     region: null,
@@ -220,10 +224,12 @@ class EgRendererElement extends window.HTMLElement {
         }
         break
       case 'width':
-        canvas.width = newValue
+        canvas.width = newValue * devicePixelRatio()
+        canvas.style.width = `${newValue}px`
         break
       case 'height':
-        canvas.height = newValue
+        canvas.height = newValue * devicePixelRatio()
+        canvas.style.height = `${newValue}px`
         break
     }
   }
