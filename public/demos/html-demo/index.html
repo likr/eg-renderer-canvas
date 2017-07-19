@@ -18,15 +18,17 @@
   height="400"
   data='{
     "vertices": [
-      {"u":0, "d": {"text": "source"}},
-      {"u":1, "d": {"text": "target"}}
+      {"u":0, "d": {"label": "source", "type": "circle"}},
+      {"u":1, "d": {"label": "target", "type": "rect"}}
     ],
     "edges": [
       {"u": 0, "v": 1, "d": {}}
     ]
   }'
   transition-duration="500"
-  layout="hierarchy">
+  default-node-width="120"
+  default-node-height="20"
+  layout="fmmm">
 </eg-renderer>
 </div>
 <div>
@@ -44,15 +46,17 @@
 &ensp;&ensp;height="400"<br/>
 &ensp;&ensp;data='{<br/>
 &ensp;&ensp;&ensp;&ensp;"vertices":&ensp;[<br/>
-&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;{"u":0,&ensp;"d":&ensp;{"text":&ensp;"source"}},<br/>
-&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;{"u":1,&ensp;"d":&ensp;{"text":&ensp;"target"}}<br/>
+&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;{"u":0,&ensp;"d":&ensp;{"label":&ensp;"source",&ensp;"type":&ensp;"circle"}},<br/>
+&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;{"u":1,&ensp;"d":&ensp;{"label":&ensp;"target",&ensp;"type":&ensp;"rect"}}<br/>
 &ensp;&ensp;&ensp;&ensp;],<br/>
 &ensp;&ensp;&ensp;&ensp;"edges":&ensp;[<br/>
 &ensp;&ensp;&ensp;&ensp;&ensp;&ensp;{"u":&ensp;0,&ensp;"v":&ensp;1,&ensp;"d":&ensp;{}}<br/>
 &ensp;&ensp;&ensp;&ensp;]<br/>
 &ensp;&ensp;}'<br/>
 &ensp;&ensp;transition-duration="500"<br/>
-&ensp;&ensp;layout="hierarchy"&gt;<br/>
+&ensp;&ensp;default-node-width="120"<br/>
+&ensp;&ensp;default-node-height="20"<br/>
+&ensp;&ensp;layout="fmmm"&gt;<br/>
 &lt;/eg-renderer&gt;<br/>
 &lt;/body&gt;<br/>
 &lt;/html&gt;<br/>

@@ -64,9 +64,56 @@ const zoom = (attrs) => {
   return zoom
 }
 
+const get = (d, key, defaultValue) => {
+  return d.hasOwnProperty(key) ? d[key] : defaultValue
+}
+
+const loadData = (e, jsonString) => {
+  const data = JSON.parse(jsonString)
+  const nodeLabelProperty = e.getAttribute('node-label-property') || 'label'
+  const nodeWidthProperty = e.getAttribute('node-width-property') || 'width'
+  const nodeHeightProperty = e.getAttribute('node-height-property') || 'height'
+  const nodeTypeProperty = e.getAttribute('node-type-property') || 'type'
+  const defaultNodeLabel = e.getAttribute('default-node-label') || ''
+  const defaultNodeWidth = e.getAttribute('default-node-width') || 10
+  const defaultNodeHeight = e.getAttribute('default-node-height') || 10
+  const defaultNodeType = e.getAttribute('default-node-type') || 'rect'
+  for (const node of data.vertices) {
+    const {d} = node
+    Object.assign(node, {
+      label: get(d, nodeLabelProperty, defaultNodeLabel),
+      width: +get(d, nodeWidthProperty, defaultNodeWidth),
+      height: +get(d, nodeHeightProperty, defaultNodeHeight),
+      type: get(d, nodeTypeProperty, defaultNodeType)
+    })
+  }
+  return data
+}
+
 const privates = new WeakMap()
 
-class EgRenderer extends window.HTMLElement {
+/**
+ * definition of the <eg-renderer> custom element
+ *
+ * Attributes
+ * * data
+ * * layout-method
+ * * width
+ * * height
+ * * transition-duration
+ * * node-label-property
+ * * node-width-property
+ * * node-height-roperty
+ * * node-type-property
+ * * default-node-label
+ * * default-node-width
+ * * default-node-height
+ * * default-node-type
+ * * auto-update
+ * * auto-centering
+ *
+ */
+class EgRendererElement extends window.HTMLElement {
   static get observedAttributes () {
     return [
       'data',
@@ -126,7 +173,6 @@ class EgRenderer extends window.HTMLElement {
       ctx.translate(p.transform.x, p.transform.y)
       ctx.scale(p.transform.k, p.transform.k)
       const data = p.data
-      const textKey = this.getAttribute('text-key') || 'text'
       for (const vertex of data.vertices) {
         const u = vertex.u
         for (const v in layout.edges[u]) {
@@ -135,11 +181,9 @@ class EgRenderer extends window.HTMLElement {
           }
         }
       }
-      for (const vertex of data.vertices) {
-        const u = vertex.u
-        renderVertex(ctx, Object.assign({}, layout.vertices[u], {
-          u,
-          text: vertex.d[textKey] || '',
+      for (const node of data.vertices) {
+        const {u} = node
+        renderVertex(ctx, Object.assign({}, layout.vertices[u], node, {
           fillColor: u.toString() === p.highlightedVertex ? 'red' : 'white'
         }))
       }
@@ -155,7 +199,7 @@ class EgRenderer extends window.HTMLElement {
       p.canvas.height = this.getAttribute('height')
     }
     if (this.hasAttribute('data')) {
-      p.data = JSON.parse(this.getAttribute('data'))
+      p.data = loadData(this, this.getAttribute('data'))
       this.layout()
       this.center()
     }
@@ -166,7 +210,7 @@ class EgRenderer extends window.HTMLElement {
     const {canvas} = p
     switch (attr) {
       case 'data':
-        p.data = JSON.parse(newValue)
+        p.data = loadData(this, newValue)
         if (this.hasAttribute('auto-update')) {
           this.layout()
         }
@@ -198,9 +242,6 @@ class EgRenderer extends window.HTMLElement {
     }
 
     let layoutResult = layout(data, mode)
-    for (const u of graph.vertices()) {
-      layoutResult.vertices[u].type = 'circle'
-    }
     p.previousLayoutResult = diff(p.layoutResult, layoutResult)
     p.layoutResult = layoutResult
     p.layoutTime = new Date()
@@ -218,4 +259,4 @@ class EgRenderer extends window.HTMLElement {
   }
 }
 
-document.registerElement('eg-renderer', EgRenderer)
+document.registerElement('eg-renderer', EgRendererElement)

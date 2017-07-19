@@ -43,11 +43,12 @@ export const layout = (graphData, mode) => {
   const attributes = new GraphAttributes(graph, nodeGraphics | edgeGraphics | nodeStyle | edgeStyle)
   const nodes = new NodeList()
   graph.allNodes(nodes)
-  for (let i = 0; i < nodes.size(); ++i) {
-    const node = nodes.at(i)
-    attributes.setWidth(node, 10)
-    attributes.setHeight(node, 10)
+  for (const {u, width, height} of graphData.vertices) {
+    const node = indexToNode.get(u)
+    attributes.setWidth(node, width)
+    attributes.setHeight(node, height)
   }
+
   const layout = new layoutMethods[mode]()
   layout.call(attributes)
 

@@ -11,7 +11,7 @@ const renderRectVertex = (ctx, args) => {
     y,
     width,
     height,
-    text,
+    label,
     fillColor
   } = args
   withContext(ctx, () => {
@@ -30,9 +30,9 @@ const renderRectVertex = (ctx, args) => {
     if (ctx.addHitRegion) {
       ctx.addHitRegion({id: u})
     }
-    if (text) {
+    if (label) {
       ctx.textAlign = 'center'
-      ctx.fillText(text, 0, 4)
+      ctx.fillText(label, 0, 4)
     }
   })
 }
@@ -44,7 +44,7 @@ const renderCircleVertex = (ctx, args) => {
     y,
     width,
     height,
-    text,
+    label,
     fillColor
   } = args
   withContext(ctx, () => {
@@ -52,8 +52,7 @@ const renderCircleVertex = (ctx, args) => {
     withContext(ctx, () => {
       ctx.fillStyle = fillColor
       ctx.beginPath()
-      ctx.scale(1, height / width)
-      ctx.arc(0, 0, width / 2, 0, 2 * Math.PI)
+      ctx.ellipse(0, 0, width / 2, height / 2, 0, 0, 2 * Math.PI)
       ctx.closePath()
       ctx.fill()
       ctx.stroke()
@@ -61,9 +60,9 @@ const renderCircleVertex = (ctx, args) => {
     if (ctx.addHitRegion) {
       ctx.addHitRegion({id: u})
     }
-    if (text) {
+    if (label) {
       ctx.textAlign = 'center'
-      ctx.fillText(text, 0, 4)
+      ctx.fillText(label, 0, 4)
     }
   })
 }
