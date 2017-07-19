@@ -4,7 +4,7 @@
 <meta charset="utf-8"/>
 <title></title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/fetch/1.0.0/fetch.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/webcomponentsjs/0.7.22/webcomponents.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/webcomponentsjs/0.7.24/webcomponents.min.js"></script>
 <link rel="import" href="../../eg-renderer.html">
 <style>
 body {
@@ -57,9 +57,9 @@ body {
 </div>
 <script>
 let egRenderer = document.getElementById('renderer')
-const wrapper = document.getElementById('wrapper')
 
 window.addEventListener('WebComponentsReady', () => {
+  const wrapper = document.getElementById('wrapper')
   egRenderer.setAttribute('width', wrapper.clientWidth)
   egRenderer.setAttribute('height', wrapper.clientHeight)
   window.fetch('data.json')
@@ -70,6 +70,7 @@ window.addEventListener('WebComponentsReady', () => {
 })
 
 window.addEventListener('resize', (event) => {
+  const wrapper = document.getElementById('wrapper')
   egRenderer.setAttribute('width', wrapper.clientWidth)
   egRenderer.setAttribute('height', wrapper.clientHeight)
 })
