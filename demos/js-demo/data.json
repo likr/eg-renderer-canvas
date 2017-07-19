@@ -1,7 +1,7 @@
 {
   "vertices": [
-    {"u":0, "d": {"text": "source"}},
-    {"u":1, "d": {"text": "target"}}
+    {"u":0, "d": {"label": "source", "type": "circle"}},
+    {"u":1, "d": {"label": "target", "type": "rect"}}
   ],
   "edges": [
     {"u": 0, "v": 1, "d": {}}
