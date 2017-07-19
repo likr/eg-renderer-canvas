@@ -29,14 +29,14 @@ const zoom = (attrs) => {
     .on('start', () => {
       if (d3.event.sourceEvent && d3.event.sourceEvent.region) {
         pos.region = d3.event.sourceEvent.region
-        pos.x0 = d3.event.transform.x / d3.event.transform.k
-        pos.y0 = d3.event.transform.y / d3.event.transform.k
+        pos.x0 = d3.event.transform.x * devicePixelRatio() / d3.event.transform.k
+        pos.y0 = d3.event.transform.y * devicePixelRatio() / d3.event.transform.k
       }
     })
     .on('zoom', () => {
       if (pos.region) {
-        const dx = d3.event.transform.x / d3.event.transform.k - pos.x0
-        const dy = d3.event.transform.y / d3.event.transform.k - pos.y0
+        const dx = d3.event.transform.x * devicePixelRatio() / d3.event.transform.k - pos.x0
+        const dy = d3.event.transform.y * devicePixelRatio() / d3.event.transform.k - pos.y0
         attrs.layoutResult.vertices[pos.region].x += dx
         attrs.layoutResult.vertices[pos.region].y += dy
         for (const key in attrs.layoutResult.edges) {
@@ -51,8 +51,8 @@ const zoom = (attrs) => {
           points[0][0] += dx
           points[0][1] += dy
         }
-        pos.x0 = d3.event.transform.x / d3.event.transform.k
-        pos.y0 = d3.event.transform.y / d3.event.transform.k
+        pos.x0 = d3.event.transform.x * devicePixelRatio() / d3.event.transform.k
+        pos.y0 = d3.event.transform.y * devicePixelRatio() / d3.event.transform.k
       } else {
         Object.assign(attrs.transform, d3.event.transform)
       }
