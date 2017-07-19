@@ -12,12 +12,14 @@ const renderRectVertex = (ctx, args) => {
     width,
     height,
     label,
-    fillColor
+    fillColor,
+    strokeColor
   } = args
   withContext(ctx, () => {
     ctx.translate(x, y)
     withContext(ctx, () => {
       ctx.fillStyle = fillColor
+      ctx.strokeStyle = strokeColor
       ctx.beginPath()
       ctx.moveTo(-width / 2, -height / 2)
       ctx.lineTo(width / 2, -height / 2)
@@ -45,12 +47,14 @@ const renderCircleVertex = (ctx, args) => {
     width,
     height,
     label,
-    fillColor
+    fillColor,
+    strokeColor
   } = args
   withContext(ctx, () => {
     ctx.translate(x, y)
     withContext(ctx, () => {
       ctx.fillStyle = fillColor
+      ctx.strokeStyle = strokeColor
       ctx.beginPath()
       ctx.ellipse(0, 0, width / 2, height / 2, 0, 0, 2 * Math.PI)
       ctx.closePath()

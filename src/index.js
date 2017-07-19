@@ -76,10 +76,14 @@ const loadData = (e, jsonString) => {
   const nodeLabelProperty = e.getAttribute('node-label-property') || 'label'
   const nodeWidthProperty = e.getAttribute('node-width-property') || 'width'
   const nodeHeightProperty = e.getAttribute('node-height-property') || 'height'
+  const nodeFillColorProperty = e.getAttribute('node-fill-color-property') || 'fill'
+  const nodeStrokeColorProperty = e.getAttribute('node-stroke-color-property') || 'stroke'
   const nodeTypeProperty = e.getAttribute('node-type-property') || 'type'
   const defaultNodeLabel = e.getAttribute('default-node-label') || ''
   const defaultNodeWidth = e.getAttribute('default-node-width') || 10
   const defaultNodeHeight = e.getAttribute('default-node-height') || 10
+  const defaultNodeFillColor = e.getAttribute('default-node-fill-color') || '#fff'
+  const defaultNodeStrokeColor = e.getAttribute('default-node-stroke-color') || '#000'
   const defaultNodeType = e.getAttribute('default-node-type') || 'rect'
   for (const node of data.vertices) {
     const {d} = node
@@ -87,13 +91,28 @@ const loadData = (e, jsonString) => {
       label: get(d, nodeLabelProperty, defaultNodeLabel),
       width: +get(d, nodeWidthProperty, defaultNodeWidth),
       height: +get(d, nodeHeightProperty, defaultNodeHeight),
-      type: get(d, nodeTypeProperty, defaultNodeType)
+      type: get(d, nodeTypeProperty, defaultNodeType),
+      fillColor: get(d, nodeFillColorProperty, defaultNodeFillColor),
+      strokeColor: get(d, nodeStrokeColorProperty, defaultNodeStrokeColor)
+
     })
   }
   return data
 }
 
 const privates = new WeakMap()
+
+const setWidth = (e, width) => {
+  const p = privates.get(e)
+  p.canvas.width = width * devicePixelRatio()
+  p.canvas.style.width = `${width}px`
+}
+
+const setHeight = (e, height) => {
+  const p = privates.get(e)
+  p.canvas.height = height * devicePixelRatio()
+  p.canvas.style.height = `${height}px`
+}
 
 /**
  * definition of the <eg-renderer> custom element
@@ -107,11 +126,17 @@ const privates = new WeakMap()
  * * node-label-property
  * * node-width-property
  * * node-height-roperty
+ * * node-fill-color-property
+ * * node-stroke-color-property
+ * * node-opacity-property
  * * node-type-property
  * * default-node-label
  * * default-node-width
  * * default-node-height
  * * default-node-type
+ * * default-node-fill-color
+ * * default-node-stroke-color
+ * * default-node-opacity
  * * auto-update
  * * auto-centering
  *
@@ -186,9 +211,7 @@ class EgRendererElement extends window.HTMLElement {
       }
       for (const node of data.vertices) {
         const {u} = node
-        renderVertex(ctx, Object.assign({}, layout.vertices[u], node, {
-          fillColor: u.toString() === p.highlightedVertex ? 'red' : 'white'
-        }))
+        renderVertex(ctx, Object.assign({}, layout.vertices[u], node))
       }
       ctx.restore()
       window.requestAnimationFrame(render)
@@ -196,10 +219,10 @@ class EgRendererElement extends window.HTMLElement {
     render()
 
     if (this.hasAttribute('width')) {
-      p.canvas.width = this.getAttribute('width')
+      setWidth(this, +this.getAttribute('width'))
     }
     if (this.hasAttribute('height')) {
-      p.canvas.height = this.getAttribute('height')
+      setHeight(this, +this.getAttribute('height'))
     }
     if (this.hasAttribute('data')) {
       p.data = loadData(this, this.getAttribute('data'))
@@ -210,7 +233,6 @@ class EgRendererElement extends window.HTMLElement {
 
   attributeChangedCallback (attr, oldValue, newValue) {
     const p = privates.get(this)
-    const {canvas} = p
     switch (attr) {
       case 'data':
         p.data = loadData(this, newValue)
@@ -224,12 +246,10 @@ class EgRendererElement extends window.HTMLElement {
         }
         break
       case 'width':
-        canvas.width = newValue * devicePixelRatio()
-        canvas.style.width = `${newValue}px`
+        setWidth(this, newValue)
         break
       case 'height':
-        canvas.height = newValue * devicePixelRatio()
-        canvas.style.height = `${newValue}px`
+        setHeight(this, newValue)
         break
     }
   }
