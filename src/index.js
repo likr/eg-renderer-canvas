@@ -28,15 +28,17 @@ const zoom = (attrs) => {
   zoom
     .on('start', () => {
       if (d3.event.sourceEvent && d3.event.sourceEvent.region) {
+        const {x, y, k} = d3.event.transform
         pos.region = d3.event.sourceEvent.region
-        pos.x0 = d3.event.transform.x * devicePixelRatio() / d3.event.transform.k
-        pos.y0 = d3.event.transform.y * devicePixelRatio() / d3.event.transform.k
+        pos.x0 = x / k
+        pos.y0 = y / k
       }
     })
     .on('zoom', () => {
+      const {x, y, k} = d3.event.transform
       if (pos.region) {
-        const dx = d3.event.transform.x * devicePixelRatio() / d3.event.transform.k - pos.x0
-        const dy = d3.event.transform.y * devicePixelRatio() / d3.event.transform.k - pos.y0
+        const dx = x / k - pos.x0
+        const dy = y / k - pos.y0
         attrs.layoutResult.vertices[pos.region].x += dx
         attrs.layoutResult.vertices[pos.region].y += dy
         for (const key in attrs.layoutResult.edges) {
@@ -51,10 +53,14 @@ const zoom = (attrs) => {
           points[0][0] += dx
           points[0][1] += dy
         }
-        pos.x0 = d3.event.transform.x * devicePixelRatio() / d3.event.transform.k
-        pos.y0 = d3.event.transform.y * devicePixelRatio() / d3.event.transform.k
+        pos.x0 = x / k
+        pos.y0 = y / k
       } else {
-        Object.assign(attrs.transform, d3.event.transform)
+        Object.assign(attrs.transform, {
+          x,
+          y,
+          k
+        })
       }
     })
     .on('end', function () {
@@ -197,6 +203,7 @@ class EgRendererElement extends window.HTMLElement {
       const ctx = p.canvas.getContext('2d')
       ctx.save()
       ctx.clearRect(0, 0, p.canvas.width, p.canvas.height)
+      ctx.scale(devicePixelRatio(), devicePixelRatio())
       ctx.translate(p.margin, p.margin)
       ctx.translate(p.transform.x, p.transform.y)
       ctx.scale(p.transform.k, p.transform.k)
@@ -272,7 +279,9 @@ class EgRendererElement extends window.HTMLElement {
   center () {
     const {canvas, layoutResult, margin, zoom} = privates.get(this)
     const {layoutWidth, layoutHeight, left, top} = layoutRect(layoutResult)
-    const {x, y, k} = centerTransform(layoutWidth, layoutHeight, left, top, canvas.width, canvas.height, margin)
+    const canvasWidth = canvas.width / devicePixelRatio()
+    const canvasHeight = canvas.height / devicePixelRatio()
+    const {x, y, k} = centerTransform(layoutWidth, layoutHeight, left, top, canvasWidth, canvasHeight, margin)
     zoom.transform(d3.select(canvas), d3.zoomIdentity.translate(x, y).scale(k).translate(-left, -top))
   }
 }
