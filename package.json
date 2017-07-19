@@ -5,7 +5,7 @@
   "description": "",
   "scripts": {
     "start": "webpack-dev-server --content-base=public",
-    "build": "webpack",
+    "build": "NODE_ENV=production webpack",
     "deploy": "npm run build && gh-pages -d public",
     "test": "echo \"Error: no test specified\" && exit 1"
   },

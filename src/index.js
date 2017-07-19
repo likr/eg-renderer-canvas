@@ -1,6 +1,5 @@
 import 'babel-polyfill'
 import * as d3 from 'd3'
-import Graph from 'egraph/graph'
 import {layout} from './layout'
 import {
   centerTransform,
@@ -233,13 +232,6 @@ class EgRendererElement extends window.HTMLElement {
     const p = privates.get(this)
     const {data} = p
     const mode = this.getAttribute('layout')
-    const graph = new Graph()
-    for (const {u, d} of data.vertices) {
-      graph.addVertex(u, d)
-    }
-    for (const {u, v, d} of data.edges) {
-      graph.addEdge(u, v, d)
-    }
 
     let layoutResult = layout(data, mode)
     p.previousLayoutResult = diff(p.layoutResult, layoutResult)
