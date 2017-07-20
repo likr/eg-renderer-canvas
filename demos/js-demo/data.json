@@ -1,7 +1,7 @@
 {
   "nodes": [
-    {"id": 0, "label": "source", "type": "circle", "width": 120, "height": 20, "fill": "green"},
-    {"id": 1, "label": "target", "type": "rect", "width": 120, "height": 20, "fill": "red"}
+    {"label": "source", "type": "circle", "width": 120, "height": 20, "fill": "green"},
+    {"label": "target", "type": "rect", "width": 120, "height": 20, "fill": "red"}
   ],
   "links": [
     {"source": 0, "target": 1}
