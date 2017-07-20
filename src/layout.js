@@ -56,27 +56,26 @@ export const layout = (graphData, mode) => {
     vertices: {},
     edges: {}
   }
-  for (const {u} of graphData.vertices) {
+  for (const vertex of graphData.vertices) {
+    const {u} = vertex
     const node = indexToNode.get(u)
-    result.vertices[u] = {
+    result.vertices[u] = Object.assign({}, vertex, {
       x: attributes.x(node),
-      y: attributes.y(node),
-      width: attributes.width(node),
-      height: attributes.height(node)
-    }
+      y: attributes.y(node)
+    })
     result.edges[u] = {}
   }
   const edges = new EdgeList()
   graph.allEdges(edges)
-  for (const {u, v} of graphData.edges) {
-    result.edges[u][v] = {
+  for (const edge of graphData.edges) {
+    const {u, v} = edge
+    result.edges[u][v] = Object.assign({}, edge, {
       type: 'line',
-      width: 1,
       points: [
         [result.vertices[u].x, result.vertices[u].y],
         [result.vertices[v].x, result.vertices[v].y]
       ]
-    }
+    })
   }
   return result
 }

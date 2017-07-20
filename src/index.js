@@ -102,12 +102,12 @@ class EgRendererElement extends window.HTMLElement {
       for (const edge of data.edges) {
         const {u, v} = edge
         if (layout.edges[u][v]) {
-          renderEdge(ctx, Object.assign({}, layout.edges[u][v], edge))
+          renderEdge(ctx, layout.edges[u][v])
         }
       }
       for (const node of data.vertices) {
         const {u} = node
-        renderVertex(ctx, Object.assign({}, layout.vertices[u], node))
+        renderVertex(ctx, layout.vertices[u])
       }
       ctx.restore()
       window.requestAnimationFrame(render)
@@ -169,7 +169,7 @@ class EgRendererElement extends window.HTMLElement {
   load (data) {
     const graphNodesProperty = this.getAttribute('graph-nodes-property') || 'nodes'
     const graphLinksProperty = this.getAttribute('graph-links-property') || 'links'
-    const nodeIdProperty = this.getAttribute('node-id-property') || 'id'
+    const nodeIdProperty = this.getAttribute('node-id-property') || '$index'
     const nodeLabelProperty = this.getAttribute('node-label-property') || 'label'
     const nodeWidthProperty = this.getAttribute('node-width-property') || 'width'
     const nodeHeightProperty = this.getAttribute('node-height-property') || 'height'
@@ -195,9 +195,9 @@ class EgRendererElement extends window.HTMLElement {
     const defaultLinkStrokeOpacity = this.getAttribute('default-link-stroke-opacity') || '1'
     const defaultLinkStrokeWidth = this.getAttribute('default-link-stroke-width') || '1'
     privates.get(this).data = {
-      vertices: data[graphNodesProperty].map((node) => {
+      vertices: data[graphNodesProperty].map((node, i) => {
         return {
-          u: node[nodeIdProperty],
+          u: nodeIdProperty === '$index' ? i : node[nodeIdProperty],
           label: get(node, nodeLabelProperty, defaultNodeLabel),
           width: +get(node, nodeWidthProperty, defaultNodeWidth),
           height: +get(node, nodeHeightProperty, defaultNodeHeight),

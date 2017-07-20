@@ -3,22 +3,30 @@ const interpolate = (current, next, r) => {
 }
 
 const interpolateVertex = (current, next, r) => {
-  const properties = ['x', 'y', 'width', 'height']
-  const result = {
-    type: next.type
+  const copyProperties = ['u', 'label', 'type', 'fillColor', 'strokeColor', 'strokeOpacity', 'strokeWidth', 'd']
+  const interpolateProperties = ['x', 'y', 'width', 'height']
+  const result = {}
+  for (const p of copyProperties) {
+    result[p] = next[p]
   }
-  for (const property of properties) {
-    result[property] = interpolate(current[property], next[property], r)
+  for (const p of interpolateProperties) {
+    result[p] = interpolate(current[p], next[p], r)
   }
   return result
 }
 
 const interpolateEdge = (current, next, r) => {
-  return {
-    type: next.type,
-    width: interpolate(current.width, next.width, r),
-    points: current.points.map(([x, y], i) => [interpolate(x, next.points[i][0], r), interpolate(y, next.points[i][1], r)])
+  const copyProperties = ['u', 'v', 'type', 'strokeColor', 'strokeOpacity', 'd']
+  const interpolateProperties = []
+  const result = {}
+  for (const p of copyProperties) {
+    result[p] = next[p]
   }
+  for (const p of interpolateProperties) {
+    result[p] = interpolate(current[p], next[p], r)
+  }
+  result.points = current.points.map(([x, y], i) => [interpolate(x, next.points[i][0], r), interpolate(y, next.points[i][1], r)])
+  return result
 }
 
 export const interpolateLayout = (current, next, r) => {
