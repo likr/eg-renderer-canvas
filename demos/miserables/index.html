@@ -3,8 +3,15 @@
 <head>
 <meta charset="utf-8"/>
 <title>Visualizing Miserables Data | EgRenderer Example</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/babel-polyfill/6.23.0/polyfill.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/fetch/2.0.3/fetch.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/webcomponentsjs/1.0.3/webcomponents-sd-ce.js"></script>
+<script>
+if (!window.customElements) {
+  window.customElements = {}
+}
+window.customElements.forcePolyfill = true
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/custom-elements/1.0.0/custom-elements.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/4.10.0/d3.min.js"></script>
 <script src="../../eg-renderer.js"></script>
 <style>
@@ -38,22 +45,20 @@ eg-renderer {
   layout="fmmm">
 </eg-renderer>
 <script>
-window.addEventListener('WebComponentsReady', () => {
-  fetch('miserables.json')
-    .then((response) => response.json())
-    .then((data) => {
-      const color = d3.scaleOrdinal(d3.schemeCategory20);
-      data.nodes.forEach((node) => {
-        node.fill = color(node.group)
-      })
-      data.links.forEach((link) => {
-        link.strokeWidth = Math.sqrt(link.value)
-      })
-      const renderer = document.querySelector('eg-renderer')
-      renderer
-        .load(data)
+fetch('miserables.json')
+  .then((response) => response.json())
+  .then((data) => {
+    const color = d3.scaleOrdinal(d3.schemeCategory20);
+    data.nodes.forEach((node) => {
+      node.fill = color(node.group)
     })
-})
+    data.links.forEach((link) => {
+      link.strokeWidth = Math.sqrt(link.value)
+    })
+    const renderer = document.querySelector('eg-renderer')
+    renderer
+      .load(data)
+  })
 </script>
 </div>
 <h2>Code</h2>
@@ -61,8 +66,8 @@ window.addEventListener('WebComponentsReady', () => {
 &lt;!DOCTYPE&ensp;html&gt;<br/>
 &lt;html&gt;<br/>
 &lt;head&gt;<br/>
-&lt;script&ensp;src="https://cdnjs.cloudflare.com/ajax/libs/webcomponentsjs/0.7.22/webcomponents.min.js"&gt;&lt;/script&gt;<br/>
-&lt;link&ensp;rel="import"&ensp;href="https://likr.github.io/eg-renderer-canvas/eg-renderer.html"&gt;<br/>
+&lt;script&ensp;src="https://cdnjs.cloudflare.com/ajax/libs/d3/4.10.0/d3.min.js"&gt;<br/>
+&lt;script&ensp;src="https://likr.github.io/eg-renderer-canvas/eg-renderer.js"&gt;<br/>
 &lt;/head&gt;<br/>
 &lt;body&gt;<br/>
 &lt;eg-renderer<br/>
