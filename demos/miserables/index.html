@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8"/>
+<title>Visualizing Miserables Data | EgRenderer Example</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/fetch/1.0.0/fetch.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/webcomponentsjs/0.7.24/webcomponents.min.js"></script>
+<link rel="import" href="../../eg-renderer.html">
+<style>
+eg-renderer {
+  display: block;
+  border: solid 1px;
+  width: 960px;
+  height: 600px;
+}
+</style>
+</head>
+<body>
+<div>
+<a href="../../">back</a>
+<h1>Visualizing Miserables Data</h1>
+<p>Drawing a network used in the <a href="https://bl.ocks.org/mbostock/4062045">D3.js example</a>.</p>
+</div>
+<div>
+<h2>Result</h2>
+<eg-renderer
+  width="960"
+  height="600"
+  transition-duration="500"
+  default-node-width="10"
+  default-node-height="10"
+  default-node-stroke-color="#fff"
+  default-node-stroke-width="1.5"
+  default-node-type="circle"
+  default-link-stroke-color="#999"
+  default-link-stroke-opacity="0.6"
+  layout="fmmm">
+</eg-renderer>
+<script>
+fetch('miserables.json')
+  .then((response) => response.json())
+  .then((data) => {
+    const color = d3.scaleOrdinal(d3.schemeCategory20);
+    data.nodes.forEach((node) => {
+      node.fill = color(node.group)
+    })
+    data.links.forEach((link) => {
+      link.strokeWidth = Math.sqrt(link.value)
+    })
+    const renderer = document.querySelector('eg-renderer')
+    renderer
+      .load(data)
+      .layout()
+      .center()
+  })
+</script>
+</div>
+</body>
+</html>

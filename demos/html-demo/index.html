@@ -17,12 +17,12 @@
   width="600"
   height="400"
   data='{
-    "vertices": [
-      {"u":0, "d": {"label": "source", "type": "circle"}},
-      {"u":1, "d": {"label": "target", "type": "rect"}}
+    "nodes": [
+      {"id": 0, "label": "source", "type": "circle"},
+      {"id": 1, "label": "target", "type": "rect"}
     ],
-    "edges": [
-      {"u": 0, "v": 1, "d": {}}
+    "links": [
+      {"source": 0, "target": 1}
     ]
   }'
   transition-duration="500"
@@ -45,12 +45,12 @@
 &ensp;&ensp;width="600"<br/>
 &ensp;&ensp;height="400"<br/>
 &ensp;&ensp;data='{<br/>
-&ensp;&ensp;&ensp;&ensp;"vertices":&ensp;[<br/>
-&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;{"u":0,&ensp;"d":&ensp;{"label":&ensp;"source",&ensp;"type":&ensp;"circle"}},<br/>
-&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;{"u":1,&ensp;"d":&ensp;{"label":&ensp;"target",&ensp;"type":&ensp;"rect"}}<br/>
+&ensp;&ensp;&ensp;&ensp;"nodes":&ensp;[<br/>
+&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;{"id":&ensp;0,&ensp;"label":&ensp;"source",&ensp;"type":&ensp;"circle"},<br/>
+&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;{"id":&ensp;1,&ensp;"label":&ensp;"target",&ensp;"type":&ensp;"rect"}<br/>
 &ensp;&ensp;&ensp;&ensp;],<br/>
-&ensp;&ensp;&ensp;&ensp;"edges":&ensp;[<br/>
-&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;{"u":&ensp;0,&ensp;"v":&ensp;1,&ensp;"d":&ensp;{}}<br/>
+&ensp;&ensp;&ensp;&ensp;"links":&ensp;[<br/>
+&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;{"source":&ensp;0,&ensp;"target":&ensp;1}<br/>
 &ensp;&ensp;&ensp;&ensp;]<br/>
 &ensp;&ensp;}'<br/>
 &ensp;&ensp;transition-duration="500"<br/>
