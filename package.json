@@ -1,7 +1,10 @@
 {
-  "name": "eg-renderer-canvas",
-  "version": "0.0.0",
+  "name": "eg-renderer",
+  "version": "0.0.1",
   "main": "src/index.js",
+  "files": [
+    "src"
+  ],
   "description": "",
   "scripts": {
     "start": "webpack-dev-server --content-base=public",
@@ -12,6 +15,9 @@
   "keywords": [],
   "author": "",
   "license": "MIT",
+  "peerDependencies": {
+    "d3": "^4.10.0"
+  },
   "devDependencies": {
     "babel-core": "^6.25.0",
     "babel-loader": "^7.1.1",
