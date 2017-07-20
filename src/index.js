@@ -1,4 +1,3 @@
-import 'babel-polyfill'
 import * as d3 from 'd3'
 import {layout} from './layout'
 import {
@@ -37,36 +36,6 @@ const setHeight = (e, height) => {
   p.canvas.style.height = `${height}px`
 }
 
-/**
- * definition of the <eg-renderer> custom element
- *
- * Attributes
- * * data
- * * layout-method
- * * width
- * * height
- * * transition-duration
- * * node-key-property
- * * node-label-property
- * * node-width-property
- * * node-height-roperty
- * * node-fill-color-property
- * * node-stroke-color-property
- * * node-opacity-property
- * * node-type-property
- * * link-source-property
- * * link-target-property
- * * default-node-label
- * * default-node-width
- * * default-node-height
- * * default-node-type
- * * default-node-fill-color
- * * default-node-stroke-color
- * * default-node-opacity
- * * no-auto-update
- * * no-auto-centering
- *
- */
 class EgRendererElement extends window.HTMLElement {
   static get observedAttributes () {
     return [
@@ -78,7 +47,8 @@ class EgRendererElement extends window.HTMLElement {
     ]
   }
 
-  createdCallback () {
+  constructor () {
+    super()
     const p = {
       canvas: document.createElement('canvas'),
       data: {
@@ -101,7 +71,7 @@ class EgRendererElement extends window.HTMLElement {
     p.zoom = zoom(p)
     privates.set(this, p)
 
-    this.createShadowRoot().appendChild(p.canvas)
+    this.appendChild(p.canvas)
 
     d3.select(p.canvas)
       .call(p.zoom)
@@ -143,30 +113,13 @@ class EgRendererElement extends window.HTMLElement {
       window.requestAnimationFrame(render)
     }
     render()
-
-    if (this.hasAttribute('width')) {
-      setWidth(this, +this.getAttribute('width'))
-    }
-    if (this.hasAttribute('height')) {
-      setHeight(this, +this.getAttribute('height'))
-    }
-    if (this.hasAttribute('data')) {
-      this.load(JSON.parse(this.getAttribute('data')))
-    }
-    if (this.hasAttribute('src')) {
-      window.fetch(this.getAttribute('src'))
-        .then((response) => response.json())
-        .then((data) => {
-          this.load(data)
-        })
-    }
   }
 
   attributeChangedCallback (attr, oldValue, newValue) {
     switch (attr) {
       case 'src':
         window.fetch(newValue)
-          .then((response) => response.json)
+          .then((response) => response.json())
           .then((data) => {
             this.load(data)
           })
@@ -276,4 +229,4 @@ class EgRendererElement extends window.HTMLElement {
   }
 }
 
-document.registerElement('eg-renderer', EgRendererElement)
+window.customElements.define('eg-renderer', EgRendererElement)

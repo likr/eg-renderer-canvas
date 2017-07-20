@@ -21,7 +21,6 @@
     "webpack-dev-server": "^2.5.1"
   },
   "dependencies": {
-    "babel-polyfill": "^6.16.0",
     "emogdf": "0.0.0"
   }
 }

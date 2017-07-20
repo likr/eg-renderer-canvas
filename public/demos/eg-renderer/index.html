@@ -4,9 +4,17 @@
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no"/>
 <title>EgRenderer Demo</title>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/fetch/1.0.0/fetch.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/webcomponentsjs/0.7.24/webcomponents.min.js"></script>
-<link rel="import" href="../../eg-renderer.html">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/babel-polyfill/6.23.0/polyfill.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/fetch/2.0.3/fetch.min.js"></script>
+<script>
+if (!window.customElements) {
+  window.customElements = {}
+}
+window.customElements.forcePolyfill = true
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/custom-elements/1.0.0/custom-elements.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/4.10.0/d3.min.js"></script>
+<script src="../../eg-renderer.js"></script>
 <style>
 body {
   margin: 0;
@@ -32,6 +40,7 @@ body {
 <div id="wrapper">
   <eg-renderer
     id="renderer"
+    src="data.json"
     transition-duration="500"
     layout="fmmm"
     node-id-property="u"
@@ -59,22 +68,13 @@ body {
 </div>
 <script>
 let egRenderer = document.getElementById('renderer')
-
-window.addEventListener('WebComponentsReady', () => {
-  const wrapper = document.getElementById('wrapper')
-  egRenderer.setAttribute('width', wrapper.clientWidth)
-  egRenderer.setAttribute('height', wrapper.clientHeight)
-  window.fetch('data.json')
-    .then((response) => response.json())
-    .then((data) => {
-      egRenderer.setAttribute('data', JSON.stringify(data))
-    })
-})
+let contentWrapper = document.getElementById('wrapper')
+egRenderer.setAttribute('width', contentWrapper.clientWidth)
+egRenderer.setAttribute('height', contentWrapper.clientHeight)
 
 window.addEventListener('resize', (event) => {
-  const wrapper = document.getElementById('wrapper')
-  egRenderer.setAttribute('width', wrapper.clientWidth)
-  egRenderer.setAttribute('height', wrapper.clientHeight)
+  egRenderer.setAttribute('width', contentWrapper.clientWidth)
+  egRenderer.setAttribute('height', contentWrapper.clientHeight)
 })
 
 document.getElementById('update').addEventListener('click', (event) => {
