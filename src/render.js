@@ -4,6 +4,26 @@ const withContext = (ctx, f) => {
   ctx.restore()
 }
 
+const setVertexStyles = (ctx, args) => {
+  const {
+    fillColor,
+    strokeColor,
+    strokeWidth
+  } = args
+  ctx.fillStyle = fillColor
+  ctx.strokeStyle = strokeColor
+  ctx.lineWidth = strokeWidth
+}
+
+const setEdgeStyles = (ctx, args) => {
+  const {
+    strokeColor,
+    strokeWidth
+  } = args
+  ctx.strokeStyle = strokeColor
+  ctx.lineWidth = strokeWidth
+}
+
 const renderRectVertex = (ctx, args) => {
   const {
     u,
@@ -11,15 +31,12 @@ const renderRectVertex = (ctx, args) => {
     y,
     width,
     height,
-    label,
-    fillColor,
-    strokeColor
+    label
   } = args
   withContext(ctx, () => {
     ctx.translate(x, y)
     withContext(ctx, () => {
-      ctx.fillStyle = fillColor
-      ctx.strokeStyle = strokeColor
+      setVertexStyles(ctx, args)
       ctx.beginPath()
       ctx.moveTo(-width / 2, -height / 2)
       ctx.lineTo(width / 2, -height / 2)
@@ -46,15 +63,13 @@ const renderCircleVertex = (ctx, args) => {
     y,
     width,
     height,
-    label,
-    fillColor,
-    strokeColor
+    label
   } = args
   withContext(ctx, () => {
     ctx.translate(x, y)
     withContext(ctx, () => {
-      ctx.fillStyle = fillColor
-      ctx.strokeStyle = strokeColor
+      setVertexStyles(ctx, args)
+      ctx.beginPath()
       ctx.beginPath()
       ctx.ellipse(0, 0, width / 2, height / 2, 0, 0, 2 * Math.PI)
       ctx.closePath()
@@ -82,13 +97,17 @@ export const renderVertex = (ctx, args) => {
   }
 }
 
-const renderLineEdge = (ctx, points) => {
-  ctx.beginPath()
-  ctx.moveTo(points[0][0], points[0][1])
-  for (let i = 1; i < points.length; ++i) {
-    ctx.lineTo(points[i][0], points[i][1])
-  }
-  ctx.stroke()
+const renderLineEdge = (ctx, args) => {
+  const {points} = args
+  withContext(ctx, () => {
+    setEdgeStyles(ctx, args)
+    ctx.beginPath()
+    ctx.moveTo(points[0][0], points[0][1])
+    for (let i = 1; i < points.length; ++i) {
+      ctx.lineTo(points[i][0], points[i][1])
+    }
+    ctx.stroke()
+  })
 }
 
 const renderQuadraticCurve = (ctx, x1, y1, x2, y2) => {
@@ -98,39 +117,47 @@ const renderQuadraticCurve = (ctx, x1, y1, x2, y2) => {
   ctx.quadraticCurveTo(x1 + 3 * dx / 4, y2, x2, y2)
 }
 
-const renderCurveEdge = (ctx, points) => {
-  ctx.beginPath()
-  ctx.moveTo(points[0][0], points[0][1])
-  ctx.lineTo(points[1][0], points[1][1])
-  renderQuadraticCurve(ctx, points[1][0], points[1][1], points[2][0], points[2][1])
-  ctx.lineTo(points[3][0], points[3][1])
-  renderQuadraticCurve(ctx, points[3][0], points[3][1], points[4][0], points[4][1])
-  ctx.lineTo(points[5][0], points[5][1])
-  ctx.stroke()
+const renderCurveEdge = (ctx, args) => {
+  const {points} = args
+  withContext(ctx, () => {
+    setEdgeStyles(ctx, args)
+    ctx.beginPath()
+    ctx.moveTo(points[0][0], points[0][1])
+    ctx.lineTo(points[1][0], points[1][1])
+    renderQuadraticCurve(ctx, points[1][0], points[1][1], points[2][0], points[2][1])
+    ctx.lineTo(points[3][0], points[3][1])
+    renderQuadraticCurve(ctx, points[3][0], points[3][1], points[4][0], points[4][1])
+    ctx.lineTo(points[5][0], points[5][1])
+    ctx.stroke()
+  })
 }
 
-const renderArcEdge = (ctx, points) => {
+const renderArcEdge = (ctx, args) => {
+  const {points} = args
   const dx = points[1][0] - points[0][0]
   const dy = points[1][1] - points[0][1]
   const r = Math.sqrt(dx * dx + dy + dy) / 2
   const cx = (points[0][0] + points[1][0]) / 2
   const cy = (points[0][1] + points[1][1]) / 2
   const theta = Math.atan(dy / dx)
-  ctx.beginPath()
-  ctx.arc(cx, cy, r, theta, theta + Math.PI)
-  ctx.stroke()
+  withContext(ctx, () => {
+    setEdgeStyles(ctx, args)
+    ctx.beginPath()
+    ctx.arc(cx, cy, r, theta, theta + Math.PI)
+    ctx.stroke()
+  })
 }
 
-export const renderEdge = (ctx, {points, type}) => {
-  switch (type) {
+export const renderEdge = (ctx, args) => {
+  switch (args.type) {
     case 'arc':
-      renderArcEdge(ctx, points)
+      renderArcEdge(ctx, args)
       break
     case 'hierarchy':
-      renderCurveEdge(ctx, points)
+      renderCurveEdge(ctx, args)
       break
     case 'line':
-      renderLineEdge(ctx, points)
+      renderLineEdge(ctx, args)
       break
   }
 }

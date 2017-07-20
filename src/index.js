@@ -23,35 +23,6 @@ const get = (d, key, defaultValue) => {
   return d.hasOwnProperty(key) ? d[key] : defaultValue
 }
 
-const loadData = (e, jsonString) => {
-  const data = JSON.parse(jsonString)
-  const nodeLabelProperty = e.getAttribute('node-label-property') || 'label'
-  const nodeWidthProperty = e.getAttribute('node-width-property') || 'width'
-  const nodeHeightProperty = e.getAttribute('node-height-property') || 'height'
-  const nodeFillColorProperty = e.getAttribute('node-fill-color-property') || 'fill'
-  const nodeStrokeColorProperty = e.getAttribute('node-stroke-color-property') || 'stroke'
-  const nodeTypeProperty = e.getAttribute('node-type-property') || 'type'
-  const defaultNodeLabel = e.getAttribute('default-node-label') || ''
-  const defaultNodeWidth = e.getAttribute('default-node-width') || 10
-  const defaultNodeHeight = e.getAttribute('default-node-height') || 10
-  const defaultNodeFillColor = e.getAttribute('default-node-fill-color') || '#fff'
-  const defaultNodeStrokeColor = e.getAttribute('default-node-stroke-color') || '#000'
-  const defaultNodeType = e.getAttribute('default-node-type') || 'rect'
-  for (const node of data.vertices) {
-    const {d} = node
-    Object.assign(node, {
-      label: get(d, nodeLabelProperty, defaultNodeLabel),
-      width: +get(d, nodeWidthProperty, defaultNodeWidth),
-      height: +get(d, nodeHeightProperty, defaultNodeHeight),
-      type: get(d, nodeTypeProperty, defaultNodeType),
-      fillColor: get(d, nodeFillColorProperty, defaultNodeFillColor),
-      strokeColor: get(d, nodeStrokeColorProperty, defaultNodeStrokeColor)
-
-    })
-  }
-  return data
-}
-
 const privates = new WeakMap()
 
 const setWidth = (e, width) => {
@@ -75,6 +46,7 @@ const setHeight = (e, height) => {
  * * width
  * * height
  * * transition-duration
+ * * node-key-property
  * * node-label-property
  * * node-width-property
  * * node-height-roperty
@@ -82,6 +54,8 @@ const setHeight = (e, height) => {
  * * node-stroke-color-property
  * * node-opacity-property
  * * node-type-property
+ * * link-source-property
+ * * link-target-property
  * * default-node-label
  * * default-node-width
  * * default-node-height
@@ -154,12 +128,10 @@ class EgRendererElement extends window.HTMLElement {
       ctx.translate(p.transform.x, p.transform.y)
       ctx.scale(p.transform.k, p.transform.k)
       const data = p.data
-      for (const vertex of data.vertices) {
-        const u = vertex.u
-        for (const v in layout.edges[u]) {
-          if (layout.edges[u][v]) {
-            renderEdge(ctx, layout.edges[u][v])
-          }
+      for (const edge of data.edges) {
+        const {u, v} = edge
+        if (layout.edges[u][v]) {
+          renderEdge(ctx, Object.assign({}, layout.edges[u][v], edge))
         }
       }
       for (const node of data.vertices) {
@@ -178,17 +150,16 @@ class EgRendererElement extends window.HTMLElement {
       setHeight(this, +this.getAttribute('height'))
     }
     if (this.hasAttribute('data')) {
-      p.data = loadData(this, this.getAttribute('data'))
+      this.load(JSON.parse(this.getAttribute('data')))
       this.layout()
       this.center()
     }
   }
 
   attributeChangedCallback (attr, oldValue, newValue) {
-    const p = privates.get(this)
     switch (attr) {
       case 'data':
-        p.data = loadData(this, newValue)
+        this.load(JSON.parse(newValue))
         if (this.hasAttribute('auto-update')) {
           this.layout()
         }
@@ -229,6 +200,65 @@ class EgRendererElement extends window.HTMLElement {
     const canvasHeight = canvas.height / devicePixelRatio()
     const {x, y, k} = centerTransform(layoutWidth, layoutHeight, left, top, canvasWidth, canvasHeight, margin)
     zoom.transform(d3.select(canvas), d3.zoomIdentity.translate(x, y).scale(k).translate(-left, -top))
+    return this
+  }
+
+  load (data) {
+    const graphNodesProperty = this.getAttribute('graph-nodes-property') || 'nodes'
+    const graphLinksProperty = this.getAttribute('graph-links-property') || 'links'
+    const nodeIdProperty = this.getAttribute('node-id-property') || 'id'
+    const nodeLabelProperty = this.getAttribute('node-label-property') || 'label'
+    const nodeWidthProperty = this.getAttribute('node-width-property') || 'width'
+    const nodeHeightProperty = this.getAttribute('node-height-property') || 'height'
+    const nodeFillColorProperty = this.getAttribute('node-fill-color-property') || 'fill'
+    const nodeStrokeColorProperty = this.getAttribute('node-stroke-color-property') || 'stroke'
+    const nodeStrokeOpacityProperty = this.getAttribute('node-stroke-opacity-property') || 'strokeOpacity'
+    const nodeStrokeWidthProperty = this.getAttribute('node-stroke-width-property') || 'strokeWidth'
+    const nodeTypeProperty = this.getAttribute('node-type-property') || 'type'
+    const linkSourceProperty = this.getAttribute('link-source-property') || 'source'
+    const linkTargetProperty = this.getAttribute('link-target-property') || 'target'
+    const linkStrokeColorProperty = this.getAttribute('link-stroke-color-property') || 'stroke'
+    const linkStrokeOpacityProperty = this.getAttribute('link-stroke-opacity-property') || 'strokeOpacity'
+    const linkStrokeWidthProperty = this.getAttribute('link-stroke-width-property') || 'strokeWidth'
+    const defaultNodeLabel = this.getAttribute('default-node-label') || ''
+    const defaultNodeWidth = this.getAttribute('default-node-width') || 10
+    const defaultNodeHeight = this.getAttribute('default-node-height') || 10
+    const defaultNodeFillColor = this.getAttribute('default-node-fill-color') || '#fff'
+    const defaultNodeStrokeColor = this.getAttribute('default-node-stroke-color') || '#000'
+    const defaultNodeStrokeOpacity = this.getAttribute('default-node-stroke-opacity') || '1'
+    const defaultNodeStrokeWidth = this.getAttribute('default-node-stroke-width') || '1'
+    const defaultNodeType = this.getAttribute('default-node-type') || 'rect'
+    const defaultLinkStrokeColor = this.getAttribute('default-link-stroke-color') || '#000'
+    const defaultLinkStrokeOpacity = this.getAttribute('default-link-stroke-opacity') || '1'
+    const defaultLinkStrokeWidth = this.getAttribute('default-link-stroke-width') || '1'
+    privates.get(this).data = {
+      vertices: data[graphNodesProperty].map((node) => {
+        return {
+          u: node[nodeIdProperty],
+          label: get(node, nodeLabelProperty, defaultNodeLabel),
+          width: +get(node, nodeWidthProperty, defaultNodeWidth),
+          height: +get(node, nodeHeightProperty, defaultNodeHeight),
+          type: get(node, nodeTypeProperty, defaultNodeType),
+          fillColor: get(node, nodeFillColorProperty, defaultNodeFillColor),
+          strokeColor: get(node, nodeStrokeColorProperty, defaultNodeStrokeColor),
+          strokeOpacity: get(node, nodeStrokeOpacityProperty, defaultNodeStrokeOpacity),
+          strokeWidth: get(node, nodeStrokeWidthProperty, defaultNodeStrokeWidth),
+          d: node
+        }
+      }),
+      edges: data[graphLinksProperty].map((link) => {
+        const strokeColor = d3.color(get(link, linkStrokeColorProperty, defaultLinkStrokeColor))
+        strokeColor.opacity = +get(link, linkStrokeOpacityProperty, defaultLinkStrokeOpacity)
+        return {
+          u: link[linkSourceProperty],
+          v: link[linkTargetProperty],
+          strokeColor,
+          strokeWidth: +get(link, linkStrokeWidthProperty, defaultLinkStrokeWidth),
+          d: link
+        }
+      })
+    }
+    return this
   }
 }
 

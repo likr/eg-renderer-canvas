@@ -1,9 +1,9 @@
 {
-  "vertices": [
-    {"u":0, "d": {"label": "source", "type": "circle"}},
-    {"u":1, "d": {"label": "target", "type": "rect"}}
+  "nodes": [
+    {"id": 0, "label": "source", "type": "circle"},
+    {"id": 1, "label": "target", "type": "rect"}
   ],
-  "edges": [
-    {"u": 0, "v": 1, "d": {}}
+  "links": [
+    {"source": 0, "target": 1}
   ]
 }
