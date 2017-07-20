@@ -5,6 +5,7 @@
 <title>Visualizing Miserables Data | EgRenderer Example</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/fetch/1.0.0/fetch.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/webcomponentsjs/0.7.24/webcomponents.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/4.3.0/d3.min.js"></script>
 <link rel="import" href="../../eg-renderer.html">
 <style>
 eg-renderer {
@@ -37,23 +38,67 @@ eg-renderer {
   layout="fmmm">
 </eg-renderer>
 <script>
-fetch('miserables.json')
-  .then((response) => response.json())
-  .then((data) => {
-    const color = d3.scaleOrdinal(d3.schemeCategory20);
-    data.nodes.forEach((node) => {
-      node.fill = color(node.group)
+window.addEventListener('WebComponentsReady', () => {
+  fetch('miserables.json')
+    .then((response) => response.json())
+    .then((data) => {
+      const color = d3.scaleOrdinal(d3.schemeCategory20);
+      data.nodes.forEach((node) => {
+        node.fill = color(node.group)
+      })
+      data.links.forEach((link) => {
+        link.strokeWidth = Math.sqrt(link.value)
+      })
+      const renderer = document.querySelector('eg-renderer')
+      renderer
+        .load(data)
     })
-    data.links.forEach((link) => {
-      link.strokeWidth = Math.sqrt(link.value)
-    })
-    const renderer = document.querySelector('eg-renderer')
-    renderer
-      .load(data)
-      .layout()
-      .center()
-  })
+})
 </script>
+</div>
+<h2>Code</h2>
+<code>
+&lt;!DOCTYPE&ensp;html&gt;<br/>
+&lt;html&gt;<br/>
+&lt;head&gt;<br/>
+&lt;script&ensp;src="https://cdnjs.cloudflare.com/ajax/libs/webcomponentsjs/0.7.22/webcomponents.min.js"&gt;&lt;/script&gt;<br/>
+&lt;link&ensp;rel="import"&ensp;href="https://likr.github.io/eg-renderer-canvas/eg-renderer.html"&gt;<br/>
+&lt;/head&gt;<br/>
+&lt;body&gt;<br/>
+&lt;eg-renderer<br/>
+&ensp;&ensp;width="600"<br/>
+&ensp;&ensp;height="400"<br/>
+&ensp;&ensp;transition-duration="500"<br/>
+&ensp;&ensp;default-node-width="10"<br/>
+&ensp;&ensp;default-node-height="10"<br/>
+&ensp;&ensp;default-node-stroke-color="#fff"<br/>
+&ensp;&ensp;default-node-stroke-width="1.5"<br/>
+&ensp;&ensp;default-node-type="circle"<br/>
+&ensp;&ensp;default-link-stroke-color="#999"<br/>
+&ensp;&ensp;default-link-stroke-opacity="0.6"<br/>
+&ensp;&ensp;layout="fmmm"&gt;<br/>
+&lt;/eg-renderer&gt;<br/>
+&lt;script&gt;<br/>
+fetch('miserables.json')<br/>
+&ensp;&ensp;.then((response)&ensp;=>&ensp;response.json())<br/>
+&ensp;&ensp;.then((data)&ensp;=>&ensp;{<br/>
+&ensp;&ensp;&ensp;&ensp;const&ensp;color&ensp;=&ensp;d3.scaleOrdinal(d3.schemeCategory20);<br/>
+&ensp;&ensp;&ensp;&ensp;data.nodes.forEach((node)&ensp;=>&ensp;{<br/>
+&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;node.fill&ensp;=&ensp;color(node.group)<br/>
+&ensp;&ensp;&ensp;&ensp;})<br/>
+&ensp;&ensp;&ensp;&ensp;data.links.forEach((link)&ensp;=>&ensp;{<br/>
+&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;link.strokeWidth&ensp;=&ensp;Math.sqrt(link.value)<br/>
+&ensp;&ensp;&ensp;&ensp;})<br/>
+&ensp;&ensp;&ensp;&ensp;const&ensp;renderer&ensp;=&ensp;document.querySelector('eg-renderer')<br/>
+&ensp;&ensp;&ensp;&ensp;renderer<br/>
+&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;.load(data)<br/>
+&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;.layout()<br/>
+&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;.center()<br/>
+&ensp;&ensp;})<br/>
+&lt;/script&gt;<br/>
+&lt;/body&gt;<br/>
+&lt;/html&gt;<br/>
+</code>
 </div>
 </body>
 </html>

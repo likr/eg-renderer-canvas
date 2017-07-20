@@ -14,21 +14,14 @@
 </div>
 <div>
 <h2>Result</h2>
-<eg-renderer
-  width="600"
-  height="400"
-  transition-duration="500"
-  default-node-width="120"
-  default-node-height="20"
-  layout="fmmm">
-</eg-renderer>
+<eg-renderer width="600" height="400"></eg-renderer>
 <script>
 fetch('data.json')
-  .then((response) => response.text())
+  .then((response) => response.json())
   .then((data) => {
     const renderer = document.querySelector('eg-renderer')
-    renderer.setAttribute('data', data)
     renderer
+      .load(data)
       .layout()
       .center()
   })
@@ -44,21 +37,14 @@ fetch('data.json')
 &lt;link&ensp;rel="import"&ensp;href="https://likr.github.io/eg-renderer-canvas/eg-renderer.html"&gt;<br/>
 &lt;/head&gt;<br/>
 &lt;body&gt;<br/>
-&lt;eg-renderer<br/>
-&ensp;&ensp;width="600"<br/>
-&ensp;&ensp;height="400"<br/>
-&ensp;&ensp;transition-duration="500"<br/>
-&ensp;&ensp;default-node-width="120"<br/>
-&ensp;&ensp;default-node-height="20"<br/>
-&ensp;&ensp;layout="fmmm"&gt;<br/>
-&lt;/eg-renderer&gt;<br/>
+&lt;eg-renderer&ensp;width="600"&ensp;height="400"&gt;&lt;/eg-renderer&gt;<br/>
 &lt;script&gt;<br/>
 fetch('data.json')<br/>
-&ensp;&ensp;.then((response)&ensp;=&gt;&ensp;response.text())<br/>
+&ensp;&ensp;.then((response)&ensp;=&gt;&ensp;response.json())<br/>
 &ensp;&ensp;.then((data)&ensp;=&gt;&ensp;{<br/>
 &ensp;&ensp;&ensp;&ensp;const&ensp;renderer&ensp;=&ensp;document.querySelector('eg-renderer')<br/>
-&ensp;&ensp;&ensp;&ensp;renderer.setAttribute('data',&ensp;data)<br/>
 &ensp;&ensp;&ensp;&ensp;renderer<br/>
+&ensp;&ensp;&ensp;&ensp;&ensp;&ensp;.load(data)<br/>
 &ensp;&ensp;&ensp;&ensp;&ensp;&ensp;.layout()<br/>
 &ensp;&ensp;&ensp;&ensp;&ensp;&ensp;.center()<br/>
 &ensp;&ensp;})<br/>

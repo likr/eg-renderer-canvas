@@ -63,13 +63,14 @@ const setHeight = (e, height) => {
  * * default-node-fill-color
  * * default-node-stroke-color
  * * default-node-opacity
- * * auto-update
- * * auto-centering
+ * * no-auto-update
+ * * no-auto-centering
  *
  */
 class EgRendererElement extends window.HTMLElement {
   static get observedAttributes () {
     return [
+      'src',
       'data',
       'layout',
       'width',
@@ -151,21 +152,30 @@ class EgRendererElement extends window.HTMLElement {
     }
     if (this.hasAttribute('data')) {
       this.load(JSON.parse(this.getAttribute('data')))
-      this.layout()
-      this.center()
+    }
+    if (this.hasAttribute('src')) {
+      window.fetch(this.getAttribute('src'))
+        .then((response) => response.json())
+        .then((data) => {
+          this.load(data)
+        })
     }
   }
 
   attributeChangedCallback (attr, oldValue, newValue) {
     switch (attr) {
+      case 'src':
+        window.fetch(newValue)
+          .then((response) => response.json)
+          .then((data) => {
+            this.load(data)
+          })
+        break
       case 'data':
         this.load(JSON.parse(newValue))
-        if (this.hasAttribute('auto-update')) {
-          this.layout()
-        }
         break
       case 'layout':
-        if (this.hasAttribute('auto-update')) {
+        if (!this.hasAttribute('no-auto-update')) {
           this.layout()
         }
         break
@@ -181,13 +191,13 @@ class EgRendererElement extends window.HTMLElement {
   layout () {
     const p = privates.get(this)
     const {data} = p
-    const mode = this.getAttribute('layout')
+    const mode = this.getAttribute('layout') || 'fmmm'
 
     let layoutResult = layout(data, mode)
     p.previousLayoutResult = diff(p.layoutResult, layoutResult)
     p.layoutResult = layoutResult
     p.layoutTime = new Date()
-    if (this.hasAttribute('auto-centering')) {
+    if (!this.hasAttribute('no-auto-centering')) {
       this.center()
     }
     return this
@@ -248,7 +258,8 @@ class EgRendererElement extends window.HTMLElement {
       }),
       edges: data[graphLinksProperty].map((link) => {
         const strokeColor = d3.color(get(link, linkStrokeColorProperty, defaultLinkStrokeColor))
-        strokeColor.opacity = +get(link, linkStrokeOpacityProperty, defaultLinkStrokeOpacity)
+        const strokeOpacity = +get(link, linkStrokeOpacityProperty, defaultLinkStrokeOpacity)
+        strokeColor.opacity = strokeOpacity
         return {
           u: link[linkSourceProperty],
           v: link[linkTargetProperty],
@@ -257,6 +268,9 @@ class EgRendererElement extends window.HTMLElement {
           d: link
         }
       })
+    }
+    if (!this.hasAttribute('no-auto-update')) {
+      this.layout()
     }
     return this
   }

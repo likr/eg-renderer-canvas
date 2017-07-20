@@ -38,9 +38,7 @@ body {
     link-source-property="u"
     link-target-property="v"
     default-node-width="140"
-    default-node-height="20"
-    auto-update
-    auto-centering>
+    default-node-height="20">
   </eg-renderer>
 </div>
 <div class="control">
@@ -93,17 +91,17 @@ document.getElementById('layout').addEventListener('input', (event) => {
 
 document.getElementById('auto-update').addEventListener('change', (event) => {
   if (event.target.checked) {
-    egRenderer.setAttribute('auto-update', '')
+    egRenderer.removeAttribute('no-auto-update')
   } else {
-    egRenderer.removeAttribute('auto-update')
+    egRenderer.setAttribute('no-auto-update', '')
   }
 })
 
 document.getElementById('auto-centering').addEventListener('change', (event) => {
   if (event.target.checked) {
-    egRenderer.setAttribute('auto-centering', '')
+    egRenderer.removeAttribute('no-auto-centering')
   } else {
-    egRenderer.removeAttribute('auto-centering')
+    egRenderer.setAttribute('no-auto-centering', '')
   }
 })
 </script>
