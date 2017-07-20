@@ -4,9 +4,10 @@
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no"/>
 <title>EgRenderer Demo</title>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/fetch/1.0.0/fetch.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/webcomponentsjs/0.7.24/webcomponents.min.js"></script>
-<link rel="import" href="../../eg-renderer.html">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/fetch/2.0.3/fetch.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/webcomponentsjs/1.0.3/webcomponents-sd-ce.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/4.10.0/d3.min.js"></script>
+<script src="../../eg-renderer.js"></script>
 <style>
 body {
   margin: 0;
@@ -32,6 +33,7 @@ body {
 <div id="wrapper">
   <eg-renderer
     id="renderer"
+    src="data.json"
     transition-duration="500"
     layout="fmmm"
     node-id-property="u"
@@ -64,11 +66,6 @@ window.addEventListener('WebComponentsReady', () => {
   const wrapper = document.getElementById('wrapper')
   egRenderer.setAttribute('width', wrapper.clientWidth)
   egRenderer.setAttribute('height', wrapper.clientHeight)
-  window.fetch('data.json')
-    .then((response) => response.json())
-    .then((data) => {
-      egRenderer.setAttribute('data', JSON.stringify(data))
-    })
 })
 
 window.addEventListener('resize', (event) => {
