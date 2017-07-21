@@ -186,10 +186,10 @@ class EgRendererElement extends window.HTMLElement {
     const linkStrokeColorProperty = this.getAttribute('link-stroke-color-property') || 'stroke'
     const linkStrokeOpacityProperty = this.getAttribute('link-stroke-opacity-property') || 'strokeOpacity'
     const linkStrokeWidthProperty = this.getAttribute('link-stroke-width-property') || 'strokeWidth'
-    const linkSourceMarkerShapeProperty = this.getAttribute('link-source-marker-shape-peroperty') || 'sourceMarkerShape'
-    const linkSourceMarkerSizeProperty = this.getAttribute('link-source-marker-size-peroperty') || 'sourceMarkerSize'
-    const linkTargetMarkerShapeProperty = this.getAttribute('link-target-marker-shape-peroperty') || 'targetMarkerShape'
-    const linkTargetMarkerSizeProperty = this.getAttribute('link-target-marker-size-peroperty') || 'targetMarkerSize'
+    const linkSourceMarkerShapeProperty = this.getAttribute('link-source-marker-shape-property') || 'sourceMarkerShape'
+    const linkSourceMarkerSizeProperty = this.getAttribute('link-source-marker-size-property') || 'sourceMarkerSize'
+    const linkTargetMarkerShapeProperty = this.getAttribute('link-target-marker-shape-property') || 'targetMarkerShape'
+    const linkTargetMarkerSizeProperty = this.getAttribute('link-target-marker-size-property') || 'targetMarkerSize'
     const linkLabelProperty = this.getAttribute('link-label-property') || 'label'
     const linkLabelFillColorProperty = this.getAttribute('link-label-fill-color-property') || 'labelFill'
     const linkLabelStrokeColorProperty = this.getAttribute('link-label-stroke-color-property') || 'labelStroke'
@@ -241,7 +241,7 @@ class EgRendererElement extends window.HTMLElement {
         return {
           u: link[linkSourceProperty],
           v: link[linkTargetProperty],
-          strokeColor,
+          strokeColor: strokeColor.toString(),
           strokeWidth: +get(link, linkStrokeWidthProperty, defaultLinkStrokeWidth),
           sourceMarkerShape: get(link, linkSourceMarkerShapeProperty, defaultLinkSourceMarkerShape),
           sourceMarkerSize: +get(link, linkSourceMarkerSizeProperty, defaultLinkSourceMarkerSize),

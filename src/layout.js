@@ -24,14 +24,21 @@ const layoutMethods = {
   tutte: TutteLayout
 }
 
-const markerPositionBase = (x0, y0, x1, y1, width, height, r) => {
+const baseCircleMarkerPosition = (x0, y0, x1, y1, width, height, size) => {
+  const r = size / 2
   const a = Math.abs((y0 - y1) / (x0 - x1))
   const theta = Math.atan(a)
   if (theta < Math.atan2(height / 2, width / 2 + r)) {
-    return [width / 2 + r, Math.tan(theta) * (width / 2 + r)]
+    return [
+      width / 2 + r,
+      Math.tan(theta) * (width / 2 + r)
+    ]
   }
   if (theta > Math.atan2(height / 2 + r, width / 2)) {
-    return [Math.tan(Math.PI / 2 - theta) * (height / 2 + r), height / 2 + r, height / 2 + r]
+    return [
+      Math.tan(Math.PI / 2 - theta) * (height / 2 + r),
+      height / 2 + r
+    ]
   }
   const b = -1
   const c = y0 - a * x0
@@ -45,8 +52,23 @@ const markerPositionBase = (x0, y0, x1, y1, width, height, r) => {
   ]
 }
 
-const markerPosition = (x0, y0, x1, y1, width, height, r) => {
-  const [x, y] = markerPositionBase(x0, y0, x1, y1, width, height, r)
+const baseTriangleMarkerPosition = (x0, y0, x1, y1, width, height, size) => {
+  const r = size * 2 / 3
+  const a = Math.abs((y0 - y1) / (x0 - x1))
+  const theta = Math.atan(a)
+  if (theta < Math.atan2(height / 2, width / 2)) {
+    return [
+      width / 2 + Math.cos(theta) * r,
+      Math.tan(theta) * width / 2 + Math.sin(theta) * r
+    ]
+  }
+  return [
+    Math.tan(Math.PI / 2 - theta) * height / 2 + Math.sin(Math.PI / 2 - theta) * r,
+    height / 2 + Math.cos(Math.PI / 2 - theta) * r
+  ]
+}
+
+const markerPosition = (x, y, x0, y0, x1, y1) => {
   if (x0 < x1) {
     if (y0 < y1) {
       return [x0 + x, y0 + y]
@@ -62,14 +84,24 @@ const markerPosition = (x0, y0, x1, y1, width, height, r) => {
   }
 }
 
+const baseFunction = (markerShape) => {
+  switch (markerShape) {
+    case 'circle':
+      return baseCircleMarkerPosition
+    case 'triangle':
+      return baseTriangleMarkerPosition
+  }
+  return () => [0, 0]
+}
+
 export const adjustEdge = (edge, source, target) => {
   const {points, sourceMarkerShape, sourceMarkerSize, targetMarkerShape, targetMarkerSize} = edge
-  if (sourceMarkerShape !== 'none') {
-    points[0] = markerPosition(source.x, source.y, target.x, target.y, source.width, source.height, sourceMarkerSize)
-  }
-  if (targetMarkerShape !== 'none') {
-    points[points.length - 1] = markerPosition(target.x, target.y, source.x, source.y, target.width, target.height, targetMarkerSize)
-  }
+  const sourceBaseFunction = baseFunction(sourceMarkerShape)
+  const [x0, y0] = sourceBaseFunction(source.x, source.y, target.x, target.y, source.width, source.height, sourceMarkerSize)
+  points[0] = markerPosition(x0, y0, source.x, source.y, target.x, target.y)
+  const targetBaseFunction = baseFunction(targetMarkerShape)
+  const [x1, y1] = targetBaseFunction(target.x, target.y, source.x, source.y, target.width, target.height, targetMarkerSize)
+  points[points.length - 1] = markerPosition(x1, y1, target.x, target.y, source.x, source.y)
 }
 
 export const layout = (graphData, mode) => {

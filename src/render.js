@@ -149,26 +149,62 @@ const renderLineEdge = (ctx, args) => {
       ctx.stroke()
     })
 
-    if (sourceMarkerShape !== 'none') {
-      withContext(ctx, () => {
-        const [x, y] = points[0]
-        ctx.fillStyle = args.strokeColor
-        ctx.translate(x, y)
-        ctx.beginPath()
-        ctx.ellipse(0, 0, sourceMarkerSize, sourceMarkerSize, 0, 0, 2 * Math.PI)
-        ctx.fill()
-      })
+    switch (sourceMarkerShape) {
+      case 'circle':
+        withContext(ctx, () => {
+          const [x, y] = points[0]
+          const r = sourceMarkerSize / 2
+          ctx.fillStyle = args.strokeColor
+          ctx.translate(x, y)
+          ctx.beginPath()
+          ctx.ellipse(0, 0, r, r, 0, 0, 2 * Math.PI)
+          ctx.fill()
+        })
+        break
+      case 'triangle':
+        withContext(ctx, () => {
+          const [x, y] = points[0]
+          const [x0, y0] = points[1]
+          const theta = Math.atan2(y - y0, x - x0)
+          const r = targetMarkerSize * 2 / 3
+          ctx.fillStyle = args.strokeColor
+          ctx.beginPath()
+          ctx.moveTo(x + Math.cos(theta) * r, y + Math.sin(theta) * r)
+          ctx.lineTo(x + Math.cos(theta + Math.PI * 2 / 3) * r, y + Math.sin(theta + Math.PI * 2 / 3) * r)
+          ctx.lineTo(x + Math.cos(theta + Math.PI * 4 / 3) * r, y + Math.sin(theta + Math.PI * 4 / 3) * r)
+          ctx.closePath()
+          ctx.fill()
+        })
+        break
     }
 
-    if (targetMarkerShape !== 'none') {
-      withContext(ctx, () => {
-        const [x, y] = points[points.length - 1]
-        ctx.fillStyle = args.strokeColor
-        ctx.translate(x, y)
-        ctx.beginPath()
-        ctx.ellipse(0, 0, targetMarkerSize, targetMarkerSize, 0, 0, 2 * Math.PI)
-        ctx.fill()
-      })
+    switch (targetMarkerShape) {
+      case 'circle':
+        withContext(ctx, () => {
+          const [x, y] = points[points.length - 1]
+          const r = targetMarkerSize / 2
+          ctx.fillStyle = args.strokeColor
+          ctx.translate(x, y)
+          ctx.beginPath()
+          ctx.ellipse(0, 0, r, r, 0, 0, 2 * Math.PI)
+          ctx.fill()
+        })
+        break
+      case 'triangle':
+        withContext(ctx, () => {
+          const [x, y] = points[points.length - 1]
+          const [x0, y0] = points[points.length - 2]
+          const theta = Math.atan2(y - y0, x - x0)
+          const r = targetMarkerSize * 2 / 3
+          ctx.fillStyle = args.strokeColor
+          ctx.beginPath()
+          ctx.moveTo(x + Math.cos(theta) * r, y + Math.sin(theta) * r)
+          ctx.lineTo(x + Math.cos(theta + Math.PI * 2 / 3) * r, y + Math.sin(theta + Math.PI * 2 / 3) * r)
+          ctx.lineTo(x + Math.cos(theta + Math.PI * 4 / 3) * r, y + Math.sin(theta + Math.PI * 4 / 3) * r)
+          ctx.closePath()
+          ctx.fill()
+        })
+        break
     }
 
     if (label) {
