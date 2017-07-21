@@ -71,42 +71,54 @@
       "source": "洋食傾向",
       "target": "総熱量",
       "color": "rgb(231, 76, 60)",
-      "strokeWidth": 8.317
+      "strokeWidth": 8.317,
+      "sourceMarkerShape": "circle",
+      "targetMarkerShape": "triangle"
     },
     {
       "label": "0.617",
       "source": "洋食傾向",
       "target": "肉類",
       "color": "rgb(233, 142, 133)",
-      "strokeWidth": 6.553
+      "strokeWidth": 6.553,
+      "sourceMarkerShape": "circle",
+      "targetMarkerShape": "triangle"
     },
     {
       "label": "0.309",
       "source": "洋食傾向",
       "target": "乳製品",
       "color": "rgb(234, 188, 184)",
-      "strokeWidth": 3.781
+      "strokeWidth": 3.781,
+      "sourceMarkerShape": "circle",
+      "targetMarkerShape": "triangle"
     },
     {
       "label": "0.455",
       "source": "洋食傾向",
       "target": "酒類",
       "color": "rgb(234, 165, 159)",
-      "strokeWidth": 5.095
+      "strokeWidth": 5.095,
+      "sourceMarkerShape": "circle",
+      "targetMarkerShape": "triangle"
     },
     {
       "label": "0.694",
       "source": "ガン傾向",
       "target": "大腸がん",
       "color": "rgb(231, 76, 60)",
-      "strokeWidth": 7.2459999999999996
+      "strokeWidth": 7.2459999999999996,
+      "sourceMarkerShape": "circle",
+      "targetMarkerShape": "triangle"
     },
     {
       "label": "0.809",
       "source": "ガン傾向",
       "target": "直腸がん",
       "color": "rgb(233, 133, 122)",
-      "strokeWidth": 8.281
+      "strokeWidth": 8.281,
+      "sourceMarkerShape": "circle",
+      "targetMarkerShape": "triangle"
     },
     {
       "label": "0.979",
@@ -114,7 +126,9 @@
       "target": "ガン傾向",
       "group": "cov",
       "color": "rgb(233, 156, 148)",
-      "strokeWidth": 9.811
+      "strokeWidth": 9.811,
+      "sourceMarkerShape": "circle",
+      "targetMarkerShape": "triangle"
     }
   ]
 }
