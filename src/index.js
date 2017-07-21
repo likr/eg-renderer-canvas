@@ -170,7 +170,6 @@ class EgRendererElement extends window.HTMLElement {
     const graphNodesProperty = this.getAttribute('graph-nodes-property') || 'nodes'
     const graphLinksProperty = this.getAttribute('graph-links-property') || 'links'
     const nodeIdProperty = this.getAttribute('node-id-property') || '$index'
-    const nodeLabelProperty = this.getAttribute('node-label-property') || 'label'
     const nodeWidthProperty = this.getAttribute('node-width-property') || 'width'
     const nodeHeightProperty = this.getAttribute('node-height-property') || 'height'
     const nodeFillColorProperty = this.getAttribute('node-fill-color-property') || 'fill'
@@ -178,34 +177,52 @@ class EgRendererElement extends window.HTMLElement {
     const nodeStrokeOpacityProperty = this.getAttribute('node-stroke-opacity-property') || 'strokeOpacity'
     const nodeStrokeWidthProperty = this.getAttribute('node-stroke-width-property') || 'strokeWidth'
     const nodeTypeProperty = this.getAttribute('node-type-property') || 'type'
+    const nodeLabelProperty = this.getAttribute('node-label-property') || 'label'
+    const nodeLabelFillColorProperty = this.getAttribute('node-label-fill-color-property') || 'labelFill'
+    const nodeLabelStrokeColorProperty = this.getAttribute('node-label-stroke-color-property') || 'labelStroke'
+    const nodeLabelStrokeWidthProperty = this.getAttribute('node-label-stroke-width-property') || 'labelStrokeWidth'
     const linkSourceProperty = this.getAttribute('link-source-property') || 'source'
     const linkTargetProperty = this.getAttribute('link-target-property') || 'target'
     const linkStrokeColorProperty = this.getAttribute('link-stroke-color-property') || 'stroke'
     const linkStrokeOpacityProperty = this.getAttribute('link-stroke-opacity-property') || 'strokeOpacity'
     const linkStrokeWidthProperty = this.getAttribute('link-stroke-width-property') || 'strokeWidth'
-    const defaultNodeLabel = this.getAttribute('default-node-label') || ''
+    const linkLabelProperty = this.getAttribute('link-label-property') || 'label'
+    const linkLabelFillColorProperty = this.getAttribute('link-label-fill-color-property') || 'labelFill'
+    const linkLabelStrokeColorProperty = this.getAttribute('link-label-stroke-color-property') || 'labelStroke'
+    const linkLabelStrokeWidthProperty = this.getAttribute('link-label-stroke-width-property') || 'labelStrokeWidth'
     const defaultNodeWidth = this.getAttribute('default-node-width') || 10
     const defaultNodeHeight = this.getAttribute('default-node-height') || 10
     const defaultNodeFillColor = this.getAttribute('default-node-fill-color') || '#fff'
     const defaultNodeStrokeColor = this.getAttribute('default-node-stroke-color') || '#000'
-    const defaultNodeStrokeOpacity = this.getAttribute('default-node-stroke-opacity') || '1'
-    const defaultNodeStrokeWidth = this.getAttribute('default-node-stroke-width') || '1'
+    const defaultNodeStrokeOpacity = this.getAttribute('default-node-stroke-opacity') || 1
+    const defaultNodeStrokeWidth = this.getAttribute('default-node-stroke-width') || 1
     const defaultNodeType = this.getAttribute('default-node-type') || 'rect'
+    const defaultNodeLabel = this.getAttribute('default-node-label') || ''
+    const defaultNodeLabelFillColor = this.getAttribute('default-node-label-fill-color') || '#000'
+    const defaultNodeLabelStrokeColor = this.getAttribute('default-node-label-stroke-color') || '#fff'
+    const defaultNodeLabelStrokeWidth = this.getAttribute('default-node-label-stroke-width') || 0
     const defaultLinkStrokeColor = this.getAttribute('default-link-stroke-color') || '#000'
-    const defaultLinkStrokeOpacity = this.getAttribute('default-link-stroke-opacity') || '1'
-    const defaultLinkStrokeWidth = this.getAttribute('default-link-stroke-width') || '1'
+    const defaultLinkStrokeOpacity = this.getAttribute('default-link-stroke-opacity') || 1
+    const defaultLinkStrokeWidth = this.getAttribute('default-link-stroke-width') || 1
+    const defaultLinkLabel = this.getAttribute('default-link-label') || ''
+    const defaultLinkLabelFillColor = this.getAttribute('default-link-label-fill-color') || '#000'
+    const defaultLinkLabelStrokeColor = this.getAttribute('default-link-label-stroke-color') || '#fff'
+    const defaultLinkLabelStrokeWidth = this.getAttribute('default-link-label-stroke-width') || 0
     privates.get(this).data = {
       vertices: data[graphNodesProperty].map((node, i) => {
         return {
           u: nodeIdProperty === '$index' ? i : node[nodeIdProperty],
-          label: get(node, nodeLabelProperty, defaultNodeLabel),
           width: +get(node, nodeWidthProperty, defaultNodeWidth),
           height: +get(node, nodeHeightProperty, defaultNodeHeight),
           type: get(node, nodeTypeProperty, defaultNodeType),
           fillColor: get(node, nodeFillColorProperty, defaultNodeFillColor),
           strokeColor: get(node, nodeStrokeColorProperty, defaultNodeStrokeColor),
-          strokeOpacity: get(node, nodeStrokeOpacityProperty, defaultNodeStrokeOpacity),
-          strokeWidth: get(node, nodeStrokeWidthProperty, defaultNodeStrokeWidth),
+          strokeOpacity: +get(node, nodeStrokeOpacityProperty, defaultNodeStrokeOpacity),
+          strokeWidth: +get(node, nodeStrokeWidthProperty, defaultNodeStrokeWidth),
+          label: get(node, nodeLabelProperty, defaultNodeLabel),
+          labelFillColor: get(node, nodeLabelFillColorProperty, defaultNodeLabelFillColor),
+          labelStrokeColor: get(node, nodeLabelStrokeColorProperty, defaultNodeLabelStrokeColor),
+          labelStrokeWidth: +get(node, nodeLabelStrokeWidthProperty, defaultNodeLabelStrokeWidth),
           d: node
         }
       }),
@@ -218,6 +235,10 @@ class EgRendererElement extends window.HTMLElement {
           v: link[linkTargetProperty],
           strokeColor,
           strokeWidth: +get(link, linkStrokeWidthProperty, defaultLinkStrokeWidth),
+          label: get(link, linkLabelProperty, defaultLinkLabel),
+          labelFillColor: get(link, linkLabelFillColorProperty, defaultLinkLabelFillColor),
+          labelStrokeColor: get(link, linkLabelStrokeColorProperty, defaultLinkLabelStrokeColor),
+          labelStrokeWidth: +get(link, linkLabelStrokeWidthProperty, defaultLinkLabelStrokeWidth),
           d: link
         }
       })

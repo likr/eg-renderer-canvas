@@ -32,6 +32,17 @@ const setEdgeStyles = (ctx, args) => {
   ctx.lineWidth = strokeWidth
 }
 
+const setLabelStyles = (ctx, args) => {
+  const {
+    labelFillColor,
+    labelStrokeColor,
+    labelStrokeWidth
+  } = args
+  ctx.fillStyle = labelFillColor
+  ctx.strokeStyle = labelStrokeColor
+  ctx.lineWidth = labelStrokeWidth
+}
+
 const renderRectVertex = (ctx, args) => {
   const {
     u,
@@ -39,7 +50,8 @@ const renderRectVertex = (ctx, args) => {
     y,
     width,
     height,
-    label
+    label,
+    strokeWidth
   } = args
   withContext(ctx, () => {
     ctx.translate(x, y)
@@ -52,13 +64,19 @@ const renderRectVertex = (ctx, args) => {
       ctx.lineTo(-width / 2, height / 2)
       ctx.closePath()
       ctx.fill()
-      ctx.stroke()
+      if (strokeWidth > 0) {
+        ctx.stroke()
+      }
     })
     if (ctx.addHitRegion) {
       ctx.addHitRegion({id: u})
     }
     if (label) {
+      setLabelStyles(ctx, args)
       ctx.textAlign = 'center'
+      if (args.labelStrokeWidth > 0) {
+        ctx.strokeText(label, 0, 4)
+      }
       ctx.fillText(label, 0, 4)
     }
   })
@@ -71,7 +89,8 @@ const renderCircleVertex = (ctx, args) => {
     y,
     width,
     height,
-    label
+    label,
+    strokeWidth
   } = args
   withContext(ctx, () => {
     ctx.translate(x, y)
@@ -82,13 +101,19 @@ const renderCircleVertex = (ctx, args) => {
       ctx.ellipse(0, 0, width / 2, height / 2, 0, 0, 2 * Math.PI)
       ctx.closePath()
       ctx.fill()
-      ctx.stroke()
+      if (strokeWidth > 0) {
+        ctx.stroke()
+      }
     })
     if (ctx.addHitRegion) {
       ctx.addHitRegion({id: u})
     }
     if (label) {
+      setLabelStyles(ctx, args)
       ctx.textAlign = 'center'
+      if (args.labelStrokeWidth > 0) {
+        ctx.strokeText(label, 0, 4)
+      }
       ctx.fillText(label, 0, 4)
     }
   })
@@ -106,7 +131,10 @@ export const renderVertex = (ctx, args) => {
 }
 
 const renderLineEdge = (ctx, args) => {
-  const {points} = args
+  const {
+    points,
+    label
+  } = args
   withContext(ctx, () => {
     setEdgeStyles(ctx, args)
     ctx.beginPath()
@@ -115,6 +143,17 @@ const renderLineEdge = (ctx, args) => {
       ctx.lineTo(points[i][0], points[i][1])
     }
     ctx.stroke()
+    if (label) {
+      const x = (points[0][0] + points[points.length - 1][0]) / 2
+      const y = (points[0][1] + points[points.length - 1][1]) / 2
+      ctx.translate(x, y)
+      setLabelStyles(ctx, args)
+      ctx.textAlign = 'center'
+      if (args.labelStrokeWidth > 0) {
+        ctx.strokeText(label, 0, 4)
+      }
+      ctx.fillText(label, 0, 4)
+    }
   })
 }
 
