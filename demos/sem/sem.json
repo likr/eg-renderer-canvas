@@ -72,6 +72,7 @@
       "target": "総熱量",
       "color": "rgb(231, 76, 60)",
       "strokeWidth": 8.317,
+      "markerSize": 16,
       "sourceMarkerShape": "circle",
       "targetMarkerShape": "triangle"
     },
@@ -81,6 +82,7 @@
       "target": "肉類",
       "color": "rgb(233, 142, 133)",
       "strokeWidth": 6.553,
+      "markerSize": 13,
       "sourceMarkerShape": "circle",
       "targetMarkerShape": "triangle"
     },
@@ -90,6 +92,7 @@
       "target": "乳製品",
       "color": "rgb(234, 188, 184)",
       "strokeWidth": 3.781,
+      "markerSize": 7,
       "sourceMarkerShape": "circle",
       "targetMarkerShape": "triangle"
     },
@@ -99,6 +102,7 @@
       "target": "酒類",
       "color": "rgb(234, 165, 159)",
       "strokeWidth": 5.095,
+      "markerSize": 10,
       "sourceMarkerShape": "circle",
       "targetMarkerShape": "triangle"
     },
@@ -108,6 +112,7 @@
       "target": "大腸がん",
       "color": "rgb(231, 76, 60)",
       "strokeWidth": 7.2459999999999996,
+      "markerSize": 15,
       "sourceMarkerShape": "circle",
       "targetMarkerShape": "triangle"
     },
@@ -117,6 +122,7 @@
       "target": "直腸がん",
       "color": "rgb(233, 133, 122)",
       "strokeWidth": 8.281,
+      "markerSize": 16,
       "sourceMarkerShape": "circle",
       "targetMarkerShape": "triangle"
     },
@@ -127,7 +133,8 @@
       "group": "cov",
       "color": "rgb(233, 156, 148)",
       "strokeWidth": 9.811,
-      "sourceMarkerShape": "circle",
+      "markerSize": 20,
+      "sourceMarkerShape": "triangle",
       "targetMarkerShape": "triangle"
     }
   ]
