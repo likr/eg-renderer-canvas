@@ -97,7 +97,6 @@ const renderCircleVertex = (ctx, args) => {
     withContext(ctx, () => {
       setVertexStyles(ctx, args)
       ctx.beginPath()
-      ctx.beginPath()
       ctx.ellipse(0, 0, width / 2, height / 2, 0, 0, 2 * Math.PI)
       ctx.closePath()
       ctx.fill()

@@ -39,6 +39,8 @@ const interpolateEdge = (current, next, r) => {
     'type',
     'strokeColor',
     'strokeOpacity',
+    'sourceShape',
+    'targetShape',
     'label',
     'labelFillColor',
     'labelStrokeColor',
