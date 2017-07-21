@@ -24,7 +24,7 @@ const layoutMethods = {
   tutte: TutteLayout
 }
 
-const baseCircleMarkerPosition = (x0, y0, x1, y1, width, height, size) => {
+const baseCircleToRectMarkerPosition = (x0, y0, x1, y1, width, height, size) => {
   const r = size / 2
   const a = Math.abs((y0 - y1) / (x0 - x1))
   const theta = Math.atan(a)
@@ -52,7 +52,7 @@ const baseCircleMarkerPosition = (x0, y0, x1, y1, width, height, size) => {
   ]
 }
 
-const baseTriangleMarkerPosition = (x0, y0, x1, y1, width, height, size) => {
+const baseTriangleToRectMarkerPosition = (x0, y0, x1, y1, width, height, size) => {
   const r = size * 2 / 3
   const a = Math.abs((y0 - y1) / (x0 - x1))
   const theta = Math.atan(a)
@@ -65,6 +65,34 @@ const baseTriangleMarkerPosition = (x0, y0, x1, y1, width, height, size) => {
   return [
     Math.tan(Math.PI / 2 - theta) * height / 2 + Math.sin(Math.PI / 2 - theta) * r,
     height / 2 + Math.cos(Math.PI / 2 - theta) * r
+  ]
+}
+
+const baseCircleToCircleMarkerPosition = (x0, y0, x1, y1, width, height, size) => {
+  const r = size / 2
+  const rx = width / 2
+  const ry = height / 2
+  const a = Math.abs((y0 - y1) / (x0 - x1))
+  const theta = Math.atan(a)
+  const px = rx * ry / Math.sqrt(a ** 2 * rx ** 2 + ry ** 2)
+  const py = a * px
+  return [
+    px + r * Math.cos(theta),
+    py + r * Math.sin(theta)
+  ]
+}
+
+const baseTriangleToCircleMarkerPosition = (x0, y0, x1, y1, width, height, size) => {
+  const r = size * 2 / 3
+  const rx = width / 2
+  const ry = height / 2
+  const a = Math.abs((y0 - y1) / (x0 - x1))
+  const theta = Math.atan(a)
+  const px = rx * ry / Math.sqrt(a ** 2 * rx ** 2 + ry ** 2)
+  const py = a * px
+  return [
+    px + r * Math.cos(theta),
+    py + r * Math.sin(theta)
   ]
 }
 
@@ -84,22 +112,28 @@ const markerPosition = (x, y, x0, y0, x1, y1) => {
   }
 }
 
-const baseFunction = (markerShape) => {
-  switch (markerShape) {
-    case 'circle':
-      return baseCircleMarkerPosition
-    case 'triangle':
-      return baseTriangleMarkerPosition
+const baseFunction = (markerShape, type) => {
+  if (markerShape === 'circle' && type === 'rect') {
+    return baseCircleToRectMarkerPosition
+  }
+  if (markerShape === 'triangle' && type === 'rect') {
+    return baseTriangleToRectMarkerPosition
+  }
+  if (markerShape === 'circle' && type === 'circle') {
+    return baseCircleToCircleMarkerPosition
+  }
+  if (markerShape === 'triangle' && type === 'circle') {
+    return baseTriangleToCircleMarkerPosition
   }
   return () => [0, 0]
 }
 
 export const adjustEdge = (edge, source, target) => {
   const {points, sourceMarkerShape, sourceMarkerSize, targetMarkerShape, targetMarkerSize} = edge
-  const sourceBaseFunction = baseFunction(sourceMarkerShape)
+  const sourceBaseFunction = baseFunction(sourceMarkerShape, source.type)
   const [x0, y0] = sourceBaseFunction(source.x, source.y, target.x, target.y, source.width, source.height, sourceMarkerSize)
   points[0] = markerPosition(x0, y0, source.x, source.y, target.x, target.y)
-  const targetBaseFunction = baseFunction(targetMarkerShape)
+  const targetBaseFunction = baseFunction(targetMarkerShape, target.type)
   const [x1, y1] = targetBaseFunction(target.x, target.y, source.x, source.y, target.width, target.height, targetMarkerSize)
   points[points.length - 1] = markerPosition(x1, y1, target.x, target.y, source.x, source.y)
 }
