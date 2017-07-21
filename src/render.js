@@ -11,11 +11,7 @@ const setVertexStyles = (ctx, args) => {
     strokeWidth
   } = args
   ctx.fillStyle = fillColor
-  if (ctx.setStrokeColor) {
-    ctx.setStrokeColor(strokeColor)
-  } else {
-    ctx.strokeStyle = strokeColor
-  }
+  ctx.strokeStyle = strokeColor
   ctx.lineWidth = strokeWidth
 }
 
@@ -24,11 +20,7 @@ const setEdgeStyles = (ctx, args) => {
     strokeColor,
     strokeWidth
   } = args
-  if (ctx.setStrokeColor) {
-    ctx.setStrokeColor(strokeColor)
-  } else {
-    ctx.strokeStyle = strokeColor
-  }
+  ctx.strokeStyle = strokeColor
   ctx.lineWidth = strokeWidth
 }
 
