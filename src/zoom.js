@@ -1,4 +1,5 @@
 import * as d3 from 'd3'
+import {adjustEdge} from './layout'
 
 export const zoom = (attrs) => {
   const pos = {
@@ -28,12 +29,14 @@ export const zoom = (attrs) => {
             const {points} = attrs.layoutResult.edges[key][pos.region]
             points[points.length - 1][0] += dx
             points[points.length - 1][1] += dy
+            adjustEdge(attrs.layoutResult.edges[key][pos.region], attrs.layoutResult.vertices[key], attrs.layoutResult.vertices[pos.region])
           }
         }
         for (const key in attrs.layoutResult.edges[pos.region]) {
           const {points} = attrs.layoutResult.edges[pos.region][key]
           points[0][0] += dx
           points[0][1] += dy
+          adjustEdge(attrs.layoutResult.edges[pos.region][key], attrs.layoutResult.vertices[pos.region], attrs.layoutResult.vertices[key])
         }
         pos.x0 = x / k
         pos.y0 = y / k

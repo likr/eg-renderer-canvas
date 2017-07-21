@@ -132,16 +132,45 @@ export const renderVertex = (ctx, args) => {
 const renderLineEdge = (ctx, args) => {
   const {
     points,
-    label
+    label,
+    sourceMarkerShape,
+    sourceMarkerSize,
+    targetMarkerShape,
+    targetMarkerSize
   } = args
   withContext(ctx, () => {
-    setEdgeStyles(ctx, args)
-    ctx.beginPath()
-    ctx.moveTo(points[0][0], points[0][1])
-    for (let i = 1; i < points.length; ++i) {
-      ctx.lineTo(points[i][0], points[i][1])
+    withContext(ctx, () => {
+      setEdgeStyles(ctx, args)
+      ctx.beginPath()
+      ctx.moveTo(points[0][0], points[0][1])
+      for (let i = 1; i < points.length; ++i) {
+        ctx.lineTo(points[i][0], points[i][1])
+      }
+      ctx.stroke()
+    })
+
+    if (sourceMarkerShape !== 'none') {
+      withContext(ctx, () => {
+        const [x, y] = points[0]
+        ctx.fillStyle = args.strokeColor
+        ctx.translate(x, y)
+        ctx.beginPath()
+        ctx.ellipse(0, 0, sourceMarkerSize, sourceMarkerSize, 0, 0, 2 * Math.PI)
+        ctx.fill()
+      })
     }
-    ctx.stroke()
+
+    if (targetMarkerShape !== 'none') {
+      withContext(ctx, () => {
+        const [x, y] = points[points.length - 1]
+        ctx.fillStyle = args.strokeColor
+        ctx.translate(x, y)
+        ctx.beginPath()
+        ctx.ellipse(0, 0, targetMarkerSize, targetMarkerSize, 0, 0, 2 * Math.PI)
+        ctx.fill()
+      })
+    }
+
     if (label) {
       const x = (points[0][0] + points[points.length - 1][0]) / 2
       const y = (points[0][1] + points[points.length - 1][1]) / 2

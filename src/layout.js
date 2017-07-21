@@ -24,6 +24,54 @@ const layoutMethods = {
   tutte: TutteLayout
 }
 
+const markerPositionBase = (x0, y0, x1, y1, width, height, r) => {
+  const a = Math.abs((y0 - y1) / (x0 - x1))
+  const theta = Math.atan(a)
+  if (theta < Math.atan2(height / 2, width / 2 + r)) {
+    return [width / 2 + r, Math.tan(theta) * (width / 2 + r)]
+  }
+  if (theta > Math.atan2(height / 2 + r, width / 2)) {
+    return [Math.tan(Math.PI / 2 - theta) * (height / 2 + r), height / 2 + r, height / 2 + r]
+  }
+  const b = -1
+  const c = y0 - a * x0
+  const px = x0 + width / 2
+  const py = y0 + height / 2
+  const d = a * px + b * py + c
+  const D = Math.sqrt((a ** 2 + b ** 2) * r ** 2 - d ** 2)
+  return [
+    (-a * d - b * D) / (a ** 2 + b ** 2) + px - x0,
+    (-b * d + a * D) / (a ** 2 + b ** 2) + py - y0
+  ]
+}
+
+const markerPosition = (x0, y0, x1, y1, width, height, r) => {
+  const [x, y] = markerPositionBase(x0, y0, x1, y1, width, height, r)
+  if (x0 < x1) {
+    if (y0 < y1) {
+      return [x0 + x, y0 + y]
+    } else {
+      return [x0 + x, y0 - y]
+    }
+  } else {
+    if (y0 < y1) {
+      return [x0 - x, y0 + y]
+    } else {
+      return [x0 - x, y0 - y]
+    }
+  }
+}
+
+export const adjustEdge = (edge, source, target) => {
+  const {points, sourceMarkerShape, sourceMarkerSize, targetMarkerShape, targetMarkerSize} = edge
+  if (sourceMarkerShape !== 'none') {
+    points[0] = markerPosition(source.x, source.y, target.x, target.y, source.width, source.height, sourceMarkerSize)
+  }
+  if (targetMarkerShape !== 'none') {
+    points[points.length - 1] = markerPosition(target.x, target.y, source.x, source.y, target.width, target.height, targetMarkerSize)
+  }
+}
+
 export const layout = (graphData, mode) => {
   const indexToNode = new Map()
   const graph = new Graph()
@@ -69,13 +117,16 @@ export const layout = (graphData, mode) => {
   graph.allEdges(edges)
   for (const edge of graphData.edges) {
     const {u, v} = edge
+    const source = result.vertices[u]
+    const target = result.vertices[v]
     result.edges[u][v] = Object.assign({}, edge, {
       type: 'line',
       points: [
-        [result.vertices[u].x, result.vertices[u].y],
-        [result.vertices[v].x, result.vertices[v].y]
+        [source.x, source.y],
+        [target.x, target.y]
       ]
     })
+    adjustEdge(result.edges[u][v], source, target)
   }
   return result
 }

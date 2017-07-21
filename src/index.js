@@ -186,8 +186,10 @@ class EgRendererElement extends window.HTMLElement {
     const linkStrokeColorProperty = this.getAttribute('link-stroke-color-property') || 'stroke'
     const linkStrokeOpacityProperty = this.getAttribute('link-stroke-opacity-property') || 'strokeOpacity'
     const linkStrokeWidthProperty = this.getAttribute('link-stroke-width-property') || 'strokeWidth'
-    const linkSourceShapeProperty = this.getAttribute('link-source-shape-peroperty') || 'sourceShape'
-    const linkTargetShapeProperty = this.getAttribute('link-target-shape-peroperty') || 'targetShape'
+    const linkSourceMarkerShapeProperty = this.getAttribute('link-source-marker-shape-peroperty') || 'sourceMarkerShape'
+    const linkSourceMarkerSizeProperty = this.getAttribute('link-source-marker-size-peroperty') || 'sourceMarkerSize'
+    const linkTargetMarkerShapeProperty = this.getAttribute('link-target-marker-shape-peroperty') || 'targetMarkerShape'
+    const linkTargetMarkerSizeProperty = this.getAttribute('link-target-marker-size-peroperty') || 'targetMarkerSize'
     const linkLabelProperty = this.getAttribute('link-label-property') || 'label'
     const linkLabelFillColorProperty = this.getAttribute('link-label-fill-color-property') || 'labelFill'
     const linkLabelStrokeColorProperty = this.getAttribute('link-label-stroke-color-property') || 'labelStroke'
@@ -206,8 +208,10 @@ class EgRendererElement extends window.HTMLElement {
     const defaultLinkStrokeColor = this.getAttribute('default-link-stroke-color') || '#000'
     const defaultLinkStrokeOpacity = this.getAttribute('default-link-stroke-opacity') || 1
     const defaultLinkStrokeWidth = this.getAttribute('default-link-stroke-width') || 1
-    const defaultLinkSourceShape = this.getAttribute('default-link-source-shape') || 'none'
-    const defaultLinkTargetShape = this.getAttribute('default-link-target-shape') || 'none'
+    const defaultLinkSourceMarkerShape = this.getAttribute('default-link-source-marker-shape') || 'none'
+    const defaultLinkSourceMarkerSize = this.getAttribute('default-link-source-marker-size') || 5
+    const defaultLinkTargetMarkerShape = this.getAttribute('default-link-target-marker-shape') || 'none'
+    const defaultLinkTargetMarkerSize = this.getAttribute('default-link-target-marker-size') || 5
     const defaultLinkLabel = this.getAttribute('default-link-label') || ''
     const defaultLinkLabelFillColor = this.getAttribute('default-link-label-fill-color') || '#000'
     const defaultLinkLabelStrokeColor = this.getAttribute('default-link-label-stroke-color') || '#fff'
@@ -239,8 +243,10 @@ class EgRendererElement extends window.HTMLElement {
           v: link[linkTargetProperty],
           strokeColor,
           strokeWidth: +get(link, linkStrokeWidthProperty, defaultLinkStrokeWidth),
-          sourceShape: get(link, linkSourceShapeProperty, defaultLinkSourceShape),
-          targetShape: get(link, linkTargetShapeProperty, defaultLinkTargetShape),
+          sourceMarkerShape: get(link, linkSourceMarkerShapeProperty, defaultLinkSourceMarkerShape),
+          sourceMarkerSize: +get(link, linkSourceMarkerSizeProperty, defaultLinkSourceMarkerSize),
+          targetMarkerShape: get(link, linkTargetMarkerShapeProperty, defaultLinkTargetMarkerShape),
+          targetMarkerSize: +get(link, linkTargetMarkerSizeProperty, defaultLinkTargetMarkerSize),
           label: get(link, linkLabelProperty, defaultLinkLabel),
           labelFillColor: get(link, linkLabelFillColorProperty, defaultLinkLabelFillColor),
           labelStrokeColor: get(link, linkLabelStrokeColorProperty, defaultLinkLabelStrokeColor),
