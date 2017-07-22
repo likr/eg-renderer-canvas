@@ -26,7 +26,5 @@
     "webpack": "^2.6.1",
     "webpack-dev-server": "^2.5.1"
   },
-  "dependencies": {
-    "emogdf": "0.0.0"
-  }
+  "dependencies": {}
 }

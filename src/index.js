@@ -1,5 +1,4 @@
 import * as d3 from 'd3'
-import {layout} from './layout'
 import {
   centerTransform,
   layoutRect
@@ -13,6 +12,7 @@ import {
   renderVertex
 } from './render'
 import {zoom} from './zoom'
+import {adjustEdge} from './marker-point'
 
 const devicePixelRatio = () => {
   return window.devicePixelRatio || 1.0
@@ -41,7 +41,6 @@ class EgRendererElement extends window.HTMLElement {
     return [
       'src',
       'data',
-      'layout',
       'width',
       'height'
     ]
@@ -62,8 +61,8 @@ class EgRendererElement extends window.HTMLElement {
       },
       highlightedVertex: null,
       layoutResult: {
-        vertices: {},
-        edges: {}
+        vertices: new Map(),
+        edges: new Map()
       },
       margin: 10,
       layoutTime: 0
@@ -90,7 +89,7 @@ class EgRendererElement extends window.HTMLElement {
       const now = new Date()
       const transitionDuration = this.getAttribute('transition-duration')
       const r = (now - p.layoutTime) / transitionDuration
-      const layout = interpolateLayout(p.previousLayoutResult, p.layoutResult, r)
+      const layout = interpolateLayout(p.layoutResult, p.data, r)
       const ctx = p.canvas.getContext('2d')
       ctx.save()
       ctx.clearRect(0, 0, p.canvas.width, p.canvas.height)
@@ -98,16 +97,11 @@ class EgRendererElement extends window.HTMLElement {
       ctx.translate(p.margin, p.margin)
       ctx.translate(p.transform.x, p.transform.y)
       ctx.scale(p.transform.k, p.transform.k)
-      const data = p.data
-      for (const edge of data.edges) {
-        const {u, v} = edge
-        if (layout.edges[u][v]) {
-          renderEdge(ctx, layout.edges[u][v])
-        }
+      for (const edge of layout.edges) {
+        renderEdge(ctx, edge)
       }
-      for (const node of data.vertices) {
-        const {u} = node
-        renderVertex(ctx, layout.vertices[u])
+      for (const vertex of layout.vertices) {
+        renderVertex(ctx, vertex)
       }
       ctx.restore()
       window.requestAnimationFrame(render)
@@ -127,11 +121,6 @@ class EgRendererElement extends window.HTMLElement {
       case 'data':
         this.load(JSON.parse(newValue))
         break
-      case 'layout':
-        if (!this.hasAttribute('no-auto-update')) {
-          this.layout()
-        }
-        break
       case 'width':
         setWidth(this, newValue)
         break
@@ -144,11 +133,8 @@ class EgRendererElement extends window.HTMLElement {
   layout () {
     const p = privates.get(this)
     const {data} = p
-    const mode = this.getAttribute('layout') || 'fmmm'
 
-    let layoutResult = layout(data, mode)
-    p.previousLayoutResult = diff(p.layoutResult, layoutResult)
-    p.layoutResult = layoutResult
+    p.layoutResult = diff(p.layoutResult, data)
     p.layoutTime = new Date()
     if (!this.hasAttribute('no-auto-centering')) {
       this.center()
@@ -157,8 +143,8 @@ class EgRendererElement extends window.HTMLElement {
   }
 
   center () {
-    const {canvas, layoutResult, margin, zoom} = privates.get(this)
-    const {layoutWidth, layoutHeight, left, top} = layoutRect(layoutResult)
+    const {canvas, data, margin, zoom} = privates.get(this)
+    const {layoutWidth, layoutHeight, left, top} = layoutRect(data)
     const canvasWidth = canvas.width / devicePixelRatio()
     const canvasHeight = canvas.height / devicePixelRatio()
     const {x, y, k} = centerTransform(layoutWidth, layoutHeight, left, top, canvasWidth, canvasHeight, margin)
@@ -216,44 +202,63 @@ class EgRendererElement extends window.HTMLElement {
     const defaultLinkLabelFillColor = this.getAttribute('default-link-label-fill-color') || '#000'
     const defaultLinkLabelStrokeColor = this.getAttribute('default-link-label-stroke-color') || '#fff'
     const defaultLinkLabelStrokeWidth = this.getAttribute('default-link-label-stroke-width') || 0
+    const vertices = data[graphNodesProperty].map((node, i) => {
+      return {
+        u: (nodeIdProperty === '$index' ? i : node[nodeIdProperty]).toString(),
+        x: +node.x,
+        y: +node.y,
+        width: +get(node, nodeWidthProperty, defaultNodeWidth),
+        height: +get(node, nodeHeightProperty, defaultNodeHeight),
+        type: get(node, nodeTypeProperty, defaultNodeType),
+        fillColor: get(node, nodeFillColorProperty, defaultNodeFillColor),
+        strokeColor: get(node, nodeStrokeColorProperty, defaultNodeStrokeColor),
+        strokeOpacity: +get(node, nodeStrokeOpacityProperty, defaultNodeStrokeOpacity),
+        strokeWidth: +get(node, nodeStrokeWidthProperty, defaultNodeStrokeWidth),
+        label: get(node, nodeLabelProperty, defaultNodeLabel),
+        labelFillColor: get(node, nodeLabelFillColorProperty, defaultNodeLabelFillColor),
+        labelStrokeColor: get(node, nodeLabelStrokeColorProperty, defaultNodeLabelStrokeColor),
+        labelStrokeWidth: +get(node, nodeLabelStrokeWidthProperty, defaultNodeLabelStrokeWidth),
+        inEdges: [],
+        outEdges: [],
+        d: node
+      }
+    })
+    const indices = new Map(vertices.map(({u}, i) => [u, i]))
+    const edges = data[graphLinksProperty].map((link) => {
+      const u = link[linkSourceProperty].toString()
+      const v = link[linkTargetProperty].toString()
+      const strokeColor = d3.color(get(link, linkStrokeColorProperty, defaultLinkStrokeColor))
+      const strokeOpacity = +get(link, linkStrokeOpacityProperty, defaultLinkStrokeOpacity)
+      strokeColor.opacity = strokeOpacity
+      const du = vertices[indices.get(u)]
+      const dv = vertices[indices.get(v)]
+      const points = [[du.x, du.y], [dv.x, dv.y]]
+      const edge = {
+        u,
+        v,
+        points,
+        type: 'line',
+        strokeColor: strokeColor.toString(),
+        strokeWidth: +get(link, linkStrokeWidthProperty, defaultLinkStrokeWidth),
+        sourceMarkerShape: get(link, linkSourceMarkerShapeProperty, defaultLinkSourceMarkerShape),
+        sourceMarkerSize: +get(link, linkSourceMarkerSizeProperty, defaultLinkSourceMarkerSize),
+        targetMarkerShape: get(link, linkTargetMarkerShapeProperty, defaultLinkTargetMarkerShape),
+        targetMarkerSize: +get(link, linkTargetMarkerSizeProperty, defaultLinkTargetMarkerSize),
+        label: get(link, linkLabelProperty, defaultLinkLabel),
+        labelFillColor: get(link, linkLabelFillColorProperty, defaultLinkLabelFillColor),
+        labelStrokeColor: get(link, linkLabelStrokeColorProperty, defaultLinkLabelStrokeColor),
+        labelStrokeWidth: +get(link, linkLabelStrokeWidthProperty, defaultLinkLabelStrokeWidth),
+        d: link
+      }
+      du.outEdges.push(edge)
+      dv.inEdges.push(edge)
+      adjustEdge(edge, du, dv)
+      return edge
+    })
     privates.get(this).data = {
-      vertices: data[graphNodesProperty].map((node, i) => {
-        return {
-          u: nodeIdProperty === '$index' ? i : node[nodeIdProperty],
-          width: +get(node, nodeWidthProperty, defaultNodeWidth),
-          height: +get(node, nodeHeightProperty, defaultNodeHeight),
-          type: get(node, nodeTypeProperty, defaultNodeType),
-          fillColor: get(node, nodeFillColorProperty, defaultNodeFillColor),
-          strokeColor: get(node, nodeStrokeColorProperty, defaultNodeStrokeColor),
-          strokeOpacity: +get(node, nodeStrokeOpacityProperty, defaultNodeStrokeOpacity),
-          strokeWidth: +get(node, nodeStrokeWidthProperty, defaultNodeStrokeWidth),
-          label: get(node, nodeLabelProperty, defaultNodeLabel),
-          labelFillColor: get(node, nodeLabelFillColorProperty, defaultNodeLabelFillColor),
-          labelStrokeColor: get(node, nodeLabelStrokeColorProperty, defaultNodeLabelStrokeColor),
-          labelStrokeWidth: +get(node, nodeLabelStrokeWidthProperty, defaultNodeLabelStrokeWidth),
-          d: node
-        }
-      }),
-      edges: data[graphLinksProperty].map((link) => {
-        const strokeColor = d3.color(get(link, linkStrokeColorProperty, defaultLinkStrokeColor))
-        const strokeOpacity = +get(link, linkStrokeOpacityProperty, defaultLinkStrokeOpacity)
-        strokeColor.opacity = strokeOpacity
-        return {
-          u: link[linkSourceProperty],
-          v: link[linkTargetProperty],
-          strokeColor: strokeColor.toString(),
-          strokeWidth: +get(link, linkStrokeWidthProperty, defaultLinkStrokeWidth),
-          sourceMarkerShape: get(link, linkSourceMarkerShapeProperty, defaultLinkSourceMarkerShape),
-          sourceMarkerSize: +get(link, linkSourceMarkerSizeProperty, defaultLinkSourceMarkerSize),
-          targetMarkerShape: get(link, linkTargetMarkerShapeProperty, defaultLinkTargetMarkerShape),
-          targetMarkerSize: +get(link, linkTargetMarkerSizeProperty, defaultLinkTargetMarkerSize),
-          label: get(link, linkLabelProperty, defaultLinkLabel),
-          labelFillColor: get(link, linkLabelFillColorProperty, defaultLinkLabelFillColor),
-          labelStrokeColor: get(link, linkLabelStrokeColorProperty, defaultLinkLabelStrokeColor),
-          labelStrokeWidth: +get(link, linkLabelStrokeWidthProperty, defaultLinkLabelStrokeWidth),
-          d: link
-        }
-      })
+      vertices,
+      edges,
+      indices
     }
     if (!this.hasAttribute('no-auto-update')) {
       this.layout()

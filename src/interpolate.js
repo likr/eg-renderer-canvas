@@ -65,24 +65,19 @@ export const interpolateLayout = (current, next, r) => {
   if (r > 1) {
     return next
   }
-  const vertices = Object.keys(next.vertices)
-  const result = {
-    vertices: {},
-    edges: {}
+  return {
+    vertices: next.vertices.map((vertex) => {
+      const {u} = vertex
+      return interpolateVertex(current.vertices.get(u), vertex, r)
+    }),
+    edges: next.edges.map((edge) => {
+      const {u, v} = edge
+      return interpolateEdge(current.edges.get(u).get(v), edge, r)
+    })
   }
-  for (const u of vertices) {
-    result.vertices[u] = interpolateVertex(current.vertices[u], next.vertices[u], r)
-    result.edges[u] = {}
-    for (const v of vertices) {
-      if (next.edges[u][v]) {
-        result.edges[u][v] = interpolateEdge(current.edges[u][v], next.edges[u][v], r)
-      }
-    }
-  }
-  return result
 }
 
-const diffArcEdge = (current, next, du, dv) => {
+const diffEdge = (current, next, du, dv) => {
   if (current) {
     return current
   } else if (du && dv) {
@@ -144,35 +139,42 @@ const diffHierarchyEdge = (current, next, du, dv) => {
   }
 }
 
+const getCurrentEdge = (nextEdge, currentEdges) => {
+  const {u, v} = nextEdge
+  if (!currentEdges.has(u)) {
+    return null
+  }
+  const vs = currentEdges.get(u)
+  if (!vs.has(v)) {
+    return null
+  }
+  const e = vs.get(v)
+  return e.type === nextEdge.type ? e : null
+}
+
 export const diff = (current, next) => {
-  const vertices = Object.keys(next.vertices)
-  const result = {
-    vertices: {},
-    edges: {}
-  }
-  for (const u of vertices) {
-    if (current.vertices[u]) {
-      result.vertices[u] = current.vertices[u]
-    } else {
-      result.vertices[u] = Object.assign({}, next.vertices[u], {
-        y: 0
-      })
+  const diffedEdges = new Map(next.vertices.map(({u}) => [u, new Map()]))
+  for (const edge of next.edges) {
+    const {u, v} = edge
+    const du = current.vertices.has(u) ? current.vertices.get(u) : null
+    const dv = current.vertices.has(v) ? current.vertices.get(u) : null
+    const currentEdge = getCurrentEdge(edge, current.edges)
+    if (edge.type === 'hierarchy') {
+      diffedEdges.get(u).set(v, diffHierarchyEdge(currentEdge, edge, du, dv))
     }
-    result.edges[u] = {}
-    for (const v of vertices) {
-      const nextEdge = next.edges[u][v]
-      if (nextEdge) {
-        const currentEdge = (current.edges[u] && current.edges[u][v] && current.edges[u][v].type === nextEdge.type) ? current.edges[u][v] : null
-        const du = current.vertices[u] || null
-        const dv = current.vertices[v] || null
-        if (nextEdge.type === 'arc' || nextEdge.type === 'line') {
-          result.edges[u][v] = diffArcEdge(currentEdge, nextEdge, du, dv)
-        }
-        if (next.edges[u][v].type === 'hierarchy') {
-          result.edges[u][v] = diffHierarchyEdge(currentEdge, nextEdge, du, dv)
-        }
+    diffedEdges.get(u).set(v, diffEdge(currentEdge, edge, du, dv))
+  }
+
+  return {
+    vertices: new Map(next.vertices.map((vertex) => {
+      const {u} = vertex
+      if (current.vertices.has(u)) {
+        return [u, current.vertices.get(u)]
       }
-    }
+      return [u, Object.assign({}, vertex, {
+        y: 0
+      })]
+    })),
+    edges: diffedEdges
   }
-  return result
 }

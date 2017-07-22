@@ -1,5 +1,5 @@
 import * as d3 from 'd3'
-import {adjustEdge} from './layout'
+import {adjustEdge} from './marker-point'
 
 export const zoom = (attrs) => {
   const pos = {
@@ -20,23 +20,24 @@ export const zoom = (attrs) => {
     .on('zoom', () => {
       const {x, y, k} = d3.event.transform
       if (pos.region) {
+        const u = pos.region
         const dx = x / k - pos.x0
         const dy = y / k - pos.y0
-        attrs.layoutResult.vertices[pos.region].x += dx
-        attrs.layoutResult.vertices[pos.region].y += dy
-        for (const key in attrs.layoutResult.edges) {
-          if (attrs.layoutResult.edges[key][pos.region]) {
-            const {points} = attrs.layoutResult.edges[key][pos.region]
-            points[points.length - 1][0] += dx
-            points[points.length - 1][1] += dy
-            adjustEdge(attrs.layoutResult.edges[key][pos.region], attrs.layoutResult.vertices[key], attrs.layoutResult.vertices[pos.region])
-          }
-        }
-        for (const key in attrs.layoutResult.edges[pos.region]) {
-          const {points} = attrs.layoutResult.edges[pos.region][key]
+        const {data} = attrs
+        const vertex = data.vertices[data.indices.get(u)]
+        vertex.x += dx
+        vertex.y += dy
+        for (const edge of vertex.outEdges) {
+          const {points} = edge
           points[0][0] += dx
           points[0][1] += dy
-          adjustEdge(attrs.layoutResult.edges[pos.region][key], attrs.layoutResult.vertices[pos.region], attrs.layoutResult.vertices[key])
+          adjustEdge(edge, vertex, data.vertices[edge.v])
+        }
+        for (const edge of vertex.inEdges) {
+          const {points} = edge
+          points[points.length - 1][0] += dx
+          points[points.length - 1][1] += dy
+          adjustEdge(edge, data.vertices[edge.u], vertex)
         }
         pos.x0 = x / k
         pos.y0 = y / k

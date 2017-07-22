@@ -1,9 +1,8 @@
 export const layoutRect = ({vertices}) => {
-  const keys = Object.keys(vertices)
-  const left = Math.min(...keys.map((u) => vertices[u].x - vertices[u].width / 2))
-  const right = Math.max(...keys.map((u) => vertices[u].x + vertices[u].width / 2))
-  const top = Math.min(...keys.map((u) => vertices[u].y - vertices[u].height / 2))
-  const bottom = Math.max(...keys.map((u) => vertices[u].y + vertices[u].height / 2))
+  const left = Math.min(...vertices.map(({x, width}) => x - width / 2))
+  const right = Math.max(...vertices.map(({x, width}) => x + width / 2))
+  const top = Math.min(...vertices.map(({y, height}) => y - height / 2))
+  const bottom = Math.max(...vertices.map(({y, height}) => y + height / 2))
   return {
     left: left,
     top: top,
