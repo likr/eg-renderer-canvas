@@ -70,8 +70,6 @@ class EgRendererElement extends window.HTMLElement {
     p.zoom = zoom(p)
     privates.set(this, p)
 
-    this.appendChild(p.canvas)
-
     d3.select(p.canvas)
       .call(p.zoom)
 
@@ -84,6 +82,11 @@ class EgRendererElement extends window.HTMLElement {
         p.highlightedVertex = event.region
       }
     })
+  }
+
+  connectedCallback () {
+    const p = privates.get(this)
+    this.appendChild(p.canvas)
 
     const render = () => {
       const now = new Date()
@@ -252,18 +255,28 @@ class EgRendererElement extends window.HTMLElement {
       }
       du.outEdges.push(edge)
       dv.inEdges.push(edge)
-      adjustEdge(edge, du, dv)
       return edge
     })
-    privates.get(this).data = {
+    const p = privates.get(this)
+    p.data = {
       vertices,
       edges,
       indices
+    }
+    this.onLoadData(p.data)
+    for (const edge of edges) {
+      const {u, v} = edge
+      const du = vertices[indices.get(u)]
+      const dv = vertices[indices.get(v)]
+      adjustEdge(edge, du, dv)
     }
     if (!this.hasAttribute('no-auto-update')) {
       this.layout()
     }
     return this
+  }
+
+  onLoadData (data) {
   }
 }
 
