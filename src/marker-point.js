@@ -1,5 +1,8 @@
 const baseCircleToRectMarkerPosition = (x0, y0, x1, y1, width, height, size) => {
   const r = size / 2
+  if (x0 === x1) {
+    return [0, height / 2 + r]
+  }
   const a = Math.abs((y0 - y1) / (x0 - x1))
   const theta = Math.atan(a)
   if (theta < Math.atan2(height / 2, width / 2 + r)) {
@@ -28,6 +31,9 @@ const baseCircleToRectMarkerPosition = (x0, y0, x1, y1, width, height, size) => 
 
 const baseTriangleToRectMarkerPosition = (x0, y0, x1, y1, width, height, size) => {
   const r = size * 2 / 3
+  if (x0 === x1) {
+    return [0, height / 2 + r]
+  }
   const a = Math.abs((y0 - y1) / (x0 - x1))
   const theta = Math.atan(a)
   if (theta < Math.atan2(height / 2, width / 2)) {
@@ -44,6 +50,9 @@ const baseTriangleToRectMarkerPosition = (x0, y0, x1, y1, width, height, size) =
 
 const baseCircleToCircleMarkerPosition = (x0, y0, x1, y1, width, height, size) => {
   const r = size / 2
+  if (x0 === x1) {
+    return [0, height / 2 + r]
+  }
   const rx = width / 2
   const ry = height / 2
   const a = Math.abs((y0 - y1) / (x0 - x1))
@@ -58,6 +67,9 @@ const baseCircleToCircleMarkerPosition = (x0, y0, x1, y1, width, height, size) =
 
 const baseTriangleToCircleMarkerPosition = (x0, y0, x1, y1, width, height, size) => {
   const r = size * 2 / 3
+  if (x0 === x1) {
+    return [0, height / 2 + r]
+  }
   const rx = width / 2
   const ry = height / 2
   const a = Math.abs((y0 - y1) / (x0 - x1))

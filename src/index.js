@@ -136,7 +136,13 @@ class EgRendererElement extends window.HTMLElement {
   layout () {
     const p = privates.get(this)
     const {data} = p
-
+    this.onLayout(data)
+    for (const edge of data.edges) {
+      const {u, v} = edge
+      const du = data.vertices[data.indices.get(u)]
+      const dv = data.vertices[data.indices.get(v)]
+      adjustEdge(edge, du, dv)
+    }
     p.layoutResult = diff(p.layoutResult, data)
     p.layoutTime = new Date()
     if (!this.hasAttribute('no-auto-centering')) {
@@ -263,20 +269,13 @@ class EgRendererElement extends window.HTMLElement {
       edges,
       indices
     }
-    this.onLoadData(p.data)
-    for (const edge of edges) {
-      const {u, v} = edge
-      const du = vertices[indices.get(u)]
-      const dv = vertices[indices.get(v)]
-      adjustEdge(edge, du, dv)
-    }
     if (!this.hasAttribute('no-auto-update')) {
       this.layout()
     }
     return this
   }
 
-  onLoadData (data) {
+  onLayout () {
   }
 }
 
