@@ -145,7 +145,7 @@ class EgRendererElement extends window.HTMLElement {
     }
     p.layoutResult = diff(p.layoutResult, data)
     p.layoutTime = new Date()
-    if (!this.hasAttribute('no-auto-centering')) {
+    if (this.autoCentering) {
       this.center()
     }
     return this
@@ -269,13 +269,37 @@ class EgRendererElement extends window.HTMLElement {
       edges,
       indices
     }
-    if (!this.hasAttribute('no-auto-update')) {
+    if (this.autoUpdate) {
       this.layout()
     }
     return this
   }
 
   onLayout () {
+  }
+
+  get autoUpdate () {
+    return !this.hasAttribute('no-auto-update')
+  }
+
+  set autoUpdate (value) {
+    if (value) {
+      this.removeAttribute('no-auto-update')
+    } else {
+      this.setAttribute('no-auto-update', '')
+    }
+  }
+
+  get autoCentering () {
+    return !this.hasAttribute('no-auto-centering')
+  }
+
+  set autoCentering (value) {
+    if (value) {
+      this.removeAttribute('no-auto-centering')
+    } else {
+      this.setAttribute('no-auto-centering', '')
+    }
   }
 }
 
