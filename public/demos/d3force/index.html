@@ -58,7 +58,7 @@ customElements.whenDefined('eg-renderer').then(() => {
   d3.json('miserables.json', (graph) => {
     const color = d3.scaleOrdinal(d3.schemeCategory20)
     graph.nodes.forEach((node) => {
-      node.fill = color(node.group)
+      node.fillColor = color(node.group)
     })
     for (const link of graph.links) {
       link.strokeWidth = Math.sqrt(link.value)
