@@ -37,6 +37,142 @@ data.json
 
 https://likr.github.io/eg-renderer-canvas/
 
+## Usage
+
+### Data Loading
+
+JavaScript API
+
+```javascript
+window.customElements.whenDefined('eg-renderer').then(() => {
+  fetch('data.json')
+    .then((response) => response.json())
+    .then((data) => {
+      const renderer = document.querySelector('eg-renderer')
+      renderer.graphNodesProperty = 'nodes' // use data['nodes'] as graph nodes (default: 'nodes')
+      renderer.graphLinksProperty = 'links' // use data['links'] as graph links (default: 'links')
+      renderer.nodeIdProperty = 'id' // use node['id'] as a node id (default: index of nodes)
+      renderer.linkSourceProperty = 'source' // use link['source'] as a link source (default: 'source')
+      renderer.linkTargetProperty = 'target' // use link['target'] as a link target (default: 'target')
+      renderer.load(data) // load data as a graph
+    })
+})
+```
+
+HTML API
+
+```html
+<eg-renderer
+  graph-nodes-property="nodes"
+  graph-links-property="links"
+  node-id-property="id"
+  link-source-property="source"
+  link-target-property="target"
+  src="data.json"
+>
+</eg-renderer>
+```
+
+### Node Geometry
+
+JavaScript API
+
+```javascript
+window.customElements.whenDefined('eg-renderer').then(() => {
+  fetch('data.json')
+    .then((response) => response.json())
+    .then((data) => {
+      const renderer = document.querySelector('eg-renderer')
+      renderer.nodeXProperty = 'x'
+      renderer.nodeYProperty = 'y'
+      renderer.nodeWidthProperty = 'width'
+      renderer.nodeHeightProperty = 'height'
+      renderer.nodeTypeProperty = 'type'
+      renderer.defaultNodeX = 0
+      renderer.defaultNodeY = 0
+      renderer.defaultNodeWidth = 10
+      renderer.defaultNodeHeight = 10
+      renderer.defaultNodeType = 'circle'
+      renderer.load(data) // load data as a graph
+    })
+})
+```
+
+HTML API
+
+```html
+<eg-renderer
+  node-x-property="x"
+  node-y-property="y"
+  node-width-property="width"
+  node-height-property="height"
+  node-type-property="type"
+  default-node-x="0"
+  default-node-y="0"
+  default-node-width="10"
+  default-node-height="10"
+  default-node-type="circle"
+  src="data.json"
+>
+</eg-renderer>
+```
+
+### Node Representation
+
+JavaScript API
+
+```javascript
+window.customElements.whenDefined('eg-renderer').then(() => {
+  fetch('data.json')
+    .then((response) => response.json())
+    .then((data) => {
+      const renderer = document.querySelector('eg-renderer')
+      renderer.nodeFillColorProperty = 'fillColor'
+      renderer.nodeFillOpacityProperty = 'fillOpacity'
+      renderer.nodeStrokeColorProperty = 'strokeColor'
+      renderer.nodeStrokeOpacityProperty = 'strokeOpacity'
+      renderer.nodeStrokeWidthProperty = 'strokeWidth'
+      renderer.defaultNodeFillColor = '#fff'
+      renderer.defaultNodeFillOpacity = 1
+      renderer.defaultNodeStrokeColor = '#000'
+      renderer.defaultNodeStrokeOpacity = 1
+      renderer.defaultNodeStrokeWidth = 1
+      renderer.load(data) // load data as a graph
+    })
+})
+```
+
+HTML API
+
+```html
+<eg-renderer
+  node-fill-color-property="fillColor"
+  node-fill-opacity-property="fillOpacity"
+  node-stroke-color-property="strokeColor"
+  node-stroke-opacity-property="strokeOpacity"
+  node-stroke-width-property="strokeWidth"
+  default-node-fill-color="#fff"
+  default-node-fill-opacity="1"
+  default-node-stroke-color="#000"
+  default-node-stroke-opacity="1"
+  default-node-stroke-width="1"
+  src="data.json"
+>
+</eg-renderer>
+```
+
+### Node Label Representation
+
+TODO
+
+### Link Representation
+
+TODO
+
+### Link Label Representation
+
+TODO
+
 ## API
 
 ### Properties
@@ -67,6 +203,8 @@ https://likr.github.io/eg-renderer-canvas/
 
 #### EgRendererElement.nodeHeightProperty
 
+#### EgRendererElement.nodeTypeProperty
+
 #### EgRendererElement.nodeFillColorProperty
 
 #### EgRendererElement.nodeFillOpacityProperty
@@ -76,8 +214,6 @@ https://likr.github.io/eg-renderer-canvas/
 #### EgRendererElement.nodeStrokeOpacityProperty
 
 #### EgRendererElement.nodeStrokeWidthProperty
-
-#### EgRendererElement.nodeTypeProperty
 
 #### EgRendererElement.nodeLabelProperty
 
@@ -129,6 +265,8 @@ https://likr.github.io/eg-renderer-canvas/
 
 #### EgRendererElement.defaultNodeHeight
 
+#### EgRendererElement.defaultNodeType
+
 #### EgRendererElement.defaultNodeFillColor
 
 #### EgRendererElement.defaultNodeFillOpacity
@@ -138,8 +276,6 @@ https://likr.github.io/eg-renderer-canvas/
 #### EgRendererElement.defaultNodeStrokeOpacity
 
 #### EgRendererElement.defaultNodeStrokeWidth
-
-#### EgRendererElement.defaultNodeType
 
 #### EgRendererElement.defaultNodeLabel
 
