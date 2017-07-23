@@ -37,6 +37,17 @@ data.json
 
 https://likr.github.io/eg-renderer-canvas/
 
+## Quick Start
+
+Run following commands and open http://localhost:8080/ .
+
+```console
+$ pip install cookiecutter
+$ cookiecutter gh:likr/cookiecutter--eg-renderer
+$ cd {{repo_name}}
+$ npm start
+```
+
 ## Usage
 
 ### Data Loading
