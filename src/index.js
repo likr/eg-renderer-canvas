@@ -80,12 +80,14 @@ class EgRendererElement extends window.HTMLElement {
       .call(p.zoom)
 
     p.canvas.addEventListener('mousemove', (event) => {
-      if (event.region == null) {
+      if (this.canDragNode && event.region) {
+        p.canvas.style.cursor = 'pointer'
+        p.highlightedVertex = event.region
+      } else if (this.canZoom) {
         p.canvas.style.cursor = 'move'
         p.highlightedVertex = null
       } else {
-        p.canvas.style.cursor = 'pointer'
-        p.highlightedVertex = event.region
+        p.canvas.style.cursor = 'default'
       }
     })
   }
@@ -263,6 +265,30 @@ class EgRendererElement extends window.HTMLElement {
       this.removeAttribute('no-auto-centering')
     } else {
       this.setAttribute('no-auto-centering', '')
+    }
+  }
+
+  get canZoom () {
+    return !this.hasAttribute('no-zoom')
+  }
+
+  set canZoom (value) {
+    if (value) {
+      this.removeAttribute('no-zoom')
+    } else {
+      this.setAttribute('no-zoom', '')
+    }
+  }
+
+  get canDragNode () {
+    return !this.hasAttribute('no-drag-node')
+  }
+
+  set canDragNode (value) {
+    if (value) {
+      this.removeAttribute('no-drag-node')
+    } else {
+      this.setAttribute('no-drag-node', '')
     }
   }
 

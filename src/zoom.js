@@ -36,21 +36,24 @@ export const zoom = (element, attrs) => {
     x0: 0,
     y0: 0
   }
+  let restoreTransform = false
   const zoom = d3.zoom()
   zoom
     .on('start', () => {
-      if (d3.event.sourceEvent && d3.event.sourceEvent.region) {
-        const u = d3.event.sourceEvent.region
+      if (!element.canZoom || (element.canDragNode && d3.event.sourceEvent && d3.event.sourceEvent.region)) {
+        const u = d3.event.sourceEvent ? d3.event.sourceEvent.region : null
         const {x, y, k} = d3.event.transform
         pos.region = u
         pos.x0 = x / k
         pos.y0 = y / k
-        dispatchNodeMoveStartEvent(element, u)
+        if (u) {
+          dispatchNodeMoveStartEvent(element, u)
+        }
       }
     })
     .on('zoom', () => {
       const {x, y, k} = d3.event.transform
-      if (pos.region) {
+      if (element.canDragNode && pos.region) {
         const u = pos.region
         const dx = x / k - pos.x0
         const dy = y / k - pos.y0
@@ -73,7 +76,7 @@ export const zoom = (element, attrs) => {
         pos.x0 = x / k
         pos.y0 = y / k
         dispatchNodeMoveEvent(element, vertex)
-      } else {
+      } else if (element.canZoom || !d3.event.sourceEvent) {
         Object.assign(attrs.transform, {
           x,
           y,
@@ -82,12 +85,16 @@ export const zoom = (element, attrs) => {
       }
     })
     .on('end', function () {
-      if (pos.region) {
+      if (!restoreTransform && (!element.canZoom || pos.region)) {
         const u = pos.region
         pos.region = null
+        restoreTransform = true
         d3.select(this)
           .call(zoom.transform, d3.zoomIdentity.translate(attrs.transform.x, attrs.transform.y).scale(attrs.transform.k))
-        dispatchNodeMoveEndEvent(element, u)
+        restoreTransform = false
+        if (u) {
+          dispatchNodeMoveEndEvent(element, u)
+        }
       }
     })
   return zoom
