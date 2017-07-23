@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html>
+<head>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/babel-polyfill/6.23.0/polyfill.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/fetch/2.0.3/fetch.min.js"></script>
+<script>
+if (!window.customElements) {
+  window.customElements = {}
+}
+window.customElements.forcePolyfill = true
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/custom-elements/1.0.0/custom-elements.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/4.10.0/d3.min.js"></script>
+<script async src="../../eg-renderer.js"></script>
+<style>
+eg-renderer {
+  display: block;
+  border: solid 1px;
+  width: 960px;
+  height: 600px;
+}
+</style>
+</head>
+<body>
+<div>
+<a href="https://likr.github.io/eg-renderer-canvas/">back</a>
+<h1>Visualizing Miserables Data</h1>
+<p>Drawing a network used in the <a href="https://bl.ocks.org/mbostock/4062045">D3.js example</a>.</p>
+</div>
+<div>
+<h2>Result</h2>
+<eg-renderer
+  width="960"
+  height="600"
+  node-id-property="id"
+  link-source-property="sourceId"
+  link-target-property="targetId"
+  default-node-width="10"
+  default-node-height="10"
+  default-node-stroke-color="#fff"
+  default-node-stroke-width="1.5"
+  default-node-type="circle"
+  default-link-stroke-color="#999"
+  default-link-stroke-opacity="0.6"
+  no-auto-centering
+>
+</eg-renderer>
+<script>
+customElements.whenDefined('eg-renderer').then(() => {
+  const renderer = document.querySelector('eg-renderer')
+  const width = renderer.width
+  const height = renderer.height
+  const simulation = d3.forceSimulation()
+    .force('link', d3.forceLink().id((d) => d.id))
+    .force('charge', d3.forceManyBody())
+    .force('center', d3.forceCenter(width / 2, height / 2))
+
+  d3.json('miserables.json', (graph) => {
+    const color = d3.scaleOrdinal(d3.schemeCategory20)
+    graph.nodes.forEach((node) => {
+      node.fill = color(node.group)
+    })
+    for (const link of graph.links) {
+      link.strokeWidth = Math.sqrt(link.value)
+      link.sourceId = link.source
+      link.targetId = link.target
+    }
+    simulation
+      .nodes(graph.nodes)
+      .on('tick', () => {
+        renderer.load(graph)
+      })
+
+    simulation.force('link')
+      .links(graph.links)
+
+    renderer.addEventListener('nodemovestart', (event) => {
+      simulation.alphaTarget(0.3).restart()
+      const {id} = event.detail
+      const node = graph.nodes.find((node) => node.id === id)
+      node.fx = node.x
+      node.fy = node.y
+    })
+
+    renderer.addEventListener('nodemove', (event) => {
+      const {id, x, y} = event.detail
+      const node = graph.nodes.find((node) => node.id === id)
+      node.fx = x
+      node.fy = y
+    })
+
+    renderer.addEventListener('nodemoveend', (event) => {
+      simulation.alphaTarget(0.0)
+      const {id} = event.detail
+      const node = graph.nodes.find((node) => node.id === id)
+      node.fx = null
+      node.fy = null
+    })
+  })
+})
+</script>
+</div>
+</body>
+</html>

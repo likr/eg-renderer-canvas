@@ -67,7 +67,7 @@ class EgRendererElement extends window.HTMLElement {
       margin: 10,
       layoutTime: 0
     }
-    p.zoom = zoom(p)
+    p.zoom = zoom(this, p)
     privates.set(this, p)
 
     d3.select(p.canvas)
