@@ -47,7 +47,6 @@ class EgRendererElement extends window.HTMLElement {
   static get observedAttributes () {
     return [
       'src',
-      'data',
       'width',
       'height'
     ]
@@ -127,9 +126,6 @@ class EgRendererElement extends window.HTMLElement {
           .then((data) => {
             this.load(data)
           })
-        break
-      case 'data':
-        this.load(JSON.parse(newValue))
         break
       case 'width':
         setWidth(this, newValue)
@@ -276,14 +272,6 @@ class EgRendererElement extends window.HTMLElement {
 
   set src (value) {
     this.setAttribute('src', value)
-  }
-
-  get data () {
-    return getter(this, 'data', null)
-  }
-
-  set data (value) {
-    this.setAttribute('data', value)
   }
 
   get width () {

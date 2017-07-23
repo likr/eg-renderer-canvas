@@ -183,8 +183,6 @@ TODO
 
 #### EgRendererElement.src
 
-#### EgRendererElement.data
-
 #### EgRendererElement.width
 
 #### EgRendererElement.height
