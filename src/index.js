@@ -98,7 +98,7 @@ class EgRendererElement extends window.HTMLElement {
 
     const render = () => {
       const now = new Date()
-      const transitionDuration = this.getAttribute('transition-duration')
+      const transitionDuration = this.transitionDuration
       const r = (now - p.layoutTime) / transitionDuration
       const layout = interpolateLayout(p.layoutResult, p.data, r)
       const ctx = p.canvas.getContext('2d')
@@ -314,6 +314,14 @@ class EgRendererElement extends window.HTMLElement {
 
   set height (value) {
     this.setAttribute('height', value)
+  }
+
+  get transitionDuration () {
+    return getter(this, 'transition-duration', 0)
+  }
+
+  set transitionDuration (value) {
+    this.setAttribute('transition-duration', value)
   }
 
   get graphNodesProperty () {
