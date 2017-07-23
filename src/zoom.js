@@ -31,13 +31,13 @@ export const zoom = (attrs) => {
           const {points} = edge
           points[0][0] += dx
           points[0][1] += dy
-          adjustEdge(edge, vertex, data.vertices[edge.v])
+          adjustEdge(edge, vertex, data.vertices[data.indices.get(edge.v)])
         }
         for (const edge of vertex.inEdges) {
           const {points} = edge
           points[points.length - 1][0] += dx
           points[points.length - 1][1] += dy
-          adjustEdge(edge, data.vertices[edge.u], vertex)
+          adjustEdge(edge, data.vertices[data.indices.get(edge.u)], vertex)
         }
         pos.x0 = x / k
         pos.y0 = y / k

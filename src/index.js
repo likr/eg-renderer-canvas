@@ -301,6 +301,50 @@ class EgRendererElement extends window.HTMLElement {
       this.setAttribute('no-auto-centering', '')
     }
   }
+
+  get src () {
+    if (!this.hasAttribute('src')) {
+      return 300
+    }
+    return this.getAttribute('src')
+  }
+
+  set src (value) {
+    this.setAttribute('src', value)
+  }
+
+  get data () {
+    if (!this.hasAttribute('data')) {
+      return 300
+    }
+    return this.getAttribute('data')
+  }
+
+  set data (value) {
+    this.setAttribute('data', value)
+  }
+
+  get width () {
+    if (!this.hasAttribute('width')) {
+      return 300
+    }
+    return this.getAttribute('width')
+  }
+
+  set width (value) {
+    this.setAttribute('width', value)
+  }
+
+  get height () {
+    if (!this.hasAttribute('height')) {
+      return 300
+    }
+    return this.getAttribute('height')
+  }
+
+  set height (value) {
+    this.setAttribute('height', value)
+  }
 }
 
 window.customElements.define('eg-renderer', EgRendererElement)
