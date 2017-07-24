@@ -331,3 +331,35 @@ TODO
 #### EgRendererElement.center()
 
 #### EgRendererElement.update()
+
+## Integration with Other JavaScript Libraries and Frameworks
+
+### jQuery
+
+```javascript
+window.customElements.whenDefined('eg-renderer').then(() => {
+  $('eg-renderer')
+    .attr('width', 960)
+    .attr('height', 600)
+    .attr('src', 'data.json')
+})
+```
+
+### React
+
+```javascript
+import React from 'react'
+
+export class Renderer extends React.Component {
+  render () {
+    const width = 960
+    const height = 600
+    const src = 'data.json'
+    return <eg-renderer-ogdf
+      width={width}
+      height={height}
+      src={src}
+    />
+  }
+}
+```
