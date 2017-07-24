@@ -345,7 +345,7 @@ $('eg-renderer')
 
 ### React
 
-```javascript
+```jsx
 import React from 'react'
 
 export class Renderer extends React.Component {
@@ -353,7 +353,7 @@ export class Renderer extends React.Component {
     const width = 960
     const height = 600
     const src = 'data.json'
-    return <eg-renderer-ogdf
+    return <eg-renderer
       width={width}
       height={height}
       src={src}
