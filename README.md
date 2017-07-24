@@ -1,6 +1,6 @@
 # EgRenderer
 
-Easy graph rendering tool using custom elements.
+Easy graph renderer for the Web.
 
 ## Example
 
@@ -43,7 +43,7 @@ Run following commands and open http://localhost:8080/ .
 
 ```console
 $ pip install cookiecutter
-$ cookiecutter gh:likr/cookiecutter--eg-renderer
+$ cookiecutter gh:likr/cookiecutter-eg-renderer
 $ cd {{repo_name}}
 $ npm start
 ```
