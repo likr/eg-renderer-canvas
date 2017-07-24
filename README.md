@@ -337,12 +337,10 @@ TODO
 ### jQuery
 
 ```javascript
-window.customElements.whenDefined('eg-renderer').then(() => {
-  $('eg-renderer')
-    .attr('width', 960)
-    .attr('height', 600)
-    .attr('src', 'data.json')
-})
+$('eg-renderer')
+  .attr('width', 960)
+  .attr('height', 600)
+  .attr('src', 'data.json')
 ```
 
 ### React
