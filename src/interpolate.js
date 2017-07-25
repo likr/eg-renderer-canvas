@@ -178,3 +178,13 @@ export const diff = (current, next) => {
     edges: diffedEdges
   }
 }
+
+export const makeMap = (data) => {
+  const vertices = new Map(data.vertices.map((vertex) => [vertex.u, vertex]))
+  const edges = new Map(data.vertices.map(({u}) => [u, new Map()]))
+  for (const edge of data.edges) {
+    const {u, v} = edge
+    edges.get(u).set(v, edge)
+  }
+  return {vertices, edges}
+}

@@ -5,6 +5,7 @@ import {
 } from './centering'
 import {
   diff,
+  makeMap,
   interpolateLayout
 } from './interpolate'
 import {
@@ -48,13 +49,78 @@ class EgRendererElement extends window.HTMLElement {
     return [
       'src',
       'width',
-      'height'
+      'height',
+      'graph-nodes-property',
+      'graph-links-property',
+      'node-id-property',
+      'node-x-property',
+      'node-y-property',
+      'node-width-property',
+      'node-height-property',
+      'node-type-property',
+      'node-fill-color-property',
+      'node-fill-opacity-property',
+      'node-stroke-color-property',
+      'node-stroke-opacity-property',
+      'node-stroke-width-property',
+      'node-label-property',
+      'node-label-fill-color-property',
+      'node-label-fill-opacity-property',
+      'node-label-stroke-color-property',
+      'node-label-stroke-opacity-property',
+      'node-label-stroke-width-property',
+      'link-source-property',
+      'link-target-property',
+      'link-stroke-color-property',
+      'link-stroke-opacity-property',
+      'link-stroke-width-property',
+      'link-source-marker-shape-property',
+      'link-source-marker-size-property',
+      'link-target-marker-shape-property',
+      'link-target-marker-size-property',
+      'link-label-property',
+      'link-label-fill-color-property',
+      'link-label-fill-opacity-property',
+      'link-label-stroke-color-property',
+      'link-label-stroke-opacity-property',
+      'link-label-stroke-width-property',
+      'default-node-x',
+      'default-node-y',
+      'default-node-width',
+      'default-node-height',
+      'default-node-type',
+      'default-node-fill-color',
+      'default-node-fill-opacity',
+      'default-node-stroke-color',
+      'default-node-stroke-opacity',
+      'default-node-stroke-width',
+      'default-node-label',
+      'default-node-label-fill-color',
+      'default-node-label-fill-opacity',
+      'default-node-label-stroke-color',
+      'default-node-label-stroke-opacity',
+      'default-node-label-stroke-width',
+      'default-link-stroke-color',
+      'default-link-stroke-opacity',
+      'default-link-stroke-width',
+      'default-link-source-marker-shape',
+      'default-link-source-marker-size',
+      'default-link-target-marker-shape',
+      'default-link-target-marker-size',
+      'default-link-label',
+      'default-link-label-fill-color',
+      'default-link-label-fill-opacity',
+      'default-link-label-stroke-color',
+      'default-link-label-stroke-opacity',
+      'default-link-label-stroke-width'
     ]
   }
 
   constructor () {
     super()
     const p = {
+      invalidate: false,
+      originalData: null,
       canvas: document.createElement('canvas'),
       data: {
         vertices: [],
@@ -97,10 +163,14 @@ class EgRendererElement extends window.HTMLElement {
     this.appendChild(p.canvas)
 
     const render = () => {
+      if (p.invalidate && p.originalData) {
+        this.load(p.originalData)
+        p.invalidate = false
+      }
       const now = new Date()
       const transitionDuration = this.transitionDuration
-      const r = (now - p.layoutTime) / transitionDuration
-      const layout = interpolateLayout(p.layoutResult, p.data, r)
+      const r = now > p.layoutTime ? (now - p.layoutTime) / transitionDuration : 1 / transitionDuration
+      const layout = interpolateLayout(p.previousLayoutResult, p.data, r)
       const ctx = p.canvas.getContext('2d')
       ctx.save()
       ctx.clearRect(0, 0, p.canvas.width, p.canvas.height)
@@ -126,6 +196,7 @@ class EgRendererElement extends window.HTMLElement {
         window.fetch(newValue)
           .then((response) => response.json())
           .then((data) => {
+            privates.get(this).originalData = data
             this.load(data)
           })
         break
@@ -135,6 +206,8 @@ class EgRendererElement extends window.HTMLElement {
       case 'height':
         setHeight(this, newValue)
         break
+      default:
+        this.invalidate()
     }
   }
 
@@ -148,7 +221,8 @@ class EgRendererElement extends window.HTMLElement {
       const dv = data.vertices[data.indices.get(v)]
       adjustEdge(edge, du, dv)
     }
-    p.layoutResult = diff(p.layoutResult, data)
+    p.previousLayoutResult = diff(p.layoutResult, data)
+    p.layoutResult = makeMap(data)
     p.layoutTime = new Date()
     if (this.autoCentering) {
       this.center()
@@ -242,6 +316,10 @@ class EgRendererElement extends window.HTMLElement {
   }
 
   onLayout () {
+  }
+
+  invalidate () {
+    privates.get(this).invalidate = true
   }
 
   get autoUpdate () {
