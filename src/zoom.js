@@ -61,6 +61,8 @@ export const zoom = (element, attrs) => {
         const vertex = data.vertices[data.indices.get(u)]
         vertex.x += dx
         vertex.y += dy
+        attrs.layoutResult.vertices.get(u).x += dx
+        attrs.layoutResult.vertices.get(u).y += dy
         for (const edge of vertex.outEdges) {
           const {points} = edge
           points[0][0] += dx

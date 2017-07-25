@@ -8,19 +8,18 @@ const interpolateVertex = (current, next, r) => {
     'type',
     'fillColor',
     'strokeColor',
-    'strokeOpacity',
-    'strokeWidth',
     'label',
     'labelFillColor',
     'labelStrokeColor',
-    'labelStrokeWidth',
     'd'
   ]
   const interpolateProperties = [
     'x',
     'y',
     'width',
-    'height'
+    'height',
+    'strokeWidth',
+    'labelStrokeWidth'
   ]
   const result = {}
   for (const p of copyProperties) {
@@ -38,18 +37,19 @@ const interpolateEdge = (current, next, r) => {
     'v',
     'type',
     'strokeColor',
-    'strokeOpacity',
     'sourceMarkerShape',
-    'sourceMarkerSize',
     'targetMarkerShape',
-    'targetMarkerSize',
     'label',
     'labelFillColor',
     'labelStrokeColor',
-    'labelStrokeWidth',
     'd'
   ]
-  const interpolateProperties = []
+  const interpolateProperties = [
+    'strokeWidth',
+    'sourceMarkerSize',
+    'targetMarkerSize',
+    'labelStrokeWidth'
+  ]
   const result = {}
   for (const p of copyProperties) {
     result[p] = next[p]

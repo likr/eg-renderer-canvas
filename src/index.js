@@ -164,7 +164,7 @@ class EgRendererElement extends window.HTMLElement {
 
     const render = () => {
       if (p.invalidate && p.originalData) {
-        this.load(p.originalData)
+        this.load(p.originalData, true)
         p.invalidate = false
       }
       const now = new Date()
@@ -240,7 +240,7 @@ class EgRendererElement extends window.HTMLElement {
     return this
   }
 
-  load (data) {
+  load (data, preservePos = false) {
     const vertices = data[this.graphNodesProperty].map((node, i) => {
       const fillColor = d3.color(get(node, this.nodeFillColorProperty, this.defaultNodeFillColor))
       fillColor.opacity = +get(node, this.nodeFillOpacityProperty, this.defaultNodeFillOpacity)
@@ -250,10 +250,11 @@ class EgRendererElement extends window.HTMLElement {
       labelFillColor.opacity = +get(node, this.nodeLabelFillOpacityProperty, this.defaultNodeLabelFillOpacity)
       const labelStrokeColor = d3.color(get(node, this.nodeLabelStrokeColorProperty, this.defaultNodeLabelStrokeColor))
       labelStrokeColor.opacity = +get(node, this.nodeLabelStrokeOpacityProperty, this.defaultNodeLabelStrokeOpacity)
+      const u = (this.nodeIdProperty === '$index' ? i : node[this.nodeIdProperty]).toString()
       return {
-        u: (this.nodeIdProperty === '$index' ? i : node[this.nodeIdProperty]).toString(),
-        x: +get(node, this.nodeXProperty, this.defaultNodeX),
-        y: +get(node, this.nodeYProperty, this.defaultNodeY),
+        u,
+        x: preservePos ? privates.get(this).layoutResult.vertices.get(u).x : +get(node, this.nodeXProperty, this.defaultNodeX),
+        y: preservePos ? privates.get(this).layoutResult.vertices.get(u).y : +get(node, this.nodeYProperty, this.defaultNodeY),
         width: +get(node, this.nodeWidthProperty, this.defaultNodeWidth),
         height: +get(node, this.nodeHeightProperty, this.defaultNodeHeight),
         type: get(node, this.nodeTypeProperty, this.defaultNodeType),
@@ -281,7 +282,7 @@ class EgRendererElement extends window.HTMLElement {
       labelStrokeColor.opacity = +get(link, this.linkLabelStrokeOpacityProperty, this.defaultLinkLabelStrokeOpacity)
       const du = vertices[indices.get(u)]
       const dv = vertices[indices.get(v)]
-      const points = [[du.x, du.y], [dv.x, dv.y]]
+      const points = preservePos ? privates.get(this).layoutResult.edges.get(u).get(v).points : [[du.x, du.y], [dv.x, dv.y]]
       const edge = {
         u,
         v,
