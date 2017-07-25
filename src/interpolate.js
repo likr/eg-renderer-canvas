@@ -180,11 +180,11 @@ export const diff = (current, next) => {
 }
 
 export const makeMap = (data) => {
-  const vertices = new Map(data.vertices.map((vertex) => [vertex.u, vertex]))
+  const vertices = new Map(data.vertices.map((vertex) => [vertex.u, Object.assign({}, vertex)]))
   const edges = new Map(data.vertices.map(({u}) => [u, new Map()]))
   for (const edge of data.edges) {
     const {u, v} = edge
-    edges.get(u).set(v, edge)
+    edges.get(u).set(v, Object.assign({}, edge))
   }
   return {vertices, edges}
 }
