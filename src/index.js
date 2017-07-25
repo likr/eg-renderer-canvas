@@ -165,8 +165,8 @@ class EgRendererElement extends window.HTMLElement {
     const render = () => {
       if (p.invalidate && p.originalData) {
         this.load(p.originalData, true)
-        p.invalidate = false
       }
+      p.invalidate = false
       const now = new Date()
       const transitionDuration = this.transitionDuration
       const r = now > p.layoutTime ? (now - p.layoutTime) / transitionDuration : 1 / transitionDuration
