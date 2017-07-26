@@ -176,7 +176,7 @@ class EgRendererElement extends window.HTMLElement {
 
     const render = () => {
       if (p.invalidate && p.originalData) {
-        this.load(p.originalData, true)
+        this.update(true)
       }
       p.invalidate = false
       const now = new Date()
@@ -208,7 +208,6 @@ class EgRendererElement extends window.HTMLElement {
         window.fetch(newValue)
           .then((response) => response.json())
           .then((data) => {
-            privates.get(this).originalData = data
             this.load(data)
           })
         break
@@ -252,7 +251,14 @@ class EgRendererElement extends window.HTMLElement {
     return this
   }
 
-  load (data, preservePos = false) {
+  load (data) {
+    privates.get(this).originalData = data
+    this.update()
+  }
+
+  update (preservePos = false) {
+    const p = privates.get(this)
+    const data = p.originalData
     const vertices = get(data, this.graphNodesProperty).map((node, i) => {
       const fillColor = d3.color(get(node, this.nodeFillColorProperty, this.defaultNodeFillColor))
       fillColor.opacity = +get(node, this.nodeFillOpacityProperty, this.defaultNodeFillOpacity)
@@ -265,8 +271,8 @@ class EgRendererElement extends window.HTMLElement {
       const u = (this.nodeIdProperty === '$index' ? i : get(node, this.nodeIdProperty)).toString()
       return {
         u,
-        x: preservePos ? privates.get(this).layoutResult.vertices.get(u).x : +get(node, this.nodeXProperty, this.defaultNodeX),
-        y: preservePos ? privates.get(this).layoutResult.vertices.get(u).y : +get(node, this.nodeYProperty, this.defaultNodeY),
+        x: preservePos ? p.layoutResult.vertices.get(u).x : +get(node, this.nodeXProperty, this.defaultNodeX),
+        y: preservePos ? p.layoutResult.vertices.get(u).y : +get(node, this.nodeYProperty, this.defaultNodeY),
         width: +get(node, this.nodeWidthProperty, this.defaultNodeWidth),
         height: +get(node, this.nodeHeightProperty, this.defaultNodeHeight),
         type: get(node, this.nodeTypeProperty, this.defaultNodeType),
@@ -294,7 +300,7 @@ class EgRendererElement extends window.HTMLElement {
       labelStrokeColor.opacity = +get(link, this.linkLabelStrokeOpacityProperty, this.defaultLinkLabelStrokeOpacity)
       const du = vertices[indices.get(u)]
       const dv = vertices[indices.get(v)]
-      const points = preservePos ? privates.get(this).layoutResult.edges.get(u).get(v).points : [[du.x, du.y], [dv.x, dv.y]]
+      const points = preservePos ? p.layoutResult.edges.get(u).get(v).points : [[du.x, du.y], [dv.x, dv.y]]
       const edge = {
         u,
         v,
@@ -316,7 +322,6 @@ class EgRendererElement extends window.HTMLElement {
       dv.inEdges.push(edge)
       return edge
     })
-    const p = privates.get(this)
     p.data = {
       vertices,
       edges,
