@@ -19,8 +19,20 @@ const devicePixelRatio = () => {
   return window.devicePixelRatio || 1.0
 }
 
-const get = (d, key, defaultValue) => {
-  return d.hasOwnProperty(key) ? d[key] : defaultValue
+const get = (...args) => {
+  let d = args[0]
+  const key = args[1]
+  const attrs = key.split('.')
+  for (const attr of attrs) {
+    if (!d.hasOwnProperty(attr)) {
+      if (args.length === 2) {
+        throw new Error(`Object doesn't have an attribute ${key}`)
+      }
+      return args[2]
+    }
+    d = d[attr]
+  }
+  return d
 }
 
 const privates = new WeakMap()
@@ -241,7 +253,7 @@ class EgRendererElement extends window.HTMLElement {
   }
 
   load (data, preservePos = false) {
-    const vertices = data[this.graphNodesProperty].map((node, i) => {
+    const vertices = get(data, this.graphNodesProperty).map((node, i) => {
       const fillColor = d3.color(get(node, this.nodeFillColorProperty, this.defaultNodeFillColor))
       fillColor.opacity = +get(node, this.nodeFillOpacityProperty, this.defaultNodeFillOpacity)
       const strokeColor = d3.color(get(node, this.nodeStrokeColorProperty, this.defaultNodeStrokeColor))
@@ -250,7 +262,7 @@ class EgRendererElement extends window.HTMLElement {
       labelFillColor.opacity = +get(node, this.nodeLabelFillOpacityProperty, this.defaultNodeLabelFillOpacity)
       const labelStrokeColor = d3.color(get(node, this.nodeLabelStrokeColorProperty, this.defaultNodeLabelStrokeColor))
       labelStrokeColor.opacity = +get(node, this.nodeLabelStrokeOpacityProperty, this.defaultNodeLabelStrokeOpacity)
-      const u = (this.nodeIdProperty === '$index' ? i : node[this.nodeIdProperty]).toString()
+      const u = (this.nodeIdProperty === '$index' ? i : get(node, this.nodeIdProperty)).toString()
       return {
         u,
         x: preservePos ? privates.get(this).layoutResult.vertices.get(u).x : +get(node, this.nodeXProperty, this.defaultNodeX),
@@ -271,9 +283,9 @@ class EgRendererElement extends window.HTMLElement {
       }
     })
     const indices = new Map(vertices.map(({u}, i) => [u, i]))
-    const edges = data[this.graphLinksProperty].map((link) => {
-      const u = link[this.linkSourceProperty].toString()
-      const v = link[this.linkTargetProperty].toString()
+    const edges = get(data, this.graphLinksProperty).map((link) => {
+      const u = get(link, this.linkSourceProperty).toString()
+      const v = get(link, this.linkTargetProperty).toString()
       const strokeColor = d3.color(get(link, this.linkStrokeColorProperty, this.defaultLinkStrokeColor))
       strokeColor.opacity = +get(link, this.linkStrokeOpacityProperty, this.defaultLinkStrokeOpacity)
       const labelFillColor = d3.color(get(link, this.linkLabelFillColorProperty, this.defaultLinkLabelFillColor))
