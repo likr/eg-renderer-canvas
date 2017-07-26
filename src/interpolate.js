@@ -1,3 +1,5 @@
+import * as d3 from 'd3'
+
 const interpolate = (current, next, r) => {
   return (next - current) * r + current
 }
@@ -6,11 +8,7 @@ const interpolateVertex = (current, next, r) => {
   const copyProperties = [
     'u',
     'type',
-    'fillColor',
-    'strokeColor',
     'label',
-    'labelFillColor',
-    'labelStrokeColor',
     'd'
   ]
   const interpolateProperties = [
@@ -21,12 +19,24 @@ const interpolateVertex = (current, next, r) => {
     'strokeWidth',
     'labelStrokeWidth'
   ]
+  const colorInterpolateProperties = [
+    'fillColor',
+    'strokeColor',
+    'labelFillColor',
+    'labelStrokeColor'
+  ]
   const result = {}
   for (const p of copyProperties) {
     result[p] = next[p]
   }
   for (const p of interpolateProperties) {
     result[p] = interpolate(current[p], next[p], r)
+  }
+  for (const p of colorInterpolateProperties) {
+    const scale = d3.scaleLinear()
+      .domain([0, 1])
+      .range([current[p], next[p]])
+    result[p] = scale(r)
   }
   return result
 }
@@ -36,12 +46,9 @@ const interpolateEdge = (current, next, r) => {
     'u',
     'v',
     'type',
-    'strokeColor',
     'sourceMarkerShape',
     'targetMarkerShape',
     'label',
-    'labelFillColor',
-    'labelStrokeColor',
     'd'
   ]
   const interpolateProperties = [
@@ -50,12 +57,23 @@ const interpolateEdge = (current, next, r) => {
     'targetMarkerSize',
     'labelStrokeWidth'
   ]
+  const colorInterpolateProperties = [
+    'strokeColor',
+    'labelFillColor',
+    'labelStrokeColor'
+  ]
   const result = {}
   for (const p of copyProperties) {
     result[p] = next[p]
   }
   for (const p of interpolateProperties) {
     result[p] = interpolate(current[p], next[p], r)
+  }
+  for (const p of colorInterpolateProperties) {
+    const scale = d3.scaleLinear()
+      .domain([0, 1])
+      .range([current[p], next[p]])
+    result[p] = scale(r)
   }
   result.points = current.points.map(([x, y], i) => [interpolate(x, next.points[i][0], r), interpolate(y, next.points[i][1], r)])
   return result
