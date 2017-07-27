@@ -208,8 +208,8 @@ class EgRendererElement extends window.HTMLElement {
         window.fetch(newValue)
           .then((response) => response.json())
           .then((data) => {
+            this.dispatchEvent(new window.CustomEvent('datafetchend', {detail: data}))
             this.load(data)
-            this.dispatchEvent(new window.CustomEvent('datafetchend'))
           })
         break
       case 'width':
