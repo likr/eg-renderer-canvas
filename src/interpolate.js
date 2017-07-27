@@ -17,7 +17,8 @@ const interpolateVertex = (current, next, r) => {
     'width',
     'height',
     'strokeWidth',
-    'labelStrokeWidth'
+    'labelStrokeWidth',
+    'alpha'
   ]
   const colorInterpolateProperties = [
     'fillColor',
@@ -52,7 +53,8 @@ const interpolateEdge = (current, next, r) => {
     'strokeWidth',
     'sourceMarkerSize',
     'targetMarkerSize',
-    'labelStrokeWidth'
+    'labelStrokeWidth',
+    'alpha'
   ]
   const colorInterpolateProperties = [
     'strokeColor',
@@ -89,65 +91,19 @@ export const interpolateLayout = (current, next, r) => {
   }
 }
 
-const diffEdge = (current, next, du, dv) => {
+const diffEdgePoints = (current, next, du, dv) => {
   if (current) {
-    return current
+    return current.points
   } else if (du && dv) {
-    return Object.assign({}, next, {
-      points: [[du.x, du.y], [dv.x, dv.y]]
-    })
+    return current.points
   } else if (du) {
     const {x, y} = du
-    const {points} = next
-    return Object.assign({}, next, {
-      points: [[x, y], [points[1][0], 0]]
-    })
+    return [[x, y], next.points[1]]
   } else if (dv) {
     const {x, y} = dv
-    const {points} = next
-    return Object.assign({}, next, {
-      points: [[points[1][0], 0], [x, y]]
-    })
+    return [next.points[0], [x, y]]
   } else {
-    return Object.assign({}, next, {
-      points: next.points.map(([x]) => [x, 0])
-    })
-  }
-}
-
-const diffHierarchyEdge = (current, next, du, dv) => {
-  if (current) {
-    return current
-  } else if (du) {
-    const {x, y, width} = du
-    const {points} = next
-    return Object.assign({}, next, {
-      points: [
-        [x + width / 2, y],
-        [x + width / 2, y],
-        [points[2][0], 0],
-        [points[3][0], 0],
-        [points[4][0], 0],
-        [points[5][0], 0]
-      ]
-    })
-  } else if (dv) {
-    const {x, y, width} = dv
-    const {points} = next
-    return Object.assign({}, next, {
-      points: [
-        [points[0][0], 0],
-        [points[1][0], 0],
-        [points[2][0], 0],
-        [points[3][0], 0],
-        [x - width / 2, y],
-        [x - width / 2, y]
-      ]
-    })
-  } else {
-    return Object.assign({}, next, {
-      points: next.points.map(([x]) => [x, 0])
-    })
+    return next.points
   }
 }
 
@@ -171,10 +127,10 @@ export const diff = (current, next) => {
     const du = current.vertices.has(u) ? current.vertices.get(u) : null
     const dv = current.vertices.has(v) ? current.vertices.get(u) : null
     const currentEdge = getCurrentEdge(edge, current.edges)
-    if (edge.type === 'hierarchy') {
-      diffedEdges.get(u).set(v, diffHierarchyEdge(currentEdge, edge, du, dv))
-    }
-    diffedEdges.get(u).set(v, diffEdge(currentEdge, edge, du, dv))
+    diffedEdges.get(u).set(v, Object.assign({}, edge, {
+      points: diffEdgePoints(currentEdge, edge, du, dv),
+      alpha: du && dv ? 1 : 0
+    }))
   }
 
   return {
@@ -184,7 +140,7 @@ export const diff = (current, next) => {
         return [u, current.vertices.get(u)]
       }
       return [u, Object.assign({}, vertex, {
-        y: 0
+        alpha: 0
       })]
     })),
     edges: diffedEdges
