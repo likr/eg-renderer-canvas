@@ -209,6 +209,7 @@ class EgRendererElement extends window.HTMLElement {
           .then((response) => response.json())
           .then((data) => {
             this.load(data)
+            this.dispatchEvent(new window.CustomEvent('datafetchend'))
           })
         break
       case 'width':
@@ -963,6 +964,10 @@ class EgRendererElement extends window.HTMLElement {
 
   set defaultLinkLabelStrokeWidth (value) {
     this.setAttribute('default-link-label-stroke-width', value)
+  }
+
+  get data () {
+    return privates.get(this).originalData
   }
 }
 
