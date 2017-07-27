@@ -149,7 +149,8 @@ class EgRendererElement extends window.HTMLElement {
         edges: new Map()
       },
       margin: 10,
-      layoutTime: 0
+      layoutTime: 0,
+      ease: d3.easeCubic
     }
     p.zoom = zoom(this, p)
     privates.set(this, p)
@@ -181,7 +182,8 @@ class EgRendererElement extends window.HTMLElement {
       p.invalidate = false
       const now = new Date()
       const transitionDuration = this.transitionDuration
-      const r = now > p.layoutTime ? (now - p.layoutTime) / transitionDuration : 1 / transitionDuration
+      const t = now > p.layoutTime ? (now - p.layoutTime) / transitionDuration : 1 / transitionDuration
+      const r = p.ease(t)
       const layout = interpolateLayout(p.previousLayoutResult, p.data, r)
       const ctx = p.canvas.getContext('2d')
       ctx.save()

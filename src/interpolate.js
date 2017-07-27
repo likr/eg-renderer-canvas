@@ -95,7 +95,7 @@ const diffEdgePoints = (current, next, du, dv) => {
   if (current) {
     return current.points
   } else if (du && dv) {
-    return current.points
+    return [[du.x, du.y], [dv.x, dv.y]]
   } else if (du) {
     const {x, y} = du
     return [[x, y], next.points[1]]
@@ -125,11 +125,11 @@ export const diff = (current, next) => {
   for (const edge of next.edges) {
     const {u, v} = edge
     const du = current.vertices.has(u) ? current.vertices.get(u) : null
-    const dv = current.vertices.has(v) ? current.vertices.get(u) : null
+    const dv = current.vertices.has(v) ? current.vertices.get(v) : null
     const currentEdge = getCurrentEdge(edge, current.edges)
     diffedEdges.get(u).set(v, Object.assign({}, edge, {
       points: diffEdgePoints(currentEdge, edge, du, dv),
-      alpha: du && dv ? 1 : 0
+      alpha: currentEdge ? 1 : 0
     }))
   }
 

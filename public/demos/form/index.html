@@ -38,14 +38,17 @@ window.customElements.forcePolyfill = true
 </div>
 <div>
 <eg-renderer
+  transition-duration="1000"
   width="600"
   height="400"
+  src="data.json"
   node-id-property="id"
   node-label-property="id"
   link-label-property="id"
   default-node-stroke-width="0"
   default-node-label-fill-color="#fff"
   default-link-stroke-color="#ccc"
+  default-link-stroke-width="3"
   no-auto-centering
 >
 </eg-renderer>
@@ -54,28 +57,25 @@ window.customElements.forcePolyfill = true
 customElements.whenDefined('eg-renderer').then(() => {
   const renderer = document.querySelector('eg-renderer')
 
-  fetch('data.json')
-    .then((response) => response.json())
-    .then((data) => {
-      renderer.load(data)
+  renderer.addEventListener('datafetchend', (event) => {
+    const data = event.detail
+    const nodes = new Map(data.nodes.map((node, i) => [i, node]))
+    const links = new Map(data.links.map((link) => [`${link.source}-${link.target}`, link]))
 
-      const nodes = new Map(data.nodes.map((node, i) => [i, node]))
-      const links = new Map(data.links.map((link) => [`${link.source}-${link.target}`, link]))
-
-      data.nodes.forEach((node, i) => {
-        document.querySelector(`#node-${i}`).addEventListener('change', (event) => {
-          node.visibility = event.target.checked
-          renderer.invalidate()
-        })
-      })
-
-      data.links.forEach((link) => {
-        document.querySelector(`#link-${link.source}-${link.target}`).addEventListener('change', (event) => {
-          link.visibility = event.target.checked
-          renderer.invalidate()
-        })
+    data.nodes.forEach((node, i) => {
+      document.querySelector(`#node-${i}`).addEventListener('change', (event) => {
+        node.visibility = event.target.checked
+        renderer.invalidate()
       })
     })
+
+    data.links.forEach((link) => {
+      document.querySelector(`#link-${link.source}-${link.target}`).addEventListener('change', (event) => {
+        link.visibility = event.target.checked
+        renderer.invalidate()
+      })
+    })
+  })
 })
 </script>
 </body>
