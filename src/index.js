@@ -259,69 +259,78 @@ class EgRendererElement extends window.HTMLElement {
   update (preservePos = false) {
     const p = privates.get(this)
     const data = p.originalData
-    const vertices = get(data, this.graphNodesProperty).map((node, i) => {
-      const fillColor = d3.color(get(node, this.nodeFillColorProperty, this.defaultNodeFillColor))
-      fillColor.opacity = +get(node, this.nodeFillOpacityProperty, this.defaultNodeFillOpacity)
-      const strokeColor = d3.color(get(node, this.nodeStrokeColorProperty, this.defaultNodeStrokeColor))
-      strokeColor.opacity = +get(node, this.nodeStrokeOpacityProperty, this.defaultNodeStrokeOpacity)
-      const labelFillColor = d3.color(get(node, this.nodeLabelFillColorProperty, this.defaultNodeLabelFillColor))
-      labelFillColor.opacity = +get(node, this.nodeLabelFillOpacityProperty, this.defaultNodeLabelFillOpacity)
-      const labelStrokeColor = d3.color(get(node, this.nodeLabelStrokeColorProperty, this.defaultNodeLabelStrokeColor))
-      labelStrokeColor.opacity = +get(node, this.nodeLabelStrokeOpacityProperty, this.defaultNodeLabelStrokeOpacity)
-      const u = (this.nodeIdProperty === '$index' ? i : get(node, this.nodeIdProperty)).toString()
-      return {
-        u,
-        x: preservePos ? p.layoutResult.vertices.get(u).x : +get(node, this.nodeXProperty, this.defaultNodeX),
-        y: preservePos ? p.layoutResult.vertices.get(u).y : +get(node, this.nodeYProperty, this.defaultNodeY),
-        width: +get(node, this.nodeWidthProperty, this.defaultNodeWidth),
-        height: +get(node, this.nodeHeightProperty, this.defaultNodeHeight),
-        type: get(node, this.nodeTypeProperty, this.defaultNodeType),
-        fillColor: fillColor.toString(),
-        strokeColor: strokeColor.toString(),
-        strokeWidth: +get(node, this.nodeStrokeWidthProperty, this.defaultNodeStrokeWidth),
-        label: get(node, this.nodeLabelProperty, this.defaultNodeLabel),
-        labelFillColor: labelFillColor.toString(),
-        labelStrokeColor: labelStrokeColor.toString(),
-        labelStrokeWidth: +get(node, this.nodeLabelStrokeWidthProperty, this.defaultNodeLabelStrokeWidth),
-        inEdges: [],
-        outEdges: [],
-        d: node
-      }
-    })
+    const vertices = get(data, this.graphNodesProperty)
+      .filter((node) => get(node, this.nodeVisibilityProperty, this.defaultNodeVisibility))
+      .map((node, i) => {
+        const fillColor = d3.color(get(node, this.nodeFillColorProperty, this.defaultNodeFillColor))
+        fillColor.opacity = +get(node, this.nodeFillOpacityProperty, this.defaultNodeFillOpacity)
+        const strokeColor = d3.color(get(node, this.nodeStrokeColorProperty, this.defaultNodeStrokeColor))
+        strokeColor.opacity = +get(node, this.nodeStrokeOpacityProperty, this.defaultNodeStrokeOpacity)
+        const labelFillColor = d3.color(get(node, this.nodeLabelFillColorProperty, this.defaultNodeLabelFillColor))
+        labelFillColor.opacity = +get(node, this.nodeLabelFillOpacityProperty, this.defaultNodeLabelFillOpacity)
+        const labelStrokeColor = d3.color(get(node, this.nodeLabelStrokeColorProperty, this.defaultNodeLabelStrokeColor))
+        labelStrokeColor.opacity = +get(node, this.nodeLabelStrokeOpacityProperty, this.defaultNodeLabelStrokeOpacity)
+        const u = (this.nodeIdProperty === '$index' ? i : get(node, this.nodeIdProperty)).toString()
+        return {
+          u,
+          x: preservePos && p.layoutResult.vertices.has(u) ? p.layoutResult.vertices.get(u).x : +get(node, this.nodeXProperty, this.defaultNodeX),
+          y: preservePos && p.layoutResult.vertices.has(u) ? p.layoutResult.vertices.get(u).y : +get(node, this.nodeYProperty, this.defaultNodeY),
+          width: +get(node, this.nodeWidthProperty, this.defaultNodeWidth),
+          height: +get(node, this.nodeHeightProperty, this.defaultNodeHeight),
+          type: get(node, this.nodeTypeProperty, this.defaultNodeType),
+          fillColor: fillColor.toString(),
+          strokeColor: strokeColor.toString(),
+          strokeWidth: +get(node, this.nodeStrokeWidthProperty, this.defaultNodeStrokeWidth),
+          label: get(node, this.nodeLabelProperty, this.defaultNodeLabel),
+          labelFillColor: labelFillColor.toString(),
+          labelStrokeColor: labelStrokeColor.toString(),
+          labelStrokeWidth: +get(node, this.nodeLabelStrokeWidthProperty, this.defaultNodeLabelStrokeWidth),
+          inEdges: [],
+          outEdges: [],
+          d: node
+        }
+      })
     const indices = new Map(vertices.map(({u}, i) => [u, i]))
-    const edges = get(data, this.graphLinksProperty).map((link) => {
-      const u = get(link, this.linkSourceProperty).toString()
-      const v = get(link, this.linkTargetProperty).toString()
-      const strokeColor = d3.color(get(link, this.linkStrokeColorProperty, this.defaultLinkStrokeColor))
-      strokeColor.opacity = +get(link, this.linkStrokeOpacityProperty, this.defaultLinkStrokeOpacity)
-      const labelFillColor = d3.color(get(link, this.linkLabelFillColorProperty, this.defaultLinkLabelFillColor))
-      labelFillColor.opacity = +get(link, this.linkLabelFillOpacityProperty, this.defaultLinkLabelFillOpacity)
-      const labelStrokeColor = d3.color(get(link, this.linkLabelStrokeColorProperty, this.defaultLinkLabelStrokeColor))
-      labelStrokeColor.opacity = +get(link, this.linkLabelStrokeOpacityProperty, this.defaultLinkLabelStrokeOpacity)
-      const du = vertices[indices.get(u)]
-      const dv = vertices[indices.get(v)]
-      const points = preservePos ? p.layoutResult.edges.get(u).get(v).points : [[du.x, du.y], [dv.x, dv.y]]
-      const edge = {
-        u,
-        v,
-        points,
-        type: 'line',
-        strokeColor: strokeColor.toString(),
-        strokeWidth: +get(link, this.linkStrokeWidthProperty, this.defaultLinkStrokeWidth),
-        sourceMarkerShape: get(link, this.linkSourceMarkerShapeProperty, this.defaultLinkSourceMarkerShape),
-        sourceMarkerSize: +get(link, this.linkSourceMarkerSizeProperty, this.defaultLinkSourceMarkerSize),
-        targetMarkerShape: get(link, this.linkTargetMarkerShapeProperty, this.defaultLinkTargetMarkerShape),
-        targetMarkerSize: +get(link, this.linkTargetMarkerSizeProperty, this.defaultLinkTargetMarkerSize),
-        label: get(link, this.linkLabelProperty, this.defaultLinkLabel),
-        labelFillColor: get(link, this.linkLabelFillColorProperty, this.defaultLinkLabelFillColor),
-        labelStrokeColor: get(link, this.linkLabelStrokeColorProperty, this.defaultLinkLabelStrokeColor),
-        labelStrokeWidth: +get(link, this.linkLabelStrokeWidthProperty, this.defaultLinkLabelStrokeWidth),
-        d: link
-      }
-      du.outEdges.push(edge)
-      dv.inEdges.push(edge)
-      return edge
-    })
+    const edges = get(data, this.graphLinksProperty)
+      .filter((link) => get(link, this.linkVisibilityProperty, this.defaultLinkVisibility))
+      .filter((link) => {
+        const u = get(link, this.linkSourceProperty).toString()
+        const v = get(link, this.linkTargetProperty).toString()
+        return indices.has(u) && indices.has(v)
+      })
+      .map((link) => {
+        const u = get(link, this.linkSourceProperty).toString()
+        const v = get(link, this.linkTargetProperty).toString()
+        const strokeColor = d3.color(get(link, this.linkStrokeColorProperty, this.defaultLinkStrokeColor))
+        strokeColor.opacity = +get(link, this.linkStrokeOpacityProperty, this.defaultLinkStrokeOpacity)
+        const labelFillColor = d3.color(get(link, this.linkLabelFillColorProperty, this.defaultLinkLabelFillColor))
+        labelFillColor.opacity = +get(link, this.linkLabelFillOpacityProperty, this.defaultLinkLabelFillOpacity)
+        const labelStrokeColor = d3.color(get(link, this.linkLabelStrokeColorProperty, this.defaultLinkLabelStrokeColor))
+        labelStrokeColor.opacity = +get(link, this.linkLabelStrokeOpacityProperty, this.defaultLinkLabelStrokeOpacity)
+        const du = vertices[indices.get(u)]
+        const dv = vertices[indices.get(v)]
+        const points = preservePos && p.layoutResult.edges.has(u) && p.layoutResult.edges.get(u).has(v) ? p.layoutResult.edges.get(u).get(v).points : [[du.x, du.y], [dv.x, dv.y]]
+        const edge = {
+          u,
+          v,
+          points,
+          type: 'line',
+          strokeColor: strokeColor.toString(),
+          strokeWidth: +get(link, this.linkStrokeWidthProperty, this.defaultLinkStrokeWidth),
+          sourceMarkerShape: get(link, this.linkSourceMarkerShapeProperty, this.defaultLinkSourceMarkerShape),
+          sourceMarkerSize: +get(link, this.linkSourceMarkerSizeProperty, this.defaultLinkSourceMarkerSize),
+          targetMarkerShape: get(link, this.linkTargetMarkerShapeProperty, this.defaultLinkTargetMarkerShape),
+          targetMarkerSize: +get(link, this.linkTargetMarkerSizeProperty, this.defaultLinkTargetMarkerSize),
+          label: get(link, this.linkLabelProperty, this.defaultLinkLabel),
+          labelFillColor: get(link, this.linkLabelFillColorProperty, this.defaultLinkLabelFillColor),
+          labelStrokeColor: get(link, this.linkLabelStrokeColorProperty, this.defaultLinkLabelStrokeColor),
+          labelStrokeWidth: +get(link, this.linkLabelStrokeWidthProperty, this.defaultLinkLabelStrokeWidth),
+          d: link
+        }
+        du.outEdges.push(edge)
+        dv.inEdges.push(edge)
+        return edge
+      })
     p.data = {
       vertices,
       edges,
@@ -524,6 +533,14 @@ class EgRendererElement extends window.HTMLElement {
     this.setAttribute('node-type-property', value)
   }
 
+  get nodeVisibilityProperty () {
+    return getter(this, 'node-visibility-property', 'visibility')
+  }
+
+  set nodeVisibilityProperty (value) {
+    this.setAttribute('node-visibility-property', value)
+  }
+
   get nodeLabelProperty () {
     return getter(this, 'node-label-property', 'label')
   }
@@ -610,6 +627,14 @@ class EgRendererElement extends window.HTMLElement {
 
   set linkStrokeWidthProperty (value) {
     this.setAttribute('link-stroke-width-property', value)
+  }
+
+  get linkVisibilityProperty () {
+    return getter(this, 'link-visibility-property', 'visibility')
+  }
+
+  set linkVisibilityProperty (value) {
+    this.setAttribute('link-visibility-property', value)
   }
 
   get linkSourceMarkerShapeProperty () {
@@ -772,6 +797,14 @@ class EgRendererElement extends window.HTMLElement {
     this.setAttribute('default-node-type', value)
   }
 
+  get defaultNodeVisibility () {
+    return getter(this, 'default-node-visibility', true)
+  }
+
+  set defaultNodeVisibility (value) {
+    this.setAttribute('default-node-visibility', value)
+  }
+
   get defaultNodeLabel () {
     return getter(this, 'default-node-label', '')
   }
@@ -842,6 +875,14 @@ class EgRendererElement extends window.HTMLElement {
 
   set defaultLinkStrokeWidth (value) {
     this.setAttribute('default-link-stroke-width', value)
+  }
+
+  get defaultLinkVisibility () {
+    return getter(this, 'default-link-visibility', true)
+  }
+
+  set defaultLinkVisibility (value) {
+    this.setAttribute('default-link-visibility', value)
   }
 
   get defaultLinkSourceMarkerShape () {

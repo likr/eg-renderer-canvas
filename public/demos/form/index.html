@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8"/>
+<title>Form Demo | EgRenderer Example</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/babel-polyfill/6.23.0/polyfill.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/fetch/2.0.3/fetch.min.js"></script>
+<script>
+if (!window.customElements) {
+  window.customElements = {}
+}
+window.customElements.forcePolyfill = true
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/custom-elements/1.0.0/custom-elements.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/4.10.0/d3.min.js"></script>
+<script async src="../../eg-renderer.js"></script>
+</head>
+<body>
+<div>
+<a href="../../">back</a>
+<h1>Form Demo</h1>
+</div>
+<div>
+  <div>
+    <label><input id="node-0" type="checkbox" checked/> Node 0</label>
+    <label><input id="node-1" type="checkbox" checked/> Node 1</label>
+    <label><input id="node-2" type="checkbox" checked/> Node 2</label>
+    <label><input id="node-3" type="checkbox" checked/> Node 3</label>
+  </div>
+  <div>
+    <label><input id="link-0-1" type="checkbox" checked/> Link 0-1</label>
+    <label><input id="link-0-2" type="checkbox" checked/> Link 0-2</label>
+    <label><input id="link-0-3" type="checkbox" checked/> Link 0-3</label>
+    <label><input id="link-1-2" type="checkbox" checked/> Link 1-2</label>
+    <label><input id="link-1-3" type="checkbox" checked/> Link 1-3</label>
+    <label><input id="link-2-3" type="checkbox" checked/> Link 2-3</label>
+  </div>
+</div>
+<div>
+<eg-renderer
+  width="600"
+  height="400"
+  node-id-property="id"
+  node-label-property="id"
+  link-label-property="id"
+  default-node-stroke-width="0"
+  default-node-label-fill-color="#fff"
+  default-link-stroke-color="#ccc"
+  no-auto-centering
+>
+</eg-renderer>
+</div>
+<script>
+customElements.whenDefined('eg-renderer').then(() => {
+  const renderer = document.querySelector('eg-renderer')
+
+  fetch('data.json')
+    .then((response) => response.json())
+    .then((data) => {
+      renderer.load(data)
+
+      const nodes = new Map(data.nodes.map((node, i) => [i, node]))
+      const links = new Map(data.links.map((link) => [`${link.source}-${link.target}`, link]))
+
+      data.nodes.forEach((node, i) => {
+        document.querySelector(`#node-${i}`).addEventListener('change', (event) => {
+          node.visibility = event.target.checked
+          renderer.invalidate()
+        })
+      })
+
+      data.links.forEach((link) => {
+        document.querySelector(`#link-${link.source}-${link.target}`).addEventListener('change', (event) => {
+          link.visibility = event.target.checked
+          renderer.invalidate()
+        })
+      })
+    })
+})
+</script>
+</body>
+</html>
+
