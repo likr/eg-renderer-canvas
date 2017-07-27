@@ -253,7 +253,7 @@ class EgRendererElement extends window.HTMLElement {
 
   load (data) {
     privates.get(this).originalData = data
-    this.update()
+    return this.update()
   }
 
   update (preservePos = false) {
@@ -278,12 +278,12 @@ class EgRendererElement extends window.HTMLElement {
           width: +get(node, this.nodeWidthProperty, this.defaultNodeWidth),
           height: +get(node, this.nodeHeightProperty, this.defaultNodeHeight),
           type: get(node, this.nodeTypeProperty, this.defaultNodeType),
-          fillColor: fillColor.toString(),
-          strokeColor: strokeColor.toString(),
+          fillColor: fillColor,
+          strokeColor: strokeColor,
           strokeWidth: +get(node, this.nodeStrokeWidthProperty, this.defaultNodeStrokeWidth),
           label: get(node, this.nodeLabelProperty, this.defaultNodeLabel),
-          labelFillColor: labelFillColor.toString(),
-          labelStrokeColor: labelStrokeColor.toString(),
+          labelFillColor: labelFillColor,
+          labelStrokeColor: labelStrokeColor,
           labelStrokeWidth: +get(node, this.nodeLabelStrokeWidthProperty, this.defaultNodeLabelStrokeWidth),
           inEdges: [],
           outEdges: [],
@@ -315,7 +315,7 @@ class EgRendererElement extends window.HTMLElement {
           v,
           points,
           type: 'line',
-          strokeColor: strokeColor.toString(),
+          strokeColor: strokeColor,
           strokeWidth: +get(link, this.linkStrokeWidthProperty, this.defaultLinkStrokeWidth),
           sourceMarkerShape: get(link, this.linkSourceMarkerShapeProperty, this.defaultLinkSourceMarkerShape),
           sourceMarkerSize: +get(link, this.linkSourceMarkerSizeProperty, this.defaultLinkSourceMarkerSize),

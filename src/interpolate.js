@@ -33,10 +33,7 @@ const interpolateVertex = (current, next, r) => {
     result[p] = interpolate(current[p], next[p], r)
   }
   for (const p of colorInterpolateProperties) {
-    const scale = d3.scaleLinear()
-      .domain([0, 1])
-      .range([current[p], next[p]])
-    result[p] = scale(r)
+    result[p] = d3.interpolateRgb(current[p], next[p])(r)
   }
   return result
 }
@@ -70,10 +67,7 @@ const interpolateEdge = (current, next, r) => {
     result[p] = interpolate(current[p], next[p], r)
   }
   for (const p of colorInterpolateProperties) {
-    const scale = d3.scaleLinear()
-      .domain([0, 1])
-      .range([current[p], next[p]])
-    result[p] = scale(r)
+    result[p] = d3.interpolateRgb(current[p], next[p])(r)
   }
   result.points = current.points.map(([x, y], i) => [interpolate(x, next.points[i][0], r), interpolate(y, next.points[i][1], r)])
   return result

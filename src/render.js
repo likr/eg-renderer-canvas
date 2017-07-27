@@ -10,8 +10,8 @@ const setVertexStyles = (ctx, args) => {
     strokeColor,
     strokeWidth
   } = args
-  ctx.fillStyle = fillColor
-  ctx.strokeStyle = strokeColor
+  ctx.fillStyle = fillColor.toString()
+  ctx.strokeStyle = strokeColor.toString()
   ctx.lineWidth = strokeWidth
 }
 
@@ -20,7 +20,7 @@ const setEdgeStyles = (ctx, args) => {
     strokeColor,
     strokeWidth
   } = args
-  ctx.strokeStyle = strokeColor
+  ctx.strokeStyle = strokeColor.toString()
   ctx.lineWidth = strokeWidth
 }
 
@@ -30,8 +30,8 @@ const setLabelStyles = (ctx, args) => {
     labelStrokeColor,
     labelStrokeWidth
   } = args
-  ctx.fillStyle = labelFillColor
-  ctx.strokeStyle = labelStrokeColor
+  ctx.fillStyle = labelFillColor.toString()
+  ctx.strokeStyle = labelStrokeColor.toString()
   ctx.lineWidth = labelStrokeWidth
 }
 
@@ -146,7 +146,7 @@ const renderLineEdge = (ctx, args) => {
         withContext(ctx, () => {
           const [x, y] = points[0]
           const r = sourceMarkerSize / 2
-          ctx.fillStyle = args.strokeColor
+          ctx.fillStyle = args.strokeColor.toString()
           ctx.translate(x, y)
           ctx.beginPath()
           ctx.ellipse(0, 0, r, r, 0, 0, 2 * Math.PI)
@@ -159,7 +159,7 @@ const renderLineEdge = (ctx, args) => {
           const [x0, y0] = points[1]
           const theta = Math.atan2(y - y0, x - x0)
           const r = targetMarkerSize * 2 / 3
-          ctx.fillStyle = args.strokeColor
+          ctx.fillStyle = args.strokeColor.toString()
           ctx.beginPath()
           ctx.moveTo(x + Math.cos(theta) * r, y + Math.sin(theta) * r)
           ctx.lineTo(x + Math.cos(theta + Math.PI * 2 / 3) * r, y + Math.sin(theta + Math.PI * 2 / 3) * r)
@@ -175,7 +175,7 @@ const renderLineEdge = (ctx, args) => {
         withContext(ctx, () => {
           const [x, y] = points[points.length - 1]
           const r = targetMarkerSize / 2
-          ctx.fillStyle = args.strokeColor
+          ctx.fillStyle = args.strokeColor.toString()
           ctx.translate(x, y)
           ctx.beginPath()
           ctx.ellipse(0, 0, r, r, 0, 0, 2 * Math.PI)
@@ -188,7 +188,7 @@ const renderLineEdge = (ctx, args) => {
           const [x0, y0] = points[points.length - 2]
           const theta = Math.atan2(y - y0, x - x0)
           const r = targetMarkerSize * 2 / 3
-          ctx.fillStyle = args.strokeColor
+          ctx.fillStyle = args.strokeColor.toString()
           ctx.beginPath()
           ctx.moveTo(x + Math.cos(theta) * r, y + Math.sin(theta) * r)
           ctx.lineTo(x + Math.cos(theta + Math.PI * 2 / 3) * r, y + Math.sin(theta + Math.PI * 2 / 3) * r)
