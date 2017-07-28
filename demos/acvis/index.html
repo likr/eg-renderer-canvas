@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<title>acvis | EgRenderer Example</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/babel-polyfill/6.23.0/polyfill.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/fetch/2.0.3/fetch.min.js"></script>
+<script>
+if (!window.customElements) {
+  window.customElements = {}
+}
+window.customElements.forcePolyfill = true
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/custom-elements/1.0.0/custom-elements.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/4.10.0/d3.min.js"></script>
+<script async src="../../eg-renderer.js"></script>
+<meta charset="utf-8"/>
+<style>
+body {
+  margin: 0;
+}
+</style>
+</head>
+<body>
+<eg-renderer
+  id="renderer"
+  src="miyano.json"
+  node-label-property="label"
+  default-node-width="10"
+  default-node-height="10"
+  default-node-stroke-width="0"
+  default-node-label-stroke-color="#fff"
+  default-node-label-stroke-width="1"
+  default-link-stroke-color="gray"
+  default-link-stroke-opacity="0.3"
+>
+</eg-renderer>
+<script>
+const renderer = document.getElementById('renderer')
+
+window.customElements.whenDefined('eg-renderer').then(() => {
+  renderer.width = window.innerWidth
+  renderer.height = window.innerHeight
+
+  window.addEventListener('resize', () => {
+    renderer.width = window.innerWidth
+    renderer.height = window.innerHeight
+  })
+})
+
+renderer.addEventListener('datafetchend', (event) => {
+  const data = event.detail
+  const colorScale = d3.scaleOrdinal(d3.schemeCategory20)
+  for (const node of data.nodes) {
+    node.fillColor = colorScale(node['Modularity Class'])
+    node.x *= 1000
+    node.y *= 1000
+  }
+})
+</script>
+</body>
+</html>
