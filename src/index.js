@@ -149,7 +149,8 @@ class EgRendererElement extends window.HTMLElement {
         edges: new Map()
       },
       margin: 10,
-      layoutTime: 0
+      layoutTime: 0,
+      ease: d3.easeCubic
     }
     p.zoom = zoom(this, p)
     privates.set(this, p)
@@ -181,7 +182,8 @@ class EgRendererElement extends window.HTMLElement {
       p.invalidate = false
       const now = new Date()
       const transitionDuration = this.transitionDuration
-      const r = now > p.layoutTime ? (now - p.layoutTime) / transitionDuration : 1 / transitionDuration
+      const t = now > p.layoutTime ? (now - p.layoutTime) / transitionDuration : 1 / transitionDuration
+      const r = p.ease(t)
       const layout = interpolateLayout(p.previousLayoutResult, p.data, r)
       const ctx = p.canvas.getContext('2d')
       ctx.save()
@@ -274,17 +276,18 @@ class EgRendererElement extends window.HTMLElement {
         const u = (this.nodeIdProperty === '$index' ? i : get(node, this.nodeIdProperty)).toString()
         return {
           u,
+          alpha: 1,
           x: preservePos && p.layoutResult.vertices.has(u) ? p.layoutResult.vertices.get(u).x : +get(node, this.nodeXProperty, this.defaultNodeX),
           y: preservePos && p.layoutResult.vertices.has(u) ? p.layoutResult.vertices.get(u).y : +get(node, this.nodeYProperty, this.defaultNodeY),
           width: +get(node, this.nodeWidthProperty, this.defaultNodeWidth),
           height: +get(node, this.nodeHeightProperty, this.defaultNodeHeight),
           type: get(node, this.nodeTypeProperty, this.defaultNodeType),
-          fillColor: fillColor,
-          strokeColor: strokeColor,
+          fillColor,
+          strokeColor,
           strokeWidth: +get(node, this.nodeStrokeWidthProperty, this.defaultNodeStrokeWidth),
           label: get(node, this.nodeLabelProperty, this.defaultNodeLabel),
-          labelFillColor: labelFillColor,
-          labelStrokeColor: labelStrokeColor,
+          labelFillColor,
+          labelStrokeColor,
           labelStrokeWidth: +get(node, this.nodeLabelStrokeWidthProperty, this.defaultNodeLabelStrokeWidth),
           inEdges: [],
           outEdges: [],
@@ -314,17 +317,18 @@ class EgRendererElement extends window.HTMLElement {
         const edge = {
           u,
           v,
+          alpha: 1,
           points,
           type: 'line',
-          strokeColor: strokeColor,
+          strokeColor,
           strokeWidth: +get(link, this.linkStrokeWidthProperty, this.defaultLinkStrokeWidth),
           sourceMarkerShape: get(link, this.linkSourceMarkerShapeProperty, this.defaultLinkSourceMarkerShape),
           sourceMarkerSize: +get(link, this.linkSourceMarkerSizeProperty, this.defaultLinkSourceMarkerSize),
           targetMarkerShape: get(link, this.linkTargetMarkerShapeProperty, this.defaultLinkTargetMarkerShape),
           targetMarkerSize: +get(link, this.linkTargetMarkerSizeProperty, this.defaultLinkTargetMarkerSize),
           label: get(link, this.linkLabelProperty, this.defaultLinkLabel),
-          labelFillColor: get(link, this.linkLabelFillColorProperty, this.defaultLinkLabelFillColor),
-          labelStrokeColor: get(link, this.linkLabelStrokeColorProperty, this.defaultLinkLabelStrokeColor),
+          labelFillColor,
+          labelStrokeColor,
           labelStrokeWidth: +get(link, this.linkLabelStrokeWidthProperty, this.defaultLinkLabelStrokeWidth),
           d: link
         }
