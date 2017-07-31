@@ -357,14 +357,19 @@ class EgRendererElement extends window.HTMLElement {
         labelStrokeColor.opacity = +get(link, this.linkLabelStrokeOpacityProperty, this.defaultLinkLabelStrokeOpacity)
         const du = vertices[indices.get(u)]
         const dv = vertices[indices.get(v)]
+        const newPoints = [[du.x, du.y]]
+        for (const [x, y] of get(link, this.linkBendsProperty, [])) {
+          newPoints.push([x, y])
+        }
+        newPoints.push([dv.x, dv.y])
         const points = preservePos && p.prevData.edges.has(u) && p.prevData.edges.get(u).has(v)
           ? p.prevData.edges.get(u).get(v).points
-          : [[du.x, du.y], [dv.x, dv.y]]
+          : newPoints
         const edge = {
           u,
           v,
           points,
-          type: 'line',
+          type: get(link, this.linkTypeProperty, this.defaultLinkType),
           strokeColor,
           strokeWidth: +get(link, this.linkStrokeWidthProperty, this.defaultLinkStrokeWidth),
           sourceMarkerShape: get(link, this.linkSourceMarkerShapeProperty, this.defaultLinkSourceMarkerShape),
@@ -659,6 +664,14 @@ class EgRendererElement extends window.HTMLElement {
     this.setAttribute('link-target-property', value)
   }
 
+  get linkBendsProperty () {
+    return getter(this, 'link-bends-property', 'bends')
+  }
+
+  set linkBendsProperty (value) {
+    this.setAttribute('link-bends-property', value)
+  }
+
   get linkStrokeColorProperty () {
     return getter(this, 'link-stroke-color-property', 'strokeColor')
   }
@@ -681,6 +694,14 @@ class EgRendererElement extends window.HTMLElement {
 
   set linkStrokeWidthProperty (value) {
     this.setAttribute('link-stroke-width-property', value)
+  }
+
+  get linkTypeProperty () {
+    return getter(this, 'link-type-property', 'type')
+  }
+
+  set linkTypeProperty (value) {
+    this.setAttribute('link-type-property', value)
   }
 
   get linkVisibilityProperty () {
@@ -929,6 +950,14 @@ class EgRendererElement extends window.HTMLElement {
 
   set defaultLinkStrokeWidth (value) {
     this.setAttribute('default-link-stroke-width', value)
+  }
+
+  get defaultLinkType () {
+    return getter(this, 'default-link-type', 'line')
+  }
+
+  set defaultLinkType (value) {
+    this.setAttribute('default-link-type', value)
   }
 
   get defaultLinkVisibility () {
