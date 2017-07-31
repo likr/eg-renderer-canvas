@@ -76,6 +76,13 @@ customElements.whenDefined('eg-renderer').then(() => {
       })
     })
   })
+
+  renderer.addEventListener('nodemove', (event) => {
+    const {id, x, y} = event.detail
+    const node = renderer.data.nodes.find((node) => node.id === id)
+    node.x = x
+    node.y = y
+  })
 })
 </script>
 </body>

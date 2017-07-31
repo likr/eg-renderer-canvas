@@ -1,0 +1,15 @@
+{
+  "nodes": [
+    {"id": "0", "x": 100, "y": 100, "width": 30, "height": 30},
+    {"id": "1", "x": 500, "y": 100, "width": 30, "height": 30},
+    {"id": "2", "x": 100, "y": 200, "width": 30, "height": 30},
+    {"id": "3", "x": 500, "y": 200, "width": 30, "height": 30},
+    {"id": "4", "x": 100, "y": 300, "width": 30, "height": 30},
+    {"id": "5", "x": 500, "y": 300, "width": 30, "height": 30}
+  ],
+  "links": [
+    {"source": "0", "target": "1", "sourceMarkerShape": "circle", "targetMarkerShape": "triangle", "type": "line", "bends": [[200, 50], [400, 150]]},
+    {"source": "2", "target": "3", "sourceMarkerShape": "circle", "targetMarkerShape": "triangle", "type": "arc"},
+    {"source": "4", "target": "5", "sourceMarkerShape": "circle", "targetMarkerShape": "triangle", "type": "quadratic", "bends": [[200, 250], [400, 350]]}
+  ]
+}
