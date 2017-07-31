@@ -270,24 +270,6 @@ class EgRendererElement extends window.HTMLElement {
     }
   }
 
-  layout () {
-    const p = privates.get(this)
-    const {data} = p
-    this.onLayout(data)
-    for (const [u, v] of data.edgeIds) {
-      const edge = data.edges.get(u).get(v)
-      const du = data.vertices.get(u)
-      const dv = data.vertices.get(v)
-      adjustEdge(edge, du, dv)
-    }
-    p.layout = diff(p.prevData, data)
-    p.layoutTime = new Date()
-    if (this.autoCentering) {
-      this.center()
-    }
-    return this
-  }
-
   center () {
     const {canvas, data, margin, zoom} = privates.get(this)
     const {layoutWidth, layoutHeight, left, top} = layoutRect(data)
@@ -395,8 +377,17 @@ class EgRendererElement extends window.HTMLElement {
     for (const edge of edges) {
       p.data.edges.get(edge.u).set(edge.v, edge)
     }
-    if (this.autoUpdate) {
-      this.layout()
+    this.onLayout(p.data)
+    for (const [u, v] of p.data.edgeIds) {
+      const edge = p.data.edges.get(u).get(v)
+      const du = p.data.vertices.get(u)
+      const dv = p.data.vertices.get(v)
+      adjustEdge(edge, du, dv)
+    }
+    p.layout = diff(p.prevData, p.data)
+    p.layoutTime = new Date()
+    if (this.autoCentering) {
+      this.center()
     }
     return this
   }
