@@ -31,6 +31,7 @@ window.customElements.forcePolyfill = true
   src="data.json"
   node-id-property="id"
   node-visibility-property="visibility1"
+  link-type-property="type1"
   link-visibility-property="visibility1"
   default-node-stroke-width="0"
   default-node-label-fill-color="#fff"
@@ -48,6 +49,7 @@ customElements.whenDefined('eg-renderer').then(() => {
   document.querySelector('#transition').addEventListener('click', () => {
     renderer.nodeVisibilityProperty = flag ? 'visibility1' : 'visibility2'
     renderer.linkVisibilityProperty = flag ? 'visibility1' : 'visibility2'
+    renderer.linkTypeProperty = flag ? 'type1' : 'type2'
     flag = !flag
   })
 

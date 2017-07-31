@@ -106,7 +106,14 @@ export const diff = (current, next) => {
       .filter((u) => !current.vertices.has(u))
       .map((u) => next.vertices.get(u)),
     edges: next.edgeIds
-      .filter(([u, v]) => !current.edges.has(u) || !current.edges.get(u).has(v))
+      .filter(([u, v]) => {
+        if (!current.edges.has(u) || !current.edges.get(u).has(v)) {
+          return true
+        }
+        const nextEdge = next.edges.get(u).get(v)
+        const currentEdge = current.edges.get(u).get(v)
+        return nextEdge.type !== currentEdge.type || nextEdge.points.length !== currentEdge.points.length
+      })
       .map(([u, v]) => next.edges.get(u).get(v))
   }
   const exit = {
@@ -114,7 +121,14 @@ export const diff = (current, next) => {
       .filter((u) => !next.vertices.has(u))
       .map((u) => current.vertices.get(u)),
     edges: current.edgeIds
-      .filter(([u, v]) => !next.edges.has(u) || !next.edges.get(u).has(v))
+      .filter(([u, v]) => {
+        if (!next.edges.has(u) || !next.edges.get(u).has(v)) {
+          return true
+        }
+        const nextEdge = next.edges.get(u).get(v)
+        const currentEdge = current.edges.get(u).get(v)
+        return nextEdge.type !== currentEdge.type || nextEdge.points.length !== currentEdge.points.length
+      })
       .map(([u, v]) => current.edges.get(u).get(v))
   }
   return {update, enter, exit}
