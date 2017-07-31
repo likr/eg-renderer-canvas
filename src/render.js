@@ -43,12 +43,10 @@ const renderRectVertex = (ctx, args) => {
     width,
     height,
     label,
-    strokeWidth,
-    alpha
+    strokeWidth
   } = args
   withContext(ctx, () => {
     ctx.translate(x, y)
-    ctx.globalAlpha = alpha
     withContext(ctx, () => {
       setVertexStyles(ctx, args)
       ctx.beginPath()
@@ -84,11 +82,9 @@ const renderCircleVertex = (ctx, args) => {
     width,
     height,
     label,
-    strokeWidth,
-    alpha
+    strokeWidth
   } = args
   withContext(ctx, () => {
-    ctx.globalAlpha = alpha
     ctx.translate(x, y)
     withContext(ctx, () => {
       setVertexStyles(ctx, args)
@@ -132,11 +128,9 @@ const renderLineEdge = (ctx, args) => {
     sourceMarkerShape,
     sourceMarkerSize,
     targetMarkerShape,
-    targetMarkerSize,
-    alpha
+    targetMarkerSize
   } = args
   withContext(ctx, () => {
-    ctx.globalAlpha = alpha
     withContext(ctx, () => {
       setEdgeStyles(ctx, args)
       ctx.beginPath()

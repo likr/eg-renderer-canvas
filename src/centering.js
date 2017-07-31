@@ -1,4 +1,5 @@
 export const layoutRect = ({vertices}) => {
+  vertices = Array.from(vertices.values())
   const left = Math.min(...vertices.map(({x, width}) => x - width / 2))
   const right = Math.max(...vertices.map(({x, width}) => x + width / 2))
   const top = Math.min(...vertices.map(({y, height}) => y - height / 2))
