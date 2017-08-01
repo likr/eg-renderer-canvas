@@ -1,11 +1,11 @@
 {
   "name": "eg-renderer",
-  "version": "0.0.2",
+  "version": "1.0.0-beta.1",
   "main": "src/index.js",
   "files": [
     "src"
   ],
-  "description": "",
+  "description": "Easy Graph Renderer for the Web",
   "scripts": {
     "start": "webpack-dev-server --content-base=public",
     "build": "NODE_ENV=production webpack",
