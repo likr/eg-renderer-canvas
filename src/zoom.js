@@ -58,22 +58,20 @@ export const zoom = (element, attrs) => {
         const dx = x / k - pos.x0
         const dy = y / k - pos.y0
         const {data} = attrs
-        const vertex = data.vertices[data.indices.get(u)]
+        const vertex = data.vertices.get(u)
         vertex.x += dx
         vertex.y += dy
-        attrs.layoutResult.vertices.get(u).x += dx
-        attrs.layoutResult.vertices.get(u).y += dy
         for (const edge of vertex.outEdges) {
           const {points} = edge
           points[0][0] += dx
           points[0][1] += dy
-          adjustEdge(edge, vertex, data.vertices[data.indices.get(edge.v)])
+          adjustEdge(edge, vertex, data.vertices.get(edge.v))
         }
         for (const edge of vertex.inEdges) {
           const {points} = edge
           points[points.length - 1][0] += dx
           points[points.length - 1][1] += dy
-          adjustEdge(edge, data.vertices[data.indices.get(edge.u)], vertex)
+          adjustEdge(edge, data.vertices.get(edge.u), vertex)
         }
         pos.x0 = x / k
         pos.y0 = y / k

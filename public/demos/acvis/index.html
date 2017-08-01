@@ -35,9 +35,9 @@ body {
 >
 </eg-renderer>
 <script>
-const renderer = document.getElementById('renderer')
-
 window.customElements.whenDefined('eg-renderer').then(() => {
+  const renderer = document.getElementById('renderer')
+
   renderer.width = window.innerWidth
   renderer.height = window.innerHeight
 
@@ -45,16 +45,16 @@ window.customElements.whenDefined('eg-renderer').then(() => {
     renderer.width = window.innerWidth
     renderer.height = window.innerHeight
   })
-})
 
-renderer.addEventListener('datafetchend', (event) => {
-  const data = event.detail
-  const colorScale = d3.scaleOrdinal(d3.schemeCategory20)
-  for (const node of data.nodes) {
-    node.fillColor = colorScale(node['Modularity Class'])
-    node.x *= 1000
-    node.y *= 1000
-  }
+  renderer.addEventListener('datafetchend', (event) => {
+    const data = event.detail
+    const colorScale = d3.scaleOrdinal(d3.schemeCategory20)
+    for (const node of data.nodes) {
+      node.fillColor = colorScale(node['Modularity Class'])
+      node.x *= 1000
+      node.y *= 1000
+    }
+  })
 })
 </script>
 </body>

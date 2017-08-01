@@ -35,114 +35,120 @@ const setLabelStyles = (ctx, args) => {
   ctx.lineWidth = labelStrokeWidth
 }
 
-const renderRectVertex = (ctx, args) => {
-  const {
-    u,
-    x,
-    y,
-    width,
-    height,
-    label,
-    strokeWidth,
-    alpha
-  } = args
-  withContext(ctx, () => {
-    ctx.translate(x, y)
-    ctx.globalAlpha = alpha
-    withContext(ctx, () => {
-      setVertexStyles(ctx, args)
-      ctx.beginPath()
-      ctx.moveTo(-width / 2, -height / 2)
-      ctx.lineTo(width / 2, -height / 2)
-      ctx.lineTo(width / 2, height / 2)
-      ctx.lineTo(-width / 2, height / 2)
-      ctx.closePath()
-      ctx.fill()
-      if (strokeWidth > 0) {
-        ctx.stroke()
-      }
-    })
-    if (ctx.addHitRegion) {
-      ctx.addHitRegion({id: u})
-    }
-    if (label) {
-      setLabelStyles(ctx, args)
-      ctx.textAlign = 'center'
-      if (args.labelStrokeWidth > 0) {
-        ctx.strokeText(label, 0, 4)
-      }
-      ctx.fillText(label, 0, 4)
-    }
-  })
+const renderRectVertex = (ctx, width, height) => {
+  ctx.moveTo(-width / 2, -height / 2)
+  ctx.lineTo(width / 2, -height / 2)
+  ctx.lineTo(width / 2, height / 2)
+  ctx.lineTo(-width / 2, height / 2)
+  ctx.closePath()
 }
 
-const renderCircleVertex = (ctx, args) => {
-  const {
-    u,
-    x,
-    y,
-    width,
-    height,
-    label,
-    strokeWidth,
-    alpha
-  } = args
-  withContext(ctx, () => {
-    ctx.globalAlpha = alpha
-    ctx.translate(x, y)
-    withContext(ctx, () => {
-      setVertexStyles(ctx, args)
-      ctx.beginPath()
-      ctx.ellipse(0, 0, width / 2, height / 2, 0, 0, 2 * Math.PI)
-      ctx.closePath()
-      ctx.fill()
-      if (strokeWidth > 0) {
-        ctx.stroke()
-      }
-    })
-    if (ctx.addHitRegion) {
-      ctx.addHitRegion({id: u})
-    }
-    if (label) {
-      setLabelStyles(ctx, args)
-      ctx.textAlign = 'center'
-      if (args.labelStrokeWidth > 0) {
-        ctx.strokeText(label, 0, 4)
-      }
-      ctx.fillText(label, 0, 4)
-    }
-  })
+const renderCircleVertex = (ctx, width, height) => {
+  ctx.ellipse(0, 0, width / 2, height / 2, 0, 0, 2 * Math.PI)
 }
 
 export const renderVertex = (ctx, args) => {
-  switch (args.type) {
-    case 'circle':
-      renderCircleVertex(ctx, args)
-      break
-    case 'rect':
-      renderRectVertex(ctx, args)
-      break
+  const {
+    type,
+    u,
+    x,
+    y,
+    width,
+    height,
+    label,
+    strokeWidth
+  } = args
+  withContext(ctx, () => {
+    ctx.translate(x, y)
+    withContext(ctx, () => {
+      setVertexStyles(ctx, args)
+      ctx.beginPath()
+      switch (type) {
+        case 'circle':
+          renderCircleVertex(ctx, width, height)
+          break
+        case 'rect':
+          renderRectVertex(ctx, width, height)
+          break
+      }
+      ctx.closePath()
+      ctx.fill()
+      if (strokeWidth > 0) {
+        ctx.stroke()
+      }
+    })
+    if (ctx.addHitRegion) {
+      ctx.addHitRegion({id: u})
+    }
+    if (label) {
+      setLabelStyles(ctx, args)
+      ctx.textAlign = 'center'
+      if (args.labelStrokeWidth > 0) {
+        ctx.strokeText(label, 0, 4)
+      }
+      ctx.fillText(label, 0, 4)
+    }
+  })
+}
+
+const renderLineEdge = (ctx, points) => {
+  ctx.moveTo(points[0][0], points[0][1])
+  for (let i = 1; i < points.length; ++i) {
+    ctx.lineTo(points[i][0], points[i][1])
   }
 }
 
-const renderLineEdge = (ctx, args) => {
+const renderQuadraticCurveEdge = (ctx, points) => {
+  const n = points.length
+  ctx.moveTo(points[0][0], points[0][1])
+  if (n === 2) {
+    ctx.lineTo(points[1][0], points[1][1])
+    return
+  }
+  for (let i = 2; i < n - 1; ++i) {
+    const [x1, y1] = points[i - 1]
+    const [x2, y2] = points[i]
+    const dx = (x2 - x1) / 2
+    const dy = (y2 - y1) / 2
+    ctx.quadraticCurveTo(x1, y1, x1 + dx, y1 + dy)
+  }
+  ctx.quadraticCurveTo(points[n - 2][0], points[n - 2][1], points[n - 1][0], points[n - 1][1])
+}
+
+const renderArcEdge = (ctx, points) => {
+  const dx = points[1][0] - points[0][0]
+  const dy = points[1][1] - points[0][1]
+  const r = Math.sqrt(dx * dx + dy * dy) / 2
+  const cx = (points[0][0] + points[1][0]) / 2
+  const cy = (points[0][1] + points[1][1]) / 2
+  const theta = Math.atan2(dy, dx)
+  ctx.arc(cx, cy, r, theta, theta + Math.PI)
+}
+
+export const renderEdge = (ctx, args) => {
   const {
+    type,
     points,
     label,
     sourceMarkerShape,
     sourceMarkerSize,
     targetMarkerShape,
-    targetMarkerSize,
-    alpha
+    targetMarkerSize
   } = args
   withContext(ctx, () => {
-    ctx.globalAlpha = alpha
     withContext(ctx, () => {
       setEdgeStyles(ctx, args)
       ctx.beginPath()
-      ctx.moveTo(points[0][0], points[0][1])
-      for (let i = 1; i < points.length; ++i) {
-        ctx.lineTo(points[i][0], points[i][1])
+      switch (type) {
+        case 'arc':
+          renderArcEdge(ctx, points)
+          break
+        case 'quadratic':
+          renderQuadraticCurveEdge(ctx, points)
+          break
+        case 'line':
+          renderLineEdge(ctx, points)
+          break
       }
       ctx.stroke()
     })
@@ -217,56 +223,4 @@ const renderLineEdge = (ctx, args) => {
       ctx.fillText(label, 0, 4)
     }
   })
-}
-
-const renderQuadraticCurve = (ctx, x1, y1, x2, y2) => {
-  const dx = x2 - x1
-  const dy = y2 - y1
-  ctx.quadraticCurveTo(x1 + dx / 4, y1, x1 + dx / 2, y1 + dy / 2)
-  ctx.quadraticCurveTo(x1 + 3 * dx / 4, y2, x2, y2)
-}
-
-const renderCurveEdge = (ctx, args) => {
-  const {points} = args
-  withContext(ctx, () => {
-    setEdgeStyles(ctx, args)
-    ctx.beginPath()
-    ctx.moveTo(points[0][0], points[0][1])
-    ctx.lineTo(points[1][0], points[1][1])
-    renderQuadraticCurve(ctx, points[1][0], points[1][1], points[2][0], points[2][1])
-    ctx.lineTo(points[3][0], points[3][1])
-    renderQuadraticCurve(ctx, points[3][0], points[3][1], points[4][0], points[4][1])
-    ctx.lineTo(points[5][0], points[5][1])
-    ctx.stroke()
-  })
-}
-
-const renderArcEdge = (ctx, args) => {
-  const {points} = args
-  const dx = points[1][0] - points[0][0]
-  const dy = points[1][1] - points[0][1]
-  const r = Math.sqrt(dx * dx + dy + dy) / 2
-  const cx = (points[0][0] + points[1][0]) / 2
-  const cy = (points[0][1] + points[1][1]) / 2
-  const theta = Math.atan(dy / dx)
-  withContext(ctx, () => {
-    setEdgeStyles(ctx, args)
-    ctx.beginPath()
-    ctx.arc(cx, cy, r, theta, theta + Math.PI)
-    ctx.stroke()
-  })
-}
-
-export const renderEdge = (ctx, args) => {
-  switch (args.type) {
-    case 'arc':
-      renderArcEdge(ctx, args)
-      break
-    case 'hierarchy':
-      renderCurveEdge(ctx, args)
-      break
-    case 'line':
-      renderLineEdge(ctx, args)
-      break
-  }
 }

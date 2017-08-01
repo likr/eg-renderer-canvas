@@ -4,7 +4,7 @@ const interpolate = (current, next, r) => {
   return (next - current) * r + current
 }
 
-const interpolateVertex = (current, next, r) => {
+export const interpolateVertex = (current, next, r) => {
   const copyProperties = [
     'u',
     'type',
@@ -39,7 +39,7 @@ const interpolateVertex = (current, next, r) => {
   return result
 }
 
-const interpolateEdge = (current, next, r) => {
+export const interpolateEdge = (current, next, r) => {
   const copyProperties = [
     'u',
     'v',
@@ -75,84 +75,61 @@ const interpolateEdge = (current, next, r) => {
   return result
 }
 
-export const interpolateLayout = (current, next, r) => {
-  if (r > 1) {
-    return next
-  }
-  return {
-    vertices: next.vertices.map((vertex) => {
-      const {u} = vertex
-      return interpolateVertex(current.vertices.get(u), vertex, r)
-    }),
-    edges: next.edges.map((edge) => {
-      const {u, v} = edge
-      return interpolateEdge(current.edges.get(u).get(v), edge, r)
-    })
-  }
-}
-
-const diffEdgePoints = (current, next, du, dv) => {
-  if (current) {
-    return current.points
-  } else if (du && dv) {
-    return [[du.x, du.y], [dv.x, dv.y]]
-  } else if (du) {
-    const {x, y} = du
-    return [[x, y], next.points[1]]
-  } else if (dv) {
-    const {x, y} = dv
-    return [next.points[0], [x, y]]
-  } else {
-    return next.points
-  }
-}
-
-const getCurrentEdge = (nextEdge, currentEdges) => {
-  const {u, v} = nextEdge
-  if (!currentEdges.has(u)) {
-    return null
-  }
-  const vs = currentEdges.get(u)
-  if (!vs.has(v)) {
-    return null
-  }
-  const e = vs.get(v)
-  return e.type === nextEdge.type ? e : null
-}
-
 export const diff = (current, next) => {
-  const diffedEdges = new Map(next.vertices.map(({u}) => [u, new Map()]))
-  for (const edge of next.edges) {
-    const {u, v} = edge
-    const du = current.vertices.has(u) ? current.vertices.get(u) : null
-    const dv = current.vertices.has(v) ? current.vertices.get(v) : null
-    const currentEdge = getCurrentEdge(edge, current.edges)
-    diffedEdges.get(u).set(v, Object.assign({}, edge, {
-      points: diffEdgePoints(currentEdge, edge, du, dv),
-      alpha: currentEdge ? 1 : 0
-    }))
+  const update = {
+    vertices: next.vertexIds
+      .filter((u) => current.vertices.has(u))
+      .map((u) => {
+        return {
+          current: current.vertices.get(u),
+          next: next.vertices.get(u)
+        }
+      }),
+    edges: next.edgeIds
+      .filter(([u, v]) => {
+        if (!current.edges.has(u) || !current.edges.get(u).has(v)) {
+          return false
+        }
+        const nextEdge = next.edges.get(u).get(v)
+        const currentEdge = current.edges.get(u).get(v)
+        return nextEdge.type === currentEdge.type && nextEdge.points.length === currentEdge.points.length
+      })
+      .map(([u, v]) => {
+        return {
+          current: current.edges.get(u).get(v),
+          next: next.edges.get(u).get(v)
+        }
+      })
   }
-
-  return {
-    vertices: new Map(next.vertices.map((vertex) => {
-      const {u} = vertex
-      if (current.vertices.has(u)) {
-        return [u, current.vertices.get(u)]
-      }
-      return [u, Object.assign({}, vertex, {
-        alpha: 0
-      })]
-    })),
-    edges: diffedEdges
+  const enter = {
+    vertices: next.vertexIds
+      .filter((u) => !current.vertices.has(u))
+      .map((u) => next.vertices.get(u)),
+    edges: next.edgeIds
+      .filter(([u, v]) => {
+        if (!current.edges.has(u) || !current.edges.get(u).has(v)) {
+          return true
+        }
+        const nextEdge = next.edges.get(u).get(v)
+        const currentEdge = current.edges.get(u).get(v)
+        return nextEdge.type !== currentEdge.type || nextEdge.points.length !== currentEdge.points.length
+      })
+      .map(([u, v]) => next.edges.get(u).get(v))
   }
-}
-
-export const makeMap = (data) => {
-  const vertices = new Map(data.vertices.map((vertex) => [vertex.u, Object.assign({}, vertex)]))
-  const edges = new Map(data.vertices.map(({u}) => [u, new Map()]))
-  for (const edge of data.edges) {
-    const {u, v} = edge
-    edges.get(u).set(v, Object.assign({}, edge))
+  const exit = {
+    vertices: current.vertexIds
+      .filter((u) => !next.vertices.has(u))
+      .map((u) => current.vertices.get(u)),
+    edges: current.edgeIds
+      .filter(([u, v]) => {
+        if (!next.edges.has(u) || !next.edges.get(u).has(v)) {
+          return true
+        }
+        const nextEdge = next.edges.get(u).get(v)
+        const currentEdge = current.edges.get(u).get(v)
+        return nextEdge.type !== currentEdge.type || nextEdge.points.length !== currentEdge.points.length
+      })
+      .map(([u, v]) => current.edges.get(u).get(v))
   }
-  return {vertices, edges}
+  return {update, enter, exit}
 }

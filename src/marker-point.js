@@ -98,17 +98,20 @@ const markerPosition = (x, y, x0, y0, x1, y1) => {
   }
 }
 
-const baseFunction = (markerShape, type) => {
-  if (markerShape === 'circle' && type === 'rect') {
+const baseFunction = (markerShape, nodeType, linkType) => {
+  if (linkType === 'arc') {
+    return () => [0, 0]
+  }
+  if (markerShape === 'circle' && nodeType === 'rect') {
     return baseCircleToRectMarkerPosition
   }
-  if (markerShape === 'triangle' && type === 'rect') {
+  if (markerShape === 'triangle' && nodeType === 'rect') {
     return baseTriangleToRectMarkerPosition
   }
-  if (markerShape === 'circle' && type === 'circle') {
+  if (markerShape === 'circle' && nodeType === 'circle') {
     return baseCircleToCircleMarkerPosition
   }
-  if (markerShape === 'triangle' && type === 'circle') {
+  if (markerShape === 'triangle' && nodeType === 'circle') {
     return baseTriangleToCircleMarkerPosition
   }
   return () => [0, 0]
@@ -116,10 +119,11 @@ const baseFunction = (markerShape, type) => {
 
 export const adjustEdge = (edge, source, target) => {
   const {points, sourceMarkerShape, sourceMarkerSize, targetMarkerShape, targetMarkerSize} = edge
-  const sourceBaseFunction = baseFunction(sourceMarkerShape, source.type)
-  const [x0, y0] = sourceBaseFunction(source.x, source.y, target.x, target.y, source.width, source.height, sourceMarkerSize)
-  points[0] = markerPosition(x0, y0, source.x, source.y, target.x, target.y)
-  const targetBaseFunction = baseFunction(targetMarkerShape, target.type)
-  const [x1, y1] = targetBaseFunction(target.x, target.y, source.x, source.y, target.width, target.height, targetMarkerSize)
-  points[points.length - 1] = markerPosition(x1, y1, target.x, target.y, source.x, source.y)
+  const n = points.length
+  const sourceBaseFunction = baseFunction(sourceMarkerShape, source.type, edge.type)
+  const [x0, y0] = sourceBaseFunction(source.x, source.y, points[1][0], points[1][1], source.width, source.height, sourceMarkerSize)
+  points[0] = markerPosition(x0, y0, source.x, source.y, points[1][0], points[1][1])
+  const targetBaseFunction = baseFunction(targetMarkerShape, target.type, edge.type)
+  const [x1, y1] = targetBaseFunction(target.x, target.y, points[n - 2][0], points[n - 2][1], target.width, target.height, targetMarkerSize)
+  points[n - 1] = markerPosition(x1, y1, target.x, target.y, points[n - 2][0], points[n - 2][1])
 }

@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8"/>
+<title>Form Demo | EgRenderer Example</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/babel-polyfill/6.23.0/polyfill.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/fetch/2.0.3/fetch.min.js"></script>
+<script>
+if (!window.customElements) {
+  window.customElements = {}
+}
+window.customElements.forcePolyfill = true
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/custom-elements/1.0.0/custom-elements.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/4.10.0/d3.min.js"></script>
+<script async src="../../eg-renderer.js"></script>
+</head>
+<body>
+<div>
+<a href="../../">back</a>
+<h1>Form Demo</h1>
+</div>
+<div>
+  <button id="transition">transition</button>
+</div>
+<div>
+<eg-renderer
+  transition-duration="1000"
+  width="600"
+  height="400"
+  src="data.json"
+  node-id-property="id"
+  node-visibility-property="visibility1"
+  link-type-property="type1"
+  link-visibility-property="visibility1"
+  default-node-stroke-width="0"
+  default-node-label-fill-color="#fff"
+  default-link-stroke-color="#ccc"
+  default-link-stroke-width="3"
+  no-auto-centering
+>
+</eg-renderer>
+</div>
+<script>
+customElements.whenDefined('eg-renderer').then(() => {
+  const renderer = document.querySelector('eg-renderer')
+
+  let flag = false
+  document.querySelector('#transition').addEventListener('click', () => {
+    renderer.nodeVisibilityProperty = flag ? 'visibility1' : 'visibility2'
+    renderer.linkVisibilityProperty = flag ? 'visibility1' : 'visibility2'
+    renderer.linkTypeProperty = flag ? 'type1' : 'type2'
+    flag = !flag
+  })
+
+  renderer.addEventListener('nodemove', (event) => {
+    const {id, x, y} = event.detail
+    const node = renderer.data.nodes.find((node) => node.id === id)
+    node.x = x
+    node.y = y
+  })
+})
+</script>
+</body>
+</html>
+

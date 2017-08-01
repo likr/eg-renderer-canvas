@@ -4,9 +4,9 @@ import {
   layoutRect
 } from './centering'
 import {
-  diff,
-  makeMap,
-  interpolateLayout
+  interpolateVertex,
+  interpolateEdge,
+  diff
 } from './interpolate'
 import {
   renderEdge,
@@ -70,6 +70,7 @@ class EgRendererElement extends window.HTMLElement {
       'node-width-property',
       'node-height-property',
       'node-type-property',
+      'node-visibility-property',
       'node-fill-color-property',
       'node-fill-opacity-property',
       'node-stroke-color-property',
@@ -86,6 +87,7 @@ class EgRendererElement extends window.HTMLElement {
       'link-stroke-color-property',
       'link-stroke-opacity-property',
       'link-stroke-width-property',
+      'link-visibility-property',
       'link-source-marker-shape-property',
       'link-source-marker-size-property',
       'link-target-marker-shape-property',
@@ -101,6 +103,7 @@ class EgRendererElement extends window.HTMLElement {
       'default-node-width',
       'default-node-height',
       'default-node-type',
+      'default-node-visibility',
       'default-node-fill-color',
       'default-node-fill-opacity',
       'default-node-stroke-color',
@@ -115,6 +118,7 @@ class EgRendererElement extends window.HTMLElement {
       'default-link-stroke-color',
       'default-link-stroke-opacity',
       'default-link-stroke-width',
+      'default-link-visibility',
       'default-link-source-marker-shape',
       'default-link-source-marker-size',
       'default-link-target-marker-shape',
@@ -135,8 +139,10 @@ class EgRendererElement extends window.HTMLElement {
       originalData: null,
       canvas: document.createElement('canvas'),
       data: {
-        vertices: [],
-        edges: []
+        vertexIds: [],
+        vertices: new Map(),
+        edgeIds: [],
+        edges: new Map()
       },
       transform: {
         x: 0,
@@ -144,9 +150,19 @@ class EgRendererElement extends window.HTMLElement {
         k: 1
       },
       highlightedVertex: null,
-      layoutResult: {
-        vertices: new Map(),
-        edges: new Map()
+      layout: {
+        update: {
+          vertices: [],
+          edges: []
+        },
+        enter: {
+          vertices: [],
+          edges: []
+        },
+        exit: {
+          vertices: [],
+          edges: []
+        }
       },
       margin: 10,
       layoutTime: 0,
@@ -184,7 +200,6 @@ class EgRendererElement extends window.HTMLElement {
       const transitionDuration = this.transitionDuration
       const t = now > p.layoutTime ? (now - p.layoutTime) / transitionDuration : 1 / transitionDuration
       const r = p.ease(t)
-      const layout = interpolateLayout(p.previousLayoutResult, p.data, r)
       const ctx = p.canvas.getContext('2d')
       ctx.save()
       ctx.clearRect(0, 0, p.canvas.width, p.canvas.height)
@@ -192,11 +207,41 @@ class EgRendererElement extends window.HTMLElement {
       ctx.translate(p.margin, p.margin)
       ctx.translate(p.transform.x, p.transform.y)
       ctx.scale(p.transform.k, p.transform.k)
-      for (const edge of layout.edges) {
+      if (r < 1) {
+        ctx.globalAlpha = 1 - r
+        for (const edge of p.layout.exit.edges) {
+          renderEdge(ctx, edge)
+        }
+      }
+      ctx.globalAlpha = Math.min(1, r)
+      for (const edge of p.layout.enter.edges) {
         renderEdge(ctx, edge)
       }
-      for (const vertex of layout.vertices) {
+      ctx.globalAlpha = 1
+      for (const {current, next} of p.layout.update.edges) {
+        if (r < 1) {
+          renderEdge(ctx, interpolateEdge(current, next, r))
+        } else {
+          renderEdge(ctx, next)
+        }
+      }
+      if (r < 1) {
+        ctx.globalAlpha = 1 - r
+        for (const vertex of p.layout.exit.vertices) {
+          renderVertex(ctx, vertex)
+        }
+      }
+      ctx.globalAlpha = Math.min(1, r)
+      for (const vertex of p.layout.enter.vertices) {
         renderVertex(ctx, vertex)
+      }
+      ctx.globalAlpha = 1
+      for (const {current, next} of p.layout.update.vertices) {
+        if (r < 1) {
+          renderVertex(ctx, interpolateVertex(current, next, r))
+        } else {
+          renderVertex(ctx, next)
+        }
       }
       ctx.restore()
       window.requestAnimationFrame(render)
@@ -225,25 +270,6 @@ class EgRendererElement extends window.HTMLElement {
     }
   }
 
-  layout () {
-    const p = privates.get(this)
-    const {data} = p
-    this.onLayout(data)
-    for (const edge of data.edges) {
-      const {u, v} = edge
-      const du = data.vertices[data.indices.get(u)]
-      const dv = data.vertices[data.indices.get(v)]
-      adjustEdge(edge, du, dv)
-    }
-    p.previousLayoutResult = diff(p.layoutResult, data)
-    p.layoutResult = makeMap(data)
-    p.layoutTime = new Date()
-    if (this.autoCentering) {
-      this.center()
-    }
-    return this
-  }
-
   center () {
     const {canvas, data, margin, zoom} = privates.get(this)
     const {layoutWidth, layoutHeight, left, top} = layoutRect(data)
@@ -261,6 +287,7 @@ class EgRendererElement extends window.HTMLElement {
 
   update (preservePos = false) {
     const p = privates.get(this)
+    p.prevData = p.data
     const data = p.originalData
     const vertices = get(data, this.graphNodesProperty)
       .filter((node) => get(node, this.nodeVisibilityProperty, this.defaultNodeVisibility))
@@ -276,9 +303,8 @@ class EgRendererElement extends window.HTMLElement {
         const u = (this.nodeIdProperty === '$index' ? i : get(node, this.nodeIdProperty)).toString()
         return {
           u,
-          alpha: 1,
-          x: preservePos && p.layoutResult.vertices.has(u) ? p.layoutResult.vertices.get(u).x : +get(node, this.nodeXProperty, this.defaultNodeX),
-          y: preservePos && p.layoutResult.vertices.has(u) ? p.layoutResult.vertices.get(u).y : +get(node, this.nodeYProperty, this.defaultNodeY),
+          x: preservePos && p.prevData.vertices.has(u) ? p.prevData.vertices.get(u).x : +get(node, this.nodeXProperty, this.defaultNodeX),
+          y: preservePos && p.prevData.vertices.has(u) ? p.prevData.vertices.get(u).y : +get(node, this.nodeYProperty, this.defaultNodeY),
           width: +get(node, this.nodeWidthProperty, this.defaultNodeWidth),
           height: +get(node, this.nodeHeightProperty, this.defaultNodeHeight),
           type: get(node, this.nodeTypeProperty, this.defaultNodeType),
@@ -313,13 +339,19 @@ class EgRendererElement extends window.HTMLElement {
         labelStrokeColor.opacity = +get(link, this.linkLabelStrokeOpacityProperty, this.defaultLinkLabelStrokeOpacity)
         const du = vertices[indices.get(u)]
         const dv = vertices[indices.get(v)]
-        const points = preservePos && p.layoutResult.edges.has(u) && p.layoutResult.edges.get(u).has(v) ? p.layoutResult.edges.get(u).get(v).points : [[du.x, du.y], [dv.x, dv.y]]
+        const newPoints = [[du.x, du.y]]
+        for (const [x, y] of get(link, this.linkBendsProperty, [])) {
+          newPoints.push([x, y])
+        }
+        newPoints.push([dv.x, dv.y])
+        const points = preservePos && p.prevData.edges.has(u) && p.prevData.edges.get(u).has(v)
+          ? p.prevData.edges.get(u).get(v).points
+          : newPoints
         const edge = {
           u,
           v,
-          alpha: 1,
           points,
-          type: 'line',
+          type: get(link, this.linkTypeProperty, this.defaultLinkType),
           strokeColor,
           strokeWidth: +get(link, this.linkStrokeWidthProperty, this.defaultLinkStrokeWidth),
           sourceMarkerShape: get(link, this.linkSourceMarkerShapeProperty, this.defaultLinkSourceMarkerShape),
@@ -337,12 +369,25 @@ class EgRendererElement extends window.HTMLElement {
         return edge
       })
     p.data = {
-      vertices,
-      edges,
-      indices
+      vertexIds: vertices.map(({u}) => u),
+      vertices: new Map(vertices.map((vertex) => [vertex.u, vertex])),
+      edgeIds: edges.map(({u, v}) => [u, v]),
+      edges: new Map(vertices.map((vertex) => [vertex.u, new Map()]))
     }
-    if (this.autoUpdate) {
-      this.layout()
+    for (const edge of edges) {
+      p.data.edges.get(edge.u).set(edge.v, edge)
+    }
+    this.onLayout(p.data)
+    for (const [u, v] of p.data.edgeIds) {
+      const edge = p.data.edges.get(u).get(v)
+      const du = p.data.vertices.get(u)
+      const dv = p.data.vertices.get(v)
+      adjustEdge(edge, du, dv)
+    }
+    p.layout = diff(p.prevData, p.data)
+    p.layoutTime = new Date()
+    if (this.autoCentering) {
+      this.center()
     }
     return this
   }
@@ -610,6 +655,14 @@ class EgRendererElement extends window.HTMLElement {
     this.setAttribute('link-target-property', value)
   }
 
+  get linkBendsProperty () {
+    return getter(this, 'link-bends-property', 'bends')
+  }
+
+  set linkBendsProperty (value) {
+    this.setAttribute('link-bends-property', value)
+  }
+
   get linkStrokeColorProperty () {
     return getter(this, 'link-stroke-color-property', 'strokeColor')
   }
@@ -632,6 +685,14 @@ class EgRendererElement extends window.HTMLElement {
 
   set linkStrokeWidthProperty (value) {
     this.setAttribute('link-stroke-width-property', value)
+  }
+
+  get linkTypeProperty () {
+    return getter(this, 'link-type-property', 'type')
+  }
+
+  set linkTypeProperty (value) {
+    this.setAttribute('link-type-property', value)
   }
 
   get linkVisibilityProperty () {
@@ -880,6 +941,14 @@ class EgRendererElement extends window.HTMLElement {
 
   set defaultLinkStrokeWidth (value) {
     this.setAttribute('default-link-stroke-width', value)
+  }
+
+  get defaultLinkType () {
+    return getter(this, 'default-link-type', 'line')
+  }
+
+  set defaultLinkType (value) {
+    this.setAttribute('default-link-type', value)
   }
 
   get defaultLinkVisibility () {
