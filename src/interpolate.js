@@ -9,6 +9,7 @@ export const interpolateVertex = (current, next, r) => {
     'u',
     'type',
     'label',
+    'labelFontFamily',
     'd'
   ]
   const interpolateProperties = [
@@ -18,6 +19,7 @@ export const interpolateVertex = (current, next, r) => {
     'height',
     'strokeWidth',
     'labelStrokeWidth',
+    'labelFontSize',
     'alpha'
   ]
   const colorInterpolateProperties = [
@@ -47,6 +49,7 @@ export const interpolateEdge = (current, next, r) => {
     'sourceMarkerShape',
     'targetMarkerShape',
     'label',
+    'labelFontFamily',
     'd'
   ]
   const interpolateProperties = [
@@ -54,6 +57,7 @@ export const interpolateEdge = (current, next, r) => {
     'sourceMarkerSize',
     'targetMarkerSize',
     'labelStrokeWidth',
+    'labelFontSize',
     'alpha'
   ]
   const colorInterpolateProperties = [

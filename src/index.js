@@ -10,7 +10,9 @@ import {
 } from './interpolate'
 import {
   renderEdge,
-  renderVertex
+  renderEdgeLabel,
+  renderVertex,
+  renderVertexLabel
 } from './render'
 import {zoom} from './zoom'
 import {adjustEdge} from './marker-point'
@@ -227,6 +229,24 @@ class EgRendererElement extends window.HTMLElement {
       }
       if (r < 1) {
         ctx.globalAlpha = 1 - r
+        for (const edge of p.layout.exit.edges) {
+          renderEdgeLabel(ctx, edge)
+        }
+      }
+      ctx.globalAlpha = Math.min(1, r)
+      for (const edge of p.layout.enter.edges) {
+        renderEdgeLabel(ctx, edge)
+      }
+      ctx.globalAlpha = 1
+      for (const {current, next} of p.layout.update.edges) {
+        if (r < 1) {
+          renderEdgeLabel(ctx, interpolateEdge(current, next, r))
+        } else {
+          renderEdgeLabel(ctx, next)
+        }
+      }
+      if (r < 1) {
+        ctx.globalAlpha = 1 - r
         for (const vertex of p.layout.exit.vertices) {
           renderVertex(ctx, vertex)
         }
@@ -241,6 +261,24 @@ class EgRendererElement extends window.HTMLElement {
           renderVertex(ctx, interpolateVertex(current, next, r))
         } else {
           renderVertex(ctx, next)
+        }
+      }
+      if (r < 1) {
+        ctx.globalAlpha = 1 - r
+        for (const vertex of p.layout.exit.vertices) {
+          renderVertexLabel(ctx, vertex)
+        }
+      }
+      ctx.globalAlpha = Math.min(1, r)
+      for (const vertex of p.layout.enter.vertices) {
+        renderVertexLabel(ctx, vertex)
+      }
+      ctx.globalAlpha = 1
+      for (const {current, next} of p.layout.update.vertices) {
+        if (r < 1) {
+          renderVertexLabel(ctx, interpolateVertex(current, next, r))
+        } else {
+          renderVertexLabel(ctx, next)
         }
       }
       ctx.restore()
@@ -315,6 +353,8 @@ class EgRendererElement extends window.HTMLElement {
           labelFillColor,
           labelStrokeColor,
           labelStrokeWidth: +get(node, this.nodeLabelStrokeWidthProperty, this.defaultNodeLabelStrokeWidth),
+          labelFontSize: +get(node, this.nodeLabelFontSizeProperty, this.defaultNodeLabelFontSize),
+          labelFontFamily: get(node, this.nodeLabelFontFamilyProperty, this.defaultNodeLabelFontFamily),
           inEdges: [],
           outEdges: [],
           d: node
@@ -362,6 +402,8 @@ class EgRendererElement extends window.HTMLElement {
           labelFillColor,
           labelStrokeColor,
           labelStrokeWidth: +get(link, this.linkLabelStrokeWidthProperty, this.defaultLinkLabelStrokeWidth),
+          labelFontSize: +get(link, this.linkLabelFontSizeProperty, this.defaultLinkLabelFontSize),
+          labelFontFamily: get(link, this.linkLabelFontFamilyProperty, this.defaultLinkLabelFontFamily),
           d: link
         }
         du.outEdges.push(edge)
@@ -377,7 +419,7 @@ class EgRendererElement extends window.HTMLElement {
     for (const edge of edges) {
       p.data.edges.get(edge.u).set(edge.v, edge)
     }
-    this.onLayout(p.data)
+    this.onLayout(p.data, preservePos)
     for (const [u, v] of p.data.edgeIds) {
       const edge = p.data.edges.get(u).get(v)
       const du = p.data.vertices.get(u)
@@ -639,6 +681,22 @@ class EgRendererElement extends window.HTMLElement {
     this.setAttribute('node-label-stroke-width-property', value)
   }
 
+  get nodeLabelFontSizeProperty () {
+    return getter(this, 'node-label-font-size-property', 'labelFontSize')
+  }
+
+  set nodeLabelFontSizeProperty (value) {
+    this.setAttribute('node-label-font-size-property', value)
+  }
+
+  get nodeLabelFontFamilyProperty () {
+    return getter(this, 'node-label-font-family-property', 'labelFontFamily')
+  }
+
+  set nodeLabelFontFamilyProperty (value) {
+    this.setAttribute('node-label-font-family-property', value)
+  }
+
   get linkSourceProperty () {
     return getter(this, 'link-source-property', 'source')
   }
@@ -783,6 +841,22 @@ class EgRendererElement extends window.HTMLElement {
     this.setAttribute('link-label-stroke-width-property', value)
   }
 
+  get linkLabelFontSizeProperty () {
+    return getter(this, 'link-label-font-size-property', 'labelFontSize')
+  }
+
+  set linkLabelFontSizeProperty (value) {
+    this.setAttribute('link-label-font-size-property', value)
+  }
+
+  get linkLabelFontFamilyProperty () {
+    return getter(this, 'link-label-font-family-property', 'labelFontFamily')
+  }
+
+  set linkLabelFontFamilyProperty (value) {
+    this.setAttribute('link-label-font-family-property', value)
+  }
+
   get defaultNodeX () {
     return getter(this, 'default-node-x', 0)
   }
@@ -919,6 +993,22 @@ class EgRendererElement extends window.HTMLElement {
     this.setAttribute('default-node-label-stroke-width', value)
   }
 
+  get defaultNodeLabelFontSize () {
+    return getter(this, 'default-node-label-font-size', 10)
+  }
+
+  set defaultNodeLabelFontSize (value) {
+    this.setAttribute('default-node-label-font-size', value)
+  }
+
+  get defaultNodeLabelFontFamily () {
+    return getter(this, 'default-node-label-font-family', 'serif')
+  }
+
+  set defaultNodeLabelFontFamily (value) {
+    this.setAttribute('default-node-label-font-family', value)
+  }
+
   get defaultLinkStrokeColor () {
     return getter(this, 'default-link-stroke-color', '#000')
   }
@@ -1037,6 +1127,22 @@ class EgRendererElement extends window.HTMLElement {
 
   set defaultLinkLabelStrokeWidth (value) {
     this.setAttribute('default-link-label-stroke-width', value)
+  }
+
+  get defaultLinkLabelFontSize () {
+    return getter(this, 'default-link-label-font-size', 10)
+  }
+
+  set defaultLinkLabelFontSize (value) {
+    this.setAttribute('default-link-label-font-size', value)
+  }
+
+  get defaultLinkLabelFontFamily () {
+    return getter(this, 'default-link-label-font-family', 'serif')
+  }
+
+  set defaultLinkLabelFontFamily (value) {
+    this.setAttribute('default-link-label-font-family', value)
   }
 
   get data () {

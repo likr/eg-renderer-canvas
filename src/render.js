@@ -28,11 +28,14 @@ const setLabelStyles = (ctx, args) => {
   const {
     labelFillColor,
     labelStrokeColor,
-    labelStrokeWidth
+    labelStrokeWidth,
+    labelFontSize,
+    labelFontFamily
   } = args
   ctx.fillStyle = labelFillColor.toString()
   ctx.strokeStyle = labelStrokeColor.toString()
   ctx.lineWidth = labelStrokeWidth
+  ctx.font = `${labelFontSize}px ${labelFontFamily}`
 }
 
 const renderRectVertex = (ctx, width, height) => {
@@ -55,7 +58,6 @@ export const renderVertex = (ctx, args) => {
     y,
     width,
     height,
-    label,
     strokeWidth
   } = args
   withContext(ctx, () => {
@@ -70,6 +72,8 @@ export const renderVertex = (ctx, args) => {
         case 'rect':
           renderRectVertex(ctx, width, height)
           break
+        default:
+          return
       }
       ctx.closePath()
       ctx.fill()
@@ -80,14 +84,26 @@ export const renderVertex = (ctx, args) => {
     if (ctx.addHitRegion) {
       ctx.addHitRegion({id: u})
     }
-    if (label) {
-      setLabelStyles(ctx, args)
-      ctx.textAlign = 'center'
-      if (args.labelStrokeWidth > 0) {
-        ctx.strokeText(label, 0, 4)
-      }
-      ctx.fillText(label, 0, 4)
+  })
+}
+
+export const renderVertexLabel = (ctx, args) => {
+  const {
+    x,
+    y,
+    label
+  } = args
+  if (!label) {
+    return
+  }
+  withContext(ctx, () => {
+    setLabelStyles(ctx, args)
+    ctx.textAlign = 'center'
+    ctx.textBaseline = 'middle'
+    if (args.labelStrokeWidth > 0) {
+      ctx.strokeText(label, x, y)
     }
+    ctx.fillText(label, x, y)
   })
 }
 
@@ -129,7 +145,6 @@ export const renderEdge = (ctx, args) => {
   const {
     type,
     points,
-    label,
     sourceMarkerShape,
     sourceMarkerSize,
     targetMarkerShape,
@@ -210,17 +225,26 @@ export const renderEdge = (ctx, args) => {
         })
         break
     }
+  })
+}
 
-    if (label) {
-      const x = (points[0][0] + points[points.length - 1][0]) / 2
-      const y = (points[0][1] + points[points.length - 1][1]) / 2
-      ctx.translate(x, y)
-      setLabelStyles(ctx, args)
-      ctx.textAlign = 'center'
-      if (args.labelStrokeWidth > 0) {
-        ctx.strokeText(label, 0, 4)
-      }
-      ctx.fillText(label, 0, 4)
+export const renderEdgeLabel = (ctx, args) => {
+  const {
+    points,
+    label
+  } = args
+  if (!label) {
+    return
+  }
+  withContext(ctx, () => {
+    const x = (points[0][0] + points[points.length - 1][0]) / 2
+    const y = (points[0][1] + points[points.length - 1][1]) / 2
+    setLabelStyles(ctx, args)
+    ctx.textAlign = 'center'
+    ctx.textBaseline = 'middle'
+    if (args.labelStrokeWidth > 0) {
+      ctx.strokeText(label, x, y)
     }
+    ctx.fillText(label, x, y)
   })
 }
