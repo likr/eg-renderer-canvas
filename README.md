@@ -236,6 +236,10 @@ TODO
 
 #### EgRendererElement.nodeLabelStrokeWidthProperty
 
+#### EgRendererElement.nodeLabelFontSizeProperty
+
+#### EgRendererElement.nodeLabelFontFamilyProperty
+
 #### EgRendererElement.linkSourceProperty
 
 #### EgRendererElement.linkTargetProperty
@@ -265,6 +269,10 @@ TODO
 #### EgRendererElement.linkLabelStrokeOpacityProperty
 
 #### EgRendererElement.linkLabelStrokeWidthProperty
+
+#### EgRendererElement.linkLabelFontSizeProperty
+
+#### EgRendererElement.linkLabelFontFamilyProperty
 
 #### EgRendererElement.defaultNodeX
 
@@ -298,6 +306,10 @@ TODO
 
 #### EgRendererElement.defaultNodeLabelStrokeWidth
 
+#### EgRendererElement.defaultNodeLabelFontSize
+
+#### EgRendererElement.defaultNodeLabelFontFamily
+
 #### EgRendererElement.defaultLinkStrokeColor
 
 #### EgRendererElement.defaultLinkStrokeOpacity
@@ -323,6 +335,10 @@ TODO
 #### EgRendererElement.defaultLinkLabelStrokeOpacity
 
 #### EgRendererElement.defaultLinkLabelStrokeWidth
+
+#### EgRendererElement.defaultLinkLabelFontSize
+
+#### EgRendererElement.defaultLinkLabelFontFamily
 
 ### Methods
 

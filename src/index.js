@@ -84,6 +84,8 @@ class EgRendererElement extends window.HTMLElement {
       'node-label-stroke-color-property',
       'node-label-stroke-opacity-property',
       'node-label-stroke-width-property',
+      'node-label-font-size-property',
+      'node-label-font-family-property',
       'link-source-property',
       'link-target-property',
       'link-stroke-color-property',
@@ -100,6 +102,8 @@ class EgRendererElement extends window.HTMLElement {
       'link-label-stroke-color-property',
       'link-label-stroke-opacity-property',
       'link-label-stroke-width-property',
+      'link-label-font-size-property',
+      'link-label-font-family-property',
       'default-node-x',
       'default-node-y',
       'default-node-width',
@@ -117,6 +121,8 @@ class EgRendererElement extends window.HTMLElement {
       'default-node-label-stroke-color',
       'default-node-label-stroke-opacity',
       'default-node-label-stroke-width',
+      'default-node-label-font-size',
+      'default-node-label-font-family',
       'default-link-stroke-color',
       'default-link-stroke-opacity',
       'default-link-stroke-width',
@@ -130,7 +136,9 @@ class EgRendererElement extends window.HTMLElement {
       'default-link-label-fill-opacity',
       'default-link-label-stroke-color',
       'default-link-label-stroke-opacity',
-      'default-link-label-stroke-width'
+      'default-link-label-stroke-width',
+      'default-link-label-font-size',
+      'default-link-label-font-family'
     ]
   }
 
