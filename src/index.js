@@ -187,6 +187,16 @@ class EgRendererElement extends window.HTMLElement {
         p.canvas.style.cursor = 'default'
       }
     })
+
+    p.canvas.addEventListener('click', (event) => {
+      if (event.region) {
+        this.dispatchEvent(new window.CustomEvent('nodeclick', {
+          detail: {
+            id: event.region
+          }
+        }))
+      }
+    })
   }
 
   connectedCallback () {
