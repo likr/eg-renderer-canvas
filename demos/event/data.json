@@ -1,0 +1,9 @@
+{
+  "nodes": [
+    {"label": "source", "type": "circle", "x": 100, "y": 100, "width": 120, "height": 20},
+    {"label": "target", "type": "rect", "x": 200, "y": 200, "width": 120, "height": 20}
+  ],
+  "links": [
+    {"source": 0, "target": 1, "sourceMarkerShape": "circle", "targetMarkerShape": "triangle"}
+  ]
+}
