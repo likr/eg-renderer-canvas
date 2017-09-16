@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8"/>
+<title>HTML API Demo | EgRenderer Example</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/babel-polyfill/6.23.0/polyfill.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/fetch/2.0.3/fetch.min.js"></script>
+<script>
+if (!window.customElements) {
+  window.customElements = {}
+}
+window.customElements.forcePolyfill = true
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/custom-elements/1.0.0/custom-elements.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/4.10.0/d3.min.js"></script>
+<script src="../../eg-renderer.js"></script>
+</head>
+<body>
+<div>
+<a href="../../">back</a>
+<h1>Event</h1>
+</div>
+<div>
+<eg-renderer width="600" height="400" src="data.json"></eg-renderer>
+<p id="status"></p>
+</div>
+<script>
+customElements.whenDefined('eg-renderer').then(() => {
+  const renderer = document.querySelector('eg-renderer')
+  const status = document.querySelector('#status')
+
+  renderer.addEventListener('nodeclick', (event) => {
+    const {id} = event.detail
+    status.textContent = `nodeclick ${id}`
+  })
+
+  renderer.addEventListener('nodemouseenter', (event) => {
+    const {id} = event.detail
+    status.textContent = `nodemouseenter ${id}`
+  })
+
+  renderer.addEventListener('nodemouseleave', (event) => {
+    const {id} = event.detail
+    status.textContent = `nodemouseleave ${id}`
+  })
+
+  renderer.addEventListener('linkclick', (event) => {
+    const {source, target} = event.detail
+    status.textContent = `linkclick ${source}:${target}`
+  })
+
+  renderer.addEventListener('linkmouseenter', (event) => {
+    const {source, target} = event.detail
+    status.textContent = `linkmouseenter ${source}:${target}`
+  })
+
+  renderer.addEventListener('linkmouseleave', (event) => {
+    const {source, target} = event.detail
+    status.textContent = `linkmouseleave ${source}:${target}`
+  })
+})
+</script>
+</body>
+</html>

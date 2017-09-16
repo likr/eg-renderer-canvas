@@ -41,7 +41,7 @@ export const zoom = (element, attrs) => {
   zoom
     .on('start', () => {
       if (!element.canZoom || (element.canDragNode && d3.event.sourceEvent && d3.event.sourceEvent.region)) {
-        const u = d3.event.sourceEvent ? d3.event.sourceEvent.region : null
+        const u = d3.event.sourceEvent ? JSON.parse(d3.event.sourceEvent.region).id : null
         const {x, y, k} = d3.event.transform
         pos.region = u
         pos.x0 = x / k

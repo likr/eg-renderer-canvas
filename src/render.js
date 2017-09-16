@@ -82,7 +82,7 @@ export const renderVertex = (ctx, args) => {
       }
     })
     if (ctx.addHitRegion) {
-      ctx.addHitRegion({id: u})
+      ctx.addHitRegion({id: JSON.stringify({id: u})})
     }
   })
 }
@@ -139,6 +139,32 @@ const renderArcEdge = (ctx, points) => {
   const cy = (points[0][1] + points[1][1]) / 2
   const theta = Math.atan2(dy, dx)
   ctx.arc(cx, cy, r, theta, theta + Math.PI)
+}
+
+export const renderEdgeRegion = (ctx, args) => {
+  const {
+    u,
+    v,
+    points
+  } = args
+  withContext(ctx, () => {
+    const x1 = points[0][0]
+    const y1 = points[0][1]
+    const x2 = points[points.length - 1][0]
+    const y2 = points[points.length - 1][1]
+    const theta = Math.atan2(y2 - y1, x2 - x1) + Math.PI / 2
+    const d = 5
+    ctx.strokeStyle = '#fff'
+    ctx.moveTo(x1 + d * Math.cos(theta), y1 + d * Math.sin(theta))
+    ctx.lineTo(x2 + d * Math.cos(theta), y2 + d * Math.sin(theta))
+    ctx.lineTo(x2 + d * Math.cos(theta + Math.PI), y2 + d * Math.sin(theta + Math.PI))
+    ctx.lineTo(x1 + d * Math.cos(theta + Math.PI), y1 + d * Math.sin(theta + Math.PI))
+    ctx.closePath()
+    ctx.stroke()
+    if (ctx.addHitRegion) {
+      ctx.addHitRegion({id: JSON.stringify({source: u, target: v})})
+    }
+  })
 }
 
 export const renderEdge = (ctx, args) => {

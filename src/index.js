@@ -11,6 +11,7 @@ import {
 import {
   renderEdge,
   renderEdgeLabel,
+  renderEdgeRegion,
   renderVertex,
   renderVertexLabel
 } from './render'
@@ -159,7 +160,7 @@ class EgRendererElement extends window.HTMLElement {
         y: 0,
         k: 1
       },
-      highlightedVertex: null,
+      currentRegion: null,
       layout: {
         update: {
           vertices: [],
@@ -185,12 +186,46 @@ class EgRendererElement extends window.HTMLElement {
       .call(p.zoom)
 
     p.canvas.addEventListener('mousemove', (event) => {
+      if (event.region) {
+        const obj = JSON.parse(event.region)
+        if (p.currentRegion == null) {
+          if (obj.id) {
+            const {id} = obj
+            this.dispatchEvent(new window.CustomEvent('nodemouseenter', {
+              detail: {id}
+            }))
+          } else if (obj.source && obj.target) {
+            const {source, target} = obj
+            this.dispatchEvent(new window.CustomEvent('linkmouseenter', {
+              detail: {source, target}
+            }))
+          }
+        }
+        p.currentRegion = obj
+      } else {
+        if (p.currentRegion) {
+          const obj = p.currentRegion
+          if (obj.id) {
+            const {id} = obj
+            this.dispatchEvent(new window.CustomEvent('nodemouseleave', {
+              detail: {id}
+            }))
+          } else if (obj.source && obj.target) {
+            const {source, target} = obj
+            this.dispatchEvent(new window.CustomEvent('linkmouseleave', {
+              detail: {source, target}
+            }))
+          }
+        }
+        p.currentRegion = null
+      }
       if (this.canDragNode && event.region) {
-        p.canvas.style.cursor = 'pointer'
-        p.highlightedVertex = event.region
+        const obj = JSON.parse(event.region)
+        if (obj.id) {
+          p.canvas.style.cursor = 'pointer'
+        }
       } else if (this.canZoom) {
         p.canvas.style.cursor = 'move'
-        p.highlightedVertex = null
       } else {
         p.canvas.style.cursor = 'default'
       }
@@ -198,11 +233,18 @@ class EgRendererElement extends window.HTMLElement {
 
     p.canvas.addEventListener('click', (event) => {
       if (event.region) {
-        this.dispatchEvent(new window.CustomEvent('nodeclick', {
-          detail: {
-            id: event.region
-          }
-        }))
+        const obj = JSON.parse(event.region)
+        if (obj.id) {
+          const {id} = obj
+          this.dispatchEvent(new window.CustomEvent('nodeclick', {
+            detail: {id}
+          }))
+        } else if (obj.source && obj.target) {
+          const {source, target} = obj
+          this.dispatchEvent(new window.CustomEvent('linkclick', {
+            detail: {source, target}
+          }))
+        }
       }
     })
   }
@@ -227,6 +269,24 @@ class EgRendererElement extends window.HTMLElement {
       ctx.translate(p.margin, p.margin)
       ctx.translate(p.transform.x, p.transform.y)
       ctx.scale(p.transform.k, p.transform.k)
+      if (r < 1) {
+        ctx.globalAlpha = 1 - r
+        for (const edge of p.layout.exit.edges) {
+          renderEdgeRegion(ctx, edge)
+        }
+      }
+      ctx.globalAlpha = Math.min(1, r)
+      for (const edge of p.layout.enter.edges) {
+        renderEdgeRegion(ctx, edge)
+      }
+      ctx.globalAlpha = 1
+      for (const {current, next} of p.layout.update.edges) {
+        if (r < 1) {
+          renderEdgeRegion(ctx, interpolateEdge(current, next, r))
+        } else {
+          renderEdgeRegion(ctx, next)
+        }
+      }
       if (r < 1) {
         ctx.globalAlpha = 1 - r
         for (const edge of p.layout.exit.edges) {
