@@ -269,22 +269,21 @@ class EgRendererElement extends window.HTMLElement {
       ctx.translate(p.margin, p.margin)
       ctx.translate(p.transform.x, p.transform.y)
       ctx.scale(p.transform.k, p.transform.k)
-      if (r < 1) {
-        ctx.globalAlpha = 1 - r
-        for (const edge of p.layout.exit.edges) {
+      if (this.enableLinkEvents) {
+        if (r < 1) {
+          for (const edge of p.layout.exit.edges) {
+            renderEdgeRegion(ctx, edge)
+          }
+        }
+        for (const edge of p.layout.enter.edges) {
           renderEdgeRegion(ctx, edge)
         }
-      }
-      ctx.globalAlpha = Math.min(1, r)
-      for (const edge of p.layout.enter.edges) {
-        renderEdgeRegion(ctx, edge)
-      }
-      ctx.globalAlpha = 1
-      for (const {current, next} of p.layout.update.edges) {
-        if (r < 1) {
-          renderEdgeRegion(ctx, interpolateEdge(current, next, r))
-        } else {
-          renderEdgeRegion(ctx, next)
+        for (const {current, next} of p.layout.update.edges) {
+          if (r < 1) {
+            renderEdgeRegion(ctx, interpolateEdge(current, next, r))
+          } else {
+            renderEdgeRegion(ctx, next)
+          }
         }
       }
       if (r < 1) {
@@ -564,6 +563,18 @@ class EgRendererElement extends window.HTMLElement {
       this.removeAttribute('no-drag-node')
     } else {
       this.setAttribute('no-drag-node', '')
+    }
+  }
+
+  get enableLinkEvents () {
+    return this.hasAttribute('enable-link-events')
+  }
+
+  set enableLinkEvents (value) {
+    if (value) {
+      this.removeAttribute('no-drag-node')
+    } else {
+      this.setAttribute('enable-link-events', '')
     }
   }
 
