@@ -1,0 +1,485 @@
+{
+    "links": [
+        {
+            "u": 0,
+            "v": 5
+        },
+        {
+            "u": 0,
+            "v": 6
+        },
+        {
+            "u": 0,
+            "v": 7
+        },
+        {
+            "u": 1,
+            "v": 0
+        },
+        {
+            "u": 1,
+            "v": 16
+        },
+        {
+            "u": 2,
+            "v": 1
+        },
+        {
+            "u": 3,
+            "v": 1
+        },
+        {
+            "u": 3,
+            "v": 8
+        },
+        {
+            "u": 4,
+            "v": 0
+        },
+        {
+            "u": 8,
+            "v": 15
+        },
+        {
+            "u": 8,
+            "v": 22
+        },
+        {
+            "u": 8,
+            "v": 25
+        },
+        {
+            "u": 9,
+            "v": 8
+        },
+        {
+            "u": 10,
+            "v": 7
+        },
+        {
+            "u": 11,
+            "v": 10
+        },
+        {
+            "u": 12,
+            "v": 10
+        },
+        {
+            "u": 12,
+            "v": 13
+        },
+        {
+            "u": 12,
+            "v": 14
+        },
+        {
+            "u": 15,
+            "v": 12
+        },
+        {
+            "u": 16,
+            "v": 17
+        },
+        {
+            "u": 16,
+            "v": 18
+        },
+        {
+            "u": 16,
+            "v": 19
+        },
+        {
+            "u": 20,
+            "v": 8
+        },
+        {
+            "u": 20,
+            "v": 23
+        },
+        {
+            "u": 20,
+            "v": 24
+        },
+        {
+            "u": 21,
+            "v": 20
+        },
+        {
+            "u": 22,
+            "v": 16
+        },
+        {
+            "u": 23,
+            "v": 16
+        },
+        {
+            "u": 25,
+            "v": 26
+        },
+        {
+            "u": 25,
+            "v": 31
+        },
+        {
+            "u": 25,
+            "v": 32
+        },
+        {
+            "u": 27,
+            "v": 28
+        },
+        {
+            "u": 27,
+            "v": 29
+        },
+        {
+            "u": 30,
+            "v": 19
+        },
+        {
+            "u": 30,
+            "v": 27
+        },
+        {
+            "u": 31,
+            "v": 30
+        },
+        {
+            "u": 31,
+            "v": 33
+        },
+        {
+            "u": 32,
+            "v": 26
+        },
+        {
+            "u": 33,
+            "v": 12
+        },
+        {
+            "u": 34,
+            "v": 33
+        }
+    ],
+    "nodes": [
+        {
+            "label": "Can challenge",
+            "original": true,
+            "participants": [
+                "agxzfmNvbGxhYm9lZ21yGAsSC1BhcnRpY2lwYW50GICAgICwn6kKDA"
+            ],
+            "weight": 1,
+            "u": 0
+        },
+        {
+            "label": "Easy to find new discoveries",
+            "original": false,
+            "participants": [
+                "agxzfmNvbGxhYm9lZ21yGAsSC1BhcnRpY2lwYW50GICAgICwn6kKDA"
+            ],
+            "weight": 1,
+            "u": 1
+        },
+        {
+            "label": "Easy to find new research topics",
+            "original": false,
+            "participants": [
+                "agxzfmNvbGxhYm9lZ21yGAsSC1BhcnRpY2lwYW50GICAgICwn6kKDA"
+            ],
+            "weight": 1,
+            "u": 2
+        },
+        {
+            "label": "Be fun",
+            "original": false,
+            "participants": [
+                "agxzfmNvbGxhYm9lZ21yGAsSC1BhcnRpY2lwYW50GICAgICwn6kKDA"
+            ],
+            "weight": 1,
+            "u": 3
+        },
+        {
+            "label": "Cool",
+            "original": false,
+            "participants": [
+                "agxzfmNvbGxhYm9lZ21yGAsSC1BhcnRpY2lwYW50GICAgICwn6kKDA"
+            ],
+            "weight": 1,
+            "u": 4
+        },
+        {
+            "label": "Can learn new technologies",
+            "original": false,
+            "participants": [
+                "agxzfmNvbGxhYm9lZ21yGAsSC1BhcnRpY2lwYW50GICAgICwn6kKDA"
+            ],
+            "weight": 1,
+            "u": 5
+        },
+        {
+            "label": "Have enough time",
+            "original": false,
+            "participants": [
+                "agxzfmNvbGxhYm9lZ21yGAsSC1BhcnRpY2lwYW50GICAgICwn6kKDA"
+            ],
+            "weight": 1,
+            "u": 6
+        },
+        {
+            "label": "Have enough budgets",
+            "original": false,
+            "participants": [
+                "agxzfmNvbGxhYm9lZ21yGAsSC1BhcnRpY2lwYW50GICAgICwn6kKDA"
+            ],
+            "weight": 1,
+            "u": 7
+        },
+        {
+            "label": "High research efficiency",
+            "original": false,
+            "participants": [
+                "agxzfmNvbGxhYm9lZ21yGAsSC1BhcnRpY2lwYW50GICAgICwn6kKDA"
+            ],
+            "weight": 1,
+            "u": 8
+        },
+        {
+            "label": "Have enough free time",
+            "original": false,
+            "participants": [
+                "agxzfmNvbGxhYm9lZ21yGAsSC1BhcnRpY2lwYW50GICAgICwn6kKDA"
+            ],
+            "weight": 1,
+            "u": 9
+        },
+        {
+            "label": "Can use latest equipments",
+            "original": false,
+            "participants": [
+                "agxzfmNvbGxhYm9lZ21yGAsSC1BhcnRpY2lwYW50GICAgICwn6kKDA"
+            ],
+            "weight": 1,
+            "u": 10
+        },
+        {
+            "label": "Happy",
+            "original": false,
+            "participants": [
+                "agxzfmNvbGxhYm9lZ21yGAsSC1BhcnRpY2lwYW50GICAgICwn6kKDA"
+            ],
+            "weight": 1,
+            "u": 11
+        },
+        {
+            "label": "High PC performance",
+            "original": false,
+            "participants": [
+                "agxzfmNvbGxhYm9lZ21yGAsSC1BhcnRpY2lwYW50GICAgICwn6kKDA",
+                "agxzfmNvbGxhYm9lZ21yGAsSC1BhcnRpY2lwYW50GICAgIDwhLgKDA"
+            ],
+            "weight": 2,
+            "u": 12
+        },
+        {
+            "label": "Dual display",
+            "original": false,
+            "participants": [
+                "agxzfmNvbGxhYm9lZ21yGAsSC1BhcnRpY2lwYW50GICAgICwn6kKDA"
+            ],
+            "weight": 1,
+            "u": 13
+        },
+        {
+            "label": "Comfortable Internet access",
+            "original": false,
+            "participants": [
+                "agxzfmNvbGxhYm9lZ21yGAsSC1BhcnRpY2lwYW50GICAgICwn6kKDA"
+            ],
+            "weight": 1,
+            "u": 14
+        },
+        {
+            "label": "Easy to experiment",
+            "original": false,
+            "participants": [
+                "agxzfmNvbGxhYm9lZ21yGAsSC1BhcnRpY2lwYW50GICAgICwn6kKDA"
+            ],
+            "weight": 1,
+            "u": 15
+        },
+        {
+            "label": "Easy to consult",
+            "original": true,
+            "participants": [
+                "agxzfmNvbGxhYm9lZ21yGAsSC1BhcnRpY2lwYW50GICAgICwn6kKDA"
+            ],
+            "weight": 1,
+            "u": 16
+        },
+        {
+            "label": "Can consult quickly",
+            "original": false,
+            "participants": [
+                "agxzfmNvbGxhYm9lZ21yGAsSC1BhcnRpY2lwYW50GICAgICwn6kKDA"
+            ],
+            "weight": 1,
+            "u": 17
+        },
+        {
+            "label": "Have tea breaks",
+            "original": false,
+            "participants": [
+                "agxzfmNvbGxhYm9lZ21yGAsSC1BhcnRpY2lwYW50GICAgICwn6kKDA"
+            ],
+            "weight": 1,
+            "u": 18
+        },
+        {
+            "label": "Have shared spaces",
+            "original": false,
+            "participants": [
+                "agxzfmNvbGxhYm9lZ21yGAsSC1BhcnRpY2lwYW50GICAgICwn6kKDA",
+                "agxzfmNvbGxhYm9lZ21yGAsSC1BhcnRpY2lwYW50GICAgIDwhLgKDA"
+            ],
+            "weight": 2,
+            "u": 19
+        },
+        {
+            "label": "Good research progress",
+            "original": false,
+            "participants": [
+                "agxzfmNvbGxhYm9lZ21yGAsSC1BhcnRpY2lwYW50GICAgICwn6kKDA"
+            ],
+            "weight": 1,
+            "u": 20
+        },
+        {
+            "label": "Good research results",
+            "original": false,
+            "participants": [
+                "agxzfmNvbGxhYm9lZ21yGAsSC1BhcnRpY2lwYW50GICAgICwn6kKDA"
+            ],
+            "weight": 1,
+            "u": 21
+        },
+        {
+            "label": "Shorter time to worry",
+            "original": false,
+            "participants": [
+                "agxzfmNvbGxhYm9lZ21yGAsSC1BhcnRpY2lwYW50GICAgICwn6kKDA"
+            ],
+            "weight": 1,
+            "u": 22
+        },
+        {
+            "label": "There are people to support",
+            "original": false,
+            "participants": [
+                "agxzfmNvbGxhYm9lZ21yGAsSC1BhcnRpY2lwYW50GICAgICwn6kKDA"
+            ],
+            "weight": 1,
+            "u": 23
+        },
+        {
+            "label": "Shorter fruitless time",
+            "original": false,
+            "participants": [
+                "agxzfmNvbGxhYm9lZ21yGAsSC1BhcnRpY2lwYW50GICAgICwn6kKDA"
+            ],
+            "weight": 1,
+            "u": 24
+        },
+        {
+            "label": "Can concentrate",
+            "original": false,
+            "participants": [
+                "agxzfmNvbGxhYm9lZ21yGAsSC1BhcnRpY2lwYW50GICAgICwn6kKDA",
+                "agxzfmNvbGxhYm9lZ21yGAsSC1BhcnRpY2lwYW50GICAgIDwhLgKDA"
+            ],
+            "weight": 2,
+            "u": 25
+        },
+        {
+            "label": "Comfortable temperature",
+            "original": false,
+            "participants": [
+                "agxzfmNvbGxhYm9lZ21yGAsSC1BhcnRpY2lwYW50GICAgICwn6kKDA",
+                "agxzfmNvbGxhYm9lZ21yGAsSC1BhcnRpY2lwYW50GICAgIDwhLgKDA"
+            ],
+            "weight": 2,
+            "u": 26
+        },
+        {
+            "label": "Can protect privacy",
+            "original": true,
+            "participants": [
+                "agxzfmNvbGxhYm9lZ21yGAsSC1BhcnRpY2lwYW50GICAgIDwhLgKDA"
+            ],
+            "weight": 1,
+            "u": 27
+        },
+        {
+            "label": "Have private room",
+            "original": false,
+            "participants": [
+                "agxzfmNvbGxhYm9lZ21yGAsSC1BhcnRpY2lwYW50GICAgIDwhLgKDA"
+            ],
+            "weight": 1,
+            "u": 28
+        },
+        {
+            "label": "Have partitions",
+            "original": false,
+            "participants": [
+                "agxzfmNvbGxhYm9lZ21yGAsSC1BhcnRpY2lwYW50GICAgIDwhLgKDA"
+            ],
+            "weight": 1,
+            "u": 29
+        },
+        {
+            "label": "Can take a rest",
+            "original": false,
+            "participants": [
+                "agxzfmNvbGxhYm9lZ21yGAsSC1BhcnRpY2lwYW50GICAgIDwhLgKDA"
+            ],
+            "weight": 1,
+            "u": 30
+        },
+        {
+            "label": "Have less stress",
+            "original": false,
+            "participants": [
+                "agxzfmNvbGxhYm9lZ21yGAsSC1BhcnRpY2lwYW50GICAgIDwhLgKDA"
+            ],
+            "weight": 1,
+            "u": 31
+        },
+        {
+            "label": "Comfortable",
+            "original": false,
+            "participants": [
+                "agxzfmNvbGxhYm9lZ21yGAsSC1BhcnRpY2lwYW50GICAgIDwhLgKDA"
+            ],
+            "weight": 1,
+            "u": 32
+        },
+        {
+            "label": "High work efficiency",
+            "original": false,
+            "participants": [
+                "agxzfmNvbGxhYm9lZ21yGAsSC1BhcnRpY2lwYW50GICAgIDwhLgKDA"
+            ],
+            "weight": 1,
+            "u": 33
+        },
+        {
+            "label": "Can save time",
+            "original": false,
+            "participants": [
+                "agxzfmNvbGxhYm9lZ21yGAsSC1BhcnRpY2lwYW50GICAgIDwhLgKDA"
+            ],
+            "weight": 1,
+            "u": 34
+        }
+    ]
+}

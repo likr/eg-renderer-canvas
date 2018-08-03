@@ -20,7 +20,8 @@ const options = {
     ]
   },
   entry: {
-    'eg-renderer': './src/index'
+    'eg-renderer': 'eg-renderer',
+    'eg-renderer-ogdf': 'eg-renderer-ogdf'
   },
   output: {
     path: path.resolve(__dirname, 'public'),
@@ -32,13 +33,10 @@ const options = {
     contentBase: path.join(__dirname, 'public'),
     historyApiFallback: true,
     port: 8083
+  },
+  node: {
+    fs: 'empty'
   }
-}
-
-if (process.env.NODE_ENV !== 'production') {
-  Object.assign(options, {
-    devtool: 'inline-source-map'
-  })
 }
 
 module.exports = options

@@ -1,0 +1,33 @@
+{
+  "name": "eg-renderer-example",
+  "private": true,
+  "version": "1.0.0-beta.4",
+  "description": "EgRenderer Examples",
+  "scripts": {
+    "start": "webpack-dev-server --mode=development",
+    "build": "webpack --mode=production",
+    "deploy": "npm run build && gh-pages -d public"
+  },
+  "keywords": [],
+  "author": "Yosuke Onoue <onoue@likr-lab.com>",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/likr/eg-renderer.git"
+  },
+  "license": "MIT",
+  "devDependencies": {
+    "babel-core": "^6.26.3",
+    "babel-loader": "^7.1.5",
+    "babel-preset-env": "^1.7.0",
+    "gh-pages": "^1.0.0",
+    "lerna": "^3.0.0-rc.0",
+    "webpack": "^4.16.4",
+    "webpack-cli": "^3.1.0",
+    "webpack-dev-server": "^3.1.5"
+  },
+  "dependencies": {
+    "d3": "^5",
+    "eg-renderer": "^1.0.0-beta.4",
+    "eg-renderer-ogdf": "^1.0.0-beta.4"
+  }
+}
