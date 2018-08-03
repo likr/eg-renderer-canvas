@@ -1,4 +1,15 @@
-import * as d3 from 'd3'
+import {
+  easeCubic as d3EaseCubic
+} from 'd3-ease'
+import {
+  color as d3Color
+} from 'd3-color'
+import {
+  select as d3Select
+} from 'd3-selection'
+import {
+  zoomIdentity as d3ZoomIdentity
+} from 'd3-zoom'
 import {
   centerTransform,
   layoutRect
@@ -177,12 +188,12 @@ class EgRendererElement extends window.HTMLElement {
       },
       margin: 10,
       layoutTime: 0,
-      ease: d3.easeCubic
+      ease: d3EaseCubic
     }
     p.zoom = zoom(this, p)
     privates.set(this, p)
 
-    d3.select(p.canvas)
+    d3Select(p.canvas)
       .call(p.zoom)
 
     p.canvas.addEventListener('mousemove', (event) => {
@@ -391,7 +402,7 @@ class EgRendererElement extends window.HTMLElement {
     const canvasWidth = canvas.width / devicePixelRatio()
     const canvasHeight = canvas.height / devicePixelRatio()
     const {x, y, k} = centerTransform(layoutWidth, layoutHeight, left, top, canvasWidth, canvasHeight, margin)
-    zoom.transform(d3.select(canvas), d3.zoomIdentity.translate(x, y).scale(k).translate(-left, -top))
+    zoom.transform(d3Select(canvas), d3ZoomIdentity.translate(x, y).scale(k).translate(-left, -top))
     return this
   }
 
@@ -407,13 +418,13 @@ class EgRendererElement extends window.HTMLElement {
     const vertices = get(data, this.graphNodesProperty)
       .filter((node) => get(node, this.nodeVisibilityProperty, this.defaultNodeVisibility))
       .map((node, i) => {
-        const fillColor = d3.color(get(node, this.nodeFillColorProperty, this.defaultNodeFillColor))
+        const fillColor = d3Color(get(node, this.nodeFillColorProperty, this.defaultNodeFillColor))
         fillColor.opacity = +get(node, this.nodeFillOpacityProperty, this.defaultNodeFillOpacity)
-        const strokeColor = d3.color(get(node, this.nodeStrokeColorProperty, this.defaultNodeStrokeColor))
+        const strokeColor = d3Color(get(node, this.nodeStrokeColorProperty, this.defaultNodeStrokeColor))
         strokeColor.opacity = +get(node, this.nodeStrokeOpacityProperty, this.defaultNodeStrokeOpacity)
-        const labelFillColor = d3.color(get(node, this.nodeLabelFillColorProperty, this.defaultNodeLabelFillColor))
+        const labelFillColor = d3Color(get(node, this.nodeLabelFillColorProperty, this.defaultNodeLabelFillColor))
         labelFillColor.opacity = +get(node, this.nodeLabelFillOpacityProperty, this.defaultNodeLabelFillOpacity)
-        const labelStrokeColor = d3.color(get(node, this.nodeLabelStrokeColorProperty, this.defaultNodeLabelStrokeColor))
+        const labelStrokeColor = d3Color(get(node, this.nodeLabelStrokeColorProperty, this.defaultNodeLabelStrokeColor))
         labelStrokeColor.opacity = +get(node, this.nodeLabelStrokeOpacityProperty, this.defaultNodeLabelStrokeOpacity)
         const u = (this.nodeIdProperty === '$index' ? i : get(node, this.nodeIdProperty)).toString()
         return {
@@ -448,11 +459,11 @@ class EgRendererElement extends window.HTMLElement {
       .map((link) => {
         const u = get(link, this.linkSourceProperty).toString()
         const v = get(link, this.linkTargetProperty).toString()
-        const strokeColor = d3.color(get(link, this.linkStrokeColorProperty, this.defaultLinkStrokeColor))
+        const strokeColor = d3Color(get(link, this.linkStrokeColorProperty, this.defaultLinkStrokeColor))
         strokeColor.opacity = +get(link, this.linkStrokeOpacityProperty, this.defaultLinkStrokeOpacity)
-        const labelFillColor = d3.color(get(link, this.linkLabelFillColorProperty, this.defaultLinkLabelFillColor))
+        const labelFillColor = d3Color(get(link, this.linkLabelFillColorProperty, this.defaultLinkLabelFillColor))
         labelFillColor.opacity = +get(link, this.linkLabelFillOpacityProperty, this.defaultLinkLabelFillOpacity)
-        const labelStrokeColor = d3.color(get(link, this.linkLabelStrokeColorProperty, this.defaultLinkLabelStrokeColor))
+        const labelStrokeColor = d3Color(get(link, this.linkLabelStrokeColorProperty, this.defaultLinkLabelStrokeColor))
         labelStrokeColor.opacity = +get(link, this.linkLabelStrokeOpacityProperty, this.defaultLinkLabelStrokeOpacity)
         const du = vertices[indices.get(u)]
         const dv = vertices[indices.get(v)]

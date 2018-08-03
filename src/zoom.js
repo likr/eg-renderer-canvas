@@ -1,4 +1,11 @@
-import * as d3 from 'd3'
+import {
+  event as d3Event,
+  select as d3Select
+} from 'd3-selection'
+import {
+  zoom as d3Zoom,
+  zoomIdentity as d3ZoomIdentity
+} from 'd3-zoom'
 import {adjustEdge} from './marker-point'
 
 const dispatchNodeMoveStartEvent = (element, u) => {
@@ -37,12 +44,12 @@ export const zoom = (element, attrs) => {
     y0: 0
   }
   let restoreTransform = false
-  const zoom = d3.zoom()
+  const zoom = d3Zoom()
   zoom
     .on('start', () => {
-      if (!element.canZoom || (element.canDragNode && d3.event.sourceEvent && d3.event.sourceEvent.region)) {
-        const u = d3.event.sourceEvent ? JSON.parse(d3.event.sourceEvent.region).id : null
-        const {x, y, k} = d3.event.transform
+      if (!element.canZoom || (element.canDragNode && d3Event.sourceEvent && d3Event.sourceEvent.region)) {
+        const u = d3Event.sourceEvent ? JSON.parse(d3Event.sourceEvent.region).id : null
+        const {x, y, k} = d3Event.transform
         pos.region = u
         pos.x0 = x / k
         pos.y0 = y / k
@@ -52,7 +59,7 @@ export const zoom = (element, attrs) => {
       }
     })
     .on('zoom', () => {
-      const {x, y, k} = d3.event.transform
+      const {x, y, k} = d3Event.transform
       if (element.canDragNode && pos.region) {
         const u = pos.region
         const dx = x / k - pos.x0
@@ -76,7 +83,7 @@ export const zoom = (element, attrs) => {
         pos.x0 = x / k
         pos.y0 = y / k
         dispatchNodeMoveEvent(element, vertex)
-      } else if (element.canZoom || !d3.event.sourceEvent) {
+      } else if (element.canZoom || !d3Event.sourceEvent) {
         Object.assign(attrs.transform, {
           x,
           y,
@@ -89,8 +96,8 @@ export const zoom = (element, attrs) => {
         const u = pos.region
         pos.region = null
         restoreTransform = true
-        d3.select(this)
-          .call(zoom.transform, d3.zoomIdentity.translate(attrs.transform.x, attrs.transform.y).scale(attrs.transform.k))
+        d3Select(this)
+          .call(zoom.transform, d3ZoomIdentity.translate(attrs.transform.x, attrs.transform.y).scale(attrs.transform.k))
         restoreTransform = false
         if (u) {
           dispatchNodeMoveEndEvent(element, u)

@@ -1,5 +1,4 @@
 const path = require('path')
-const webpack = require('webpack')
 
 const options = {
   module: {
@@ -27,31 +26,16 @@ const options = {
     path: path.resolve(__dirname, 'public'),
     filename: '[name].js'
   },
-  externals: {
-    'd3': 'd3'
-  },
   plugins: [
   ],
-  resolve: {
-    extensions: ['.js']
-  },
   devServer: {
     contentBase: path.join(__dirname, 'public'),
     historyApiFallback: true,
-    port: 8080
-  },
-  node: {
-    fs: 'empty'
+    port: 8083
   }
 }
 
-if (process.env.NODE_ENV === 'production') {
-  options.plugins.push(new webpack.optimize.UglifyJsPlugin({
-    compress: {
-      warnings: false
-    }
-  }))
-} else {
+if (process.env.NODE_ENV !== 'production') {
   Object.assign(options, {
     devtool: 'inline-source-map'
   })

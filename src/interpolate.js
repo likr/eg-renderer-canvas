@@ -1,4 +1,6 @@
-import * as d3 from 'd3'
+import {
+  interpolateRgb as d3InterpolateRgb
+} from 'd3-interpolate'
 
 const interpolate = (current, next, r) => {
   return (next - current) * r + current
@@ -36,7 +38,7 @@ export const interpolateVertex = (current, next, r) => {
     result[p] = interpolate(current[p], next[p], r)
   }
   for (const p of colorInterpolateProperties) {
-    result[p] = d3.interpolateRgb(current[p], next[p])(r)
+    result[p] = d3InterpolateRgb(current[p], next[p])(r)
   }
   return result
 }
@@ -73,7 +75,7 @@ export const interpolateEdge = (current, next, r) => {
     result[p] = interpolate(current[p], next[p], r)
   }
   for (const p of colorInterpolateProperties) {
-    result[p] = d3.interpolateRgb(current[p], next[p])(r)
+    result[p] = d3InterpolateRgb(current[p], next[p])(r)
   }
   result.points = current.points.map(([x, y], i) => [interpolate(x, next.points[i][0], r), interpolate(y, next.points[i][1], r)])
   return result
