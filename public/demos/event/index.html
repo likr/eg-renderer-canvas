@@ -21,7 +21,7 @@ window.customElements.forcePolyfill = true
 <h1>Event</h1>
 </div>
 <div>
-<eg-renderer width="600" height="400" src="data.json" enable-link-events></eg-renderer>
+<eg-renderer width="600" height="400" src="data.json" enable-link-events no-auto-centering></eg-renderer>
 <p id="status"></p>
 </div>
 <script>
@@ -45,7 +45,7 @@ customElements.whenDefined('eg-renderer').then(() => {
         node.checked = true
         node.fillColor = 'red'
       }
-      renderer.update()
+      renderer.update(true)
     })
 
     renderer.addEventListener('nodemouseenter', (event) => {
@@ -54,7 +54,7 @@ customElements.whenDefined('eg-renderer').then(() => {
       const node = nodes.get(id)
       if (!node.checked) {
         node.fillColor = 'green'
-        renderer.update()
+        renderer.update(true)
       }
     })
 
@@ -64,7 +64,7 @@ customElements.whenDefined('eg-renderer').then(() => {
       const node = nodes.get(id)
       if (!node.checked) {
         delete node.fillColor
-        renderer.update()
+        renderer.update(true)
       }
     })
 
@@ -79,7 +79,7 @@ customElements.whenDefined('eg-renderer').then(() => {
         link.checked = true
         link.strokeColor = 'red'
       }
-      renderer.update()
+      renderer.update(true)
     })
 
     renderer.addEventListener('linkmouseenter', (event) => {
@@ -88,7 +88,7 @@ customElements.whenDefined('eg-renderer').then(() => {
       const link = links.get(`${source}-${target}`)
       if (!link.checked) {
         link.strokeColor = 'green'
-        renderer.update()
+        renderer.update(true)
       }
     })
 
@@ -98,7 +98,14 @@ customElements.whenDefined('eg-renderer').then(() => {
       const link = links.get(`${source}-${target}`)
       if (!link.checked) {
         delete link.strokeColor
-        renderer.update()
+        renderer.update(true)
+      }
+    })
+
+    renderer.addEventListener('updateend', (event) => {
+      const {preservePos} = event.detail
+      if (!preservePos) {
+        renderer.center()
       }
     })
   })

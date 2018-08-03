@@ -519,6 +519,9 @@ class EgRendererElement extends window.HTMLElement {
     if (this.autoCentering) {
       this.center()
     }
+    this.dispatchEvent(new window.CustomEvent('updateend', {
+      detail: {preservePos}
+    }))
     return this
   }
 
